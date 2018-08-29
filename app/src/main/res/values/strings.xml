@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Mqsdk</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="bind_device">添加设备</string>
+    <string name="scan_no_device_code">绑定失败，扫描的不是设备二维码</string>
+
+    <!--Keyboard 相关-->
+    <string name="keyboard_hide_soft_input">隐藏输入框</string>
+    <string name="keyboard_show_soft_input">显示输入框</string>
+    <string name="keyboard_toggle_soft_input">Toggle Soft Input</string>
+    <string name="keyboard_show_dialog">显示窗口</string>
+    <string name="keyboard_close_dialog">关闭窗口</string>
+
+    <string name="permission_rationale_message">你已经拒绝了我们的申请授权，请同意授权</string>
+    <string name="permission_denied_forever_message">我们需要一些您拒绝的权限，请手动设置到页面授权，否则该函数不能正常使用！</string>
+
+</resources>
+

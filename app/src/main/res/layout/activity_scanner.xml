@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".util.zxing.ScanActivity">
+
+
+    <com.mylhyl.zxing.scanner.ScannerView
+        android:id="@+id/scanner_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:id="@+id/ll_toolbar"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="48dp" >
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:src="@mipmap/back"
+            android:layout_centerVertical="true"
+            android:contentDescription="@null"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/ToolbarTitleStyle"
+            android:text="@string/bind_device"/>
+
+        <View
+            style="@style/ViewLine"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="8dp"
+        android:background="@drawable/selector_lightflash"
+        android:textOff=""
+        android:textOn="" />
+
+    <ImageView
+        android:id="@+id/button4"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        android:background="@mipmap/user_photo"
+        android:text="相册" />
+</RelativeLayout>

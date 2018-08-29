@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="cn.com.startai.testsdk.MainActivity">
+
+
+    <item
+        android:id="@+id/menu_scan"
+        android:icon="@drawable/ic_add_48dp"
+        android:orderInCategory="100"
+        android:title="scan"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_airkiss"
+        android:icon="@drawable/ic_wifi_48dp"
+        android:orderInCategory="100"
+        android:title="airkiss"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_refresh"
+        android:icon="@drawable/ic_refresh_48dp"
+        android:orderInCategory="100"
+        android:title="refresh"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_account"
+        android:icon="@drawable/ic_account_box_black_48dp"
+        android:orderInCategory="100"
+        android:title="account"
+        app:showAsAction="always" />
+
+
+    <!--<item-->
+    <!--android:id="@+id/menu_exit"-->
+    <!--android:icon="@drawable/ic_exit_to_app_white_48dp"-->
+    <!--android:orderInCategory="100"-->
+    <!--android:title="exit"-->
+    <!--app:showAsAction="always" />-->
+</menu>

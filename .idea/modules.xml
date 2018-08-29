@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mqsdk.iml" filepath="$PROJECT_DIR$/mqsdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mqttsdk/mqttsdk.iml" filepath="$PROJECT_DIR$/mqttsdk/mqttsdk.iml" />
+    </modules>
+  </component>
+</project>
