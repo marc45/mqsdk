@@ -14,6 +14,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -44,13 +45,12 @@ public class C_0x9998 {
 
     /**
      * 处理对端的 终端连接事件
-     *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
      */
-    public static void m_0x9998_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-        if (resp == null || resp.getContent() == null || TextUtils.isEmpty(resp.getContent().getSn())) {
+    public static void m_0x9998_resp(String miof) {
+
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+
+        if (resp == null) {
             SLog.e(TAG, "接收的数据格式错误");
             return;
         }
@@ -61,7 +61,7 @@ public class C_0x9998 {
         if (userBean != null) {
             userid = userBean.getUserid();
         }
-        SLog.d(TAG, "设备上线 " + sn);
+        SLog.e(TAG, "设备上线 " + sn);
 
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onDeviceConnectStatusChanged(userid, 1, sn);
     }

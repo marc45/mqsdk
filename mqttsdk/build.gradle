@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 316
+        versionName "3.1.6"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -20,10 +20,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-
-    lintOptions {
-        abortOnError false
     }
 
 
@@ -52,33 +48,33 @@ dependencies {
 //    rename('mqttsdk-debug.aar','startai-mq-android-3.0.1.aar')
 //
 //}
-
-task makeJar(type: Copy) {
-    //删除存在的
-    delete 'libs/startai-mqtt-3.0.5.jar'
-    //设置拷贝的文件
-    from('build/intermediates/bundles/debug/')
-    //打进jar包后的文件目录
-    into('libs/')
-    //将classes.jar放入build/libs/目录下
-    //include ,exclude参数来设置过滤
-    //（我们只关心classes.jar这个文件）
-    include('classes.jar')
-    //重命名
-    rename('classes.jar', 'startai-mqtt-3.0.5.jar')
-}
-makeJar.dependsOn(build)
+//
+//task makeJar(type: Copy) {
+//    //删除存在的
+//    delete 'libs/startai-mqtt-3.0.5.jar'
+//    //设置拷贝的文件
+//    from('build/intermediates/bundles/debug/')
+//    //打进jar包后的文件目录
+//    into('libs/')
+//    //将classes.jar放入build/libs/目录下
+//    //include ,exclude参数来设置过滤
+//    //（我们只关心classes.jar这个文件）
+//    include('classes.jar')
+//    //重命名
+//    rename('classes.jar', 'startai-mqtt-3.0.5.jar')
+//}
+//makeJar.dependsOn(build)
 
 
 task makeAAR(type: Copy) {
     //删除存在的
-    delete 'libs/startai-mqtt-3.0.6.aar'
+    delete 'libs/startai-mqtt-3.1.3.aar'
     //设置拷贝的文件
     from('build/outputs/aar/mqttsdk-debug.aar')
     into('libs/')
     //include ,exclude参数来设置过滤
     //重命名
-    rename('mqttsdk-debug.aar', 'startai-mqtt-3.0.6.aar')
+    rename('mqttsdk-debug.aar', 'startai-mqtt-3.1.3.aar')
 
 }
 makeAAR.dependsOn(build)
@@ -96,11 +92,11 @@ publish {
     //项目名称
     artifactId = 'mqsdk'
     //版本号
-    publishVersion = '3.0.6'
+    publishVersion = '3.1.6'
     //描述，不重要
-    desc = 'startai sdk 3.0.6'
+    desc = 'startai sdk 3.1.6'
     //网站，不重要
     website = 'https://www.startai.com.cn'
 
 }
-//gradlew clean build bintrayUpload -PbintrayUser=robin1015  -PbintrayKey=b1ecd692fdd40a39ca847e60a805261421fc481c -PdryRun=false
+

@@ -4,12 +4,11 @@ import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -45,20 +44,23 @@ public class C_0x8022 {
     /**
      * 检验验证码
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8022_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-        if (result == 1 && resp != null) {
-            SLog.d(TAG, "检验验证码成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onCheckIdentifyResult(result, "", "");
-        } else if (result == 0 && errorMiofMsg != null) {
-            SLog.d(TAG, "检验验证码失败");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onCheckIdentifyResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg());
-        } else {
+    public static void m_0x8022_resp(String miof) {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+        if (resp.getResult() == 1) {
+
+
+            SLog.e(TAG, "检验验证码成功");
+        } else {
+
+            SLog.e(TAG, "检验验证码失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onCheckIdentifyResult(resp);
     }
 
     public static class Req {
@@ -130,11 +132,28 @@ public class C_0x8022 {
 
 
     /**
-     * 登录 返回
+     * 返回
      */
     public static class Resp extends BaseMessage {
 
         private ContentBean content;
+
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
 
         public ContentBean getContent() {
             return content;
@@ -144,52 +163,62 @@ public class C_0x8022 {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
-            private String userid;//用户id
-            private String token; //用户token
-            private long expire_in; //token时效
+            /**
+             * mobile : 13332965499
+             * identifyCode : 123456
+             * type : 1
+             */
+
+
+            private String mobile;
+            private String identifyCode;
+            private int type;
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "userid='" + userid + '\'' +
-                        ", token='" + token + '\'' +
-                        ", expire_in=" + expire_in +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", mobile='" + mobile + '\'' +
+                        ", identifyCode='" + identifyCode + '\'' +
+                        ", type=" + type +
+                        ", errcontent=" + errcontent +
                         '}';
             }
 
-            public ContentBean() {
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
             }
 
-            public ContentBean(String userid, String token, long expire_in) {
-                this.userid = userid;
-                this.token = token;
-                this.expire_in = expire_in;
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
             }
 
-            public String getUserid() {
-                return userid;
+            public String getMobile() {
+                return mobile;
             }
 
-            public void setUserid(String userid) {
-                this.userid = userid;
+            public void setMobile(String mobile) {
+                this.mobile = mobile;
             }
 
-            public String getToken() {
-                return token;
+            public String getIdentifyCode() {
+                return identifyCode;
             }
 
-            public void setToken(String token) {
-                this.token = token;
+            public void setIdentifyCode(String identifyCode) {
+                this.identifyCode = identifyCode;
             }
 
-            public long getExpire_in() {
-                return expire_in;
+            public int getType() {
+                return type;
             }
 
-            public void setExpire_in(long expire_in) {
-                this.expire_in = expire_in;
+            public void setType(int type) {
+                this.type = type;
             }
         }
     }

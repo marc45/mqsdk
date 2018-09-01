@@ -16,6 +16,7 @@ import cn.com.startai.mqsdk.util.eventbus.E_0x8018_Resp;
 import cn.com.startai.mqsdk.util.eventbus.E_0x8021_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.entity.UserBean;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
@@ -65,7 +66,6 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
     }
 
     private void checkLoginStatus() {
-
 
 
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
@@ -131,29 +131,54 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
 
 
     @Override
-    public void onGetIdentifyResult(E_0x8021_Resp resp) {
-        super.onGetIdentifyResult(resp);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp.getResult() + " " +resp.getErrorMsg() + resp.getContentBean());
+    public void onGetIdentifyCodeResult( C_0x8021.Resp resp) {
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp);
+    }
+
+    @Override
+    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg) {
+        super.onGetIdentifyCodeResult(result, errorCode, errorMsg);
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg);
+    }
+
+    @Override
+    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg, C_0x8021.Resp.ContentBean contentBean) {
+        super.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
+
     }
 
 
     @Override
-    public void onLoginResult(E_0x8018_Resp resp) {
-        super.onLoginResult(resp);
+    public void onLoginResult( C_0x8018.Resp resp) {
 
-        int result = resp.getResult();
-        C_0x8018.Resp.ContentBean loginInfo = resp.getLoginInfo();
-        TAndL.TL(getApplicationContext(), "登录结果 " + resp.getResult() + " errorMsg = " + resp.getErrorMsg());
         if (resp.getResult() == 1) {
+            TAndL.TL(getApplicationContext(), "登录成功 " + resp);
             //TODO:开发者需要在此保存登录信息
-            TAndL.TL(getApplicationContext(), "登录成功 " + loginInfo.getUserid() + " " + loginInfo.getuName() + " " + loginInfo.getType());
             startActivity(new Intent(Login2Activity.this, HomeActivity.class));
             finish();
-        } else if (result == 0) {
-            String errmsg = resp.getErrorMsg();
-            TAndL.TL(getApplicationContext(), "登录失败 " + errmsg + " loginInfo = " + loginInfo);
+        } else {
+            TAndL.TL(getApplicationContext(), "登录失败 " + resp);
         }
 
     }
+
+    @Override
+    public void onLoginResult(int result, String errorCode, String errorMsg, C_0x8018.Resp.ContentBean loginInfo) {
+        super.onLoginResult(result, errorCode, errorMsg, loginInfo);
+
+        if (result == 1) {
+            TAndL.TL(getApplicationContext(), "登录成功 " + loginInfo);
+            //TODO:开发者需要在此保存登录信息
+            startActivity(new Intent(Login2Activity.this, HomeActivity.class));
+            finish();
+        } else if (result == 0) {
+            TAndL.TL(getApplicationContext(), "登录失败 " + errorMsg);
+        }
+
+
+    }
+
+
 }
 

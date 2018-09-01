@@ -45,7 +45,7 @@ public class MqttConfigure {
 
     private static final String HOST_CN = "ssl://cn.startai.net:8883";
     private static final String HOST_US = "ssl://us.startai.net:8883";
-    private static final String HOST_TEST = "ssl://192.168.1.201:8883";
+//    private static final String HOST_TEST = "ssl://192.168.1.189:8883";
 
 
     public static ArrayList<String> getHosts() {

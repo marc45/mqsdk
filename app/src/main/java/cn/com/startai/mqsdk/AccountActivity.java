@@ -14,13 +14,12 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.AppUtils;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8003_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8016_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8018_Resp_;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8024_Resp;
 import cn.com.startai.mqttsdk.StartAI;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8003;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8016;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
 
 /**
  * 个人中心
@@ -76,7 +75,10 @@ public class AccountActivity extends BaseActivity {
             }
         }
 
-        StartAI.getInstance().getBaseBusiManager().getUserInfo(onCallListener);
+        C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
+        if (currUser != null) {
+            StartAI.getInstance().getBaseBusiManager().getUserInfo(currUser.getUserid(), onCallListener);
+        }
 
     }
 
@@ -152,16 +154,29 @@ public class AccountActivity extends BaseActivity {
     }
 
     @Override
-    public void onGetLatestVersionResult(E_0x8016_Resp e_0x8016_resp) {
-        super.onGetLatestVersionResult(e_0x8016_resp);
+    public void onGetLatestVersionResult(C_0x8016.Resp resp) {
+        super.onGetLatestVersionResult(resp);
 
-        int result = e_0x8016_resp.getResult();
-        if (result != 1) {
-            TAndL.TL(getApplicationContext(), e_0x8016_resp.getErrorMsg());
-            return;
+
+        TAndL.TL(getApplicationContext(), "检查结果 " + resp);
+        if (resp != null) {
+            toUpdate(resp.getContent());
+        }
+    }
+
+    @Override
+    public void onGetLatestVersionResult(int result, String errorCode, String errorMsg, C_0x8016.Resp.ContentBean contentBean) {
+        super.onGetLatestVersionResult(result, errorCode, errorMsg, contentBean);
+
+        TAndL.TL(getApplicationContext(), "检查结果 " + result + " errorMsg = " + errorMsg + " contentBean = " + contentBean);
+        if (contentBean != null) {
+            toUpdate(contentBean);
         }
 
-        final C_0x8016.Resp.ContentBean contentBean = e_0x8016_resp.getContentBean();
+    }
+
+    private void toUpdate(final C_0x8016.Resp.ContentBean contentBean) {
+
         if (!getApplicationInfo().packageName.equals(contentBean.getPackageName())) {
             return;
         }
@@ -217,10 +232,7 @@ public class AccountActivity extends BaseActivity {
                     .create().show();
 
         }
-
-
     }
-
 
     private void gotoBrowserDownload(String downloadUrl) {
         Intent intent = new Intent();
@@ -231,34 +243,66 @@ public class AccountActivity extends BaseActivity {
     }
 
     @Override
-    public void onLogoutResult(E_0x8018_Resp_ resp_) {
-        super.onLogoutResult(resp_);
+    public void onLogoutResult(int result, String errorCode, String errorMsg) {
+        super.onLogoutResult(result, errorCode, errorMsg);
 
-        if (resp_.getResult() == 1) {
+        if (result == 1) {
             finishAllActivity();
             startActivity(new Intent(AccountActivity.this, LoginActivity.class));
         }
     }
 
+
     @Override
-    public void onUnActiviteResult(E_0x8003_Resp resp) {
-        super.onUnActiviteResult(resp);
+    public void onUnActiviteResult(C_0x8003.Resp resp) {
+
+        TAndL.TL(getApplicationContext(), "注销结果 " + resp);
         if (resp.getResult() == 1) {
-            TAndL.TL(getApplicationContext(), "注销成功");
             finishAllActivity();
             System.exit(0);
-        } else {
-            TAndL.TL(getApplicationContext(), "注销激活失败 " + resp.getErrorMsg());
         }
+
     }
 
     @Override
-    public void onGetUserInfoResult(E_0x8024_Resp resp) {
-        super.onGetUserInfoResult(resp);
+    public void onUnActiviteResult(int result, String errorCode, String errorMsg) {
+        super.onUnActiviteResult(result, errorCode, errorMsg);
 
-        int result = resp.getResult();
         if (result == 1) {
-            userInfo = resp.getMessage();
+            TAndL.TL(getApplicationContext(), "注销成功 ");
+            finishAllActivity();
+            System.exit(0);
+        } else {
+            TAndL.TL(getApplicationContext(), "注销激活失败 " + errorMsg);
+        }
+
+    }
+
+
+    @Override
+    public void onGetUserInfoResult(C_0x8024.Resp resp) {
+        super.onGetUserInfoResult(resp);
+        if (resp.getResult() == 1) {
+            userInfo = resp.getContent();
+            if (TextUtils.isEmpty(userInfo.getNickName())) {
+                tvNickName.setText("昵称未设置");
+            } else {
+                tvNickName.setText(userInfo.getNickName());
+            }
+            int isHavePwd = userInfo.getIsHavePwd();
+            if (isHavePwd != 1) {
+                tvUpdatePwd.setText("设置登录密码");
+            }
+        }
+        TAndL.TL(getApplicationContext(), "查询用户信息结果" + resp);
+
+    }
+
+    @Override
+    public void onGetUserInfoResult(int result, String errorCode, String errorMsg, C_0x8024.Resp.ContentBean contentBean) {
+        super.onGetUserInfoResult(result, errorCode, errorMsg, contentBean);
+        if (result == 1) {
+            userInfo = contentBean;
             if (TextUtils.isEmpty(userInfo.getNickName())) {
                 tvNickName.setText("昵称未设置");
             } else {
@@ -270,7 +314,11 @@ public class AccountActivity extends BaseActivity {
             }
         }
 
+        TAndL.TL(getApplicationContext(), "查询用户信息结果" + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
+
+
     }
+
 
     private void initview() {
 

@@ -10,6 +10,7 @@ import android.widget.EditText;
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqsdk.util.eventbus.E_0x8023_Resp;
 import cn.com.startai.mqttsdk.StartAI;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 
 public class ForgetEmailActivity extends BaseActivity {
 
@@ -39,16 +40,29 @@ public class ForgetEmailActivity extends BaseActivity {
     }
 
 
-    @Override
-    public void onSendEmailResult(E_0x8023_Resp resp) {
-        super.onSendEmailResult(resp);
 
-        int result = resp.getResult();
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "邮件发送成功,请根据邮件指引完成密码重置");
+    @Override
+    public void onSendEmailResult(  C_0x8023.Resp resp) {
+
+        if (resp.getResult() == 1) {
+            TAndL.TL(getApplicationContext(), "邮件发送成功 " + resp);
         } else {
 
-            TAndL.TL(getApplicationContext(), "邮件发送失败 " + resp.getErrorMsg());
+            TAndL.TL(getApplicationContext(), "邮件发送失败 " + resp);
+        }
+
+    }
+
+    @Override
+    public void onSendEmailResult(int result, String errorCode, String errorMsg, C_0x8023.Resp.ContentBean contentBean) {
+        super.onSendEmailResult(result, errorCode, errorMsg, contentBean);
+
+
+        if (result == 1) {
+            TAndL.TL(getApplicationContext(), "邮件发送成功 " + contentBean);
+        } else {
+
+            TAndL.TL(getApplicationContext(), "邮件发送失败 " + errorMsg);
         }
 
     }

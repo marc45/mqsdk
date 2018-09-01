@@ -10,6 +10,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -44,20 +45,24 @@ public class C_0x8023 {
     /**
      * 请求发送邮件结果
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8023_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-        if (result == 1 && resp != null) {
-            SLog.d(TAG, "请求发送邮件成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onSendEmailResult(result, "", "", resp.getContent());
-        } else if (result == 0 && errorMiofMsg != null) {
-            SLog.d(TAG, "请求发送邮件失败");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onSendEmailResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), null);
-        } else {
+    public static void m_0x8023_resp(String miof) {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+
+        if (resp.getResult() == 1) {
+
+
+            SLog.e(TAG, "请求发送邮件成功");
+        } else {
+
+            SLog.e(TAG, "请求发送邮件失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onSendEmailResult(resp);
     }
 
     /**
@@ -127,6 +132,23 @@ public class C_0x8023 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -135,20 +157,32 @@ public class C_0x8023 {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
             private String email;
             private int type;//1 为重新发送激活邮件 2 为发送忘记密码邮件
-
-            public ContentBean() {
-            }
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "email='" + email + '\'' +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", email='" + email + '\'' +
                         ", type=" + type +
+                        ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
+
+            public ContentBean() {
             }
 
             public ContentBean(String email, int type) {

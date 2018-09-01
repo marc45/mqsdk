@@ -3,6 +3,7 @@ package cn.com.startai.mqttsdk;
 import android.content.Context;
 
 import cn.com.startai.mqttsdk.busi.BaseBusiManager;
+import cn.com.startai.mqttsdk.busi.CommonBusiManager;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.listener.IOnSubscribeListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
@@ -65,7 +66,9 @@ public class StartAI implements IPersisitentNet {
         return BaseBusiManager.getInstance();
     }
 
-
+    public CommonBusiManager getCommonBusiManager(){
+        return CommonBusiManager.getInstance();
+    }
 
     @Override
     public PersistentConnectState getConnectState() {

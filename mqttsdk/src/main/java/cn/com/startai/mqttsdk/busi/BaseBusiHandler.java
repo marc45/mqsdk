@@ -27,7 +27,6 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
 import cn.com.startai.mqttsdk.busi.entity.MiofTag;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
@@ -56,102 +55,94 @@ public class BaseBusiHandler {
             SLog.e(TAG, "JSON format is not correct");
         }
 
-        ErrorMiofMsg errorMiofMsg = null;
-        if (isNeedCheckResult(msgcw) && result == 0) {
-            errorMiofMsg = SJsonUtils.fromJson(msg, ErrorMiofMsg.class);
-        }
-
         switch (msgtype) {
 
             case "0x8000"://获取区域节点信息
-                C_0x8000.Resp resp_0x8000 = SJsonUtils.fromJson(msg, C_0x8000.Resp.class);
-                C_0x8000.m_0x8000_resp(result, resp_0x8000, errorMiofMsg);
+                C_0x8000.m_0x8000_resp(msg);
                 return;
 
             case "0x8001"://设备激活
-                C_0x8001.Resp resp_0x8001 = SJsonUtils.fromJson(msg, C_0x8001.Resp.class);
-                C_0x8001.m_0x8001_resp(result, resp_0x8001, errorMiofMsg);
+                C_0x8001.m_0x8001_resp(msg);
                 break;
 
             case "0x8002"://添加好友
-                C_0x8002.Resp resp_0x8002 = SJsonUtils.fromJson(msg, C_0x8002.Resp.class);
-                C_0x8002.m_0x8002_resp(result, resp_0x8002, errorMiofMsg);
-
+                C_0x8002.m_0x8002_resp(msg);
                 break;
+
             case "0x8003"://注销激活
-                C_0x8003.Resp resp = SJsonUtils.fromJson(msg, C_0x8003.Resp.class);
-                C_0x8003.m_0x8003_resp(result, resp, errorMiofMsg);
+                C_0x8003.m_0x8003_resp(msg);
                 break;
+
             case "0x8004"://删除好友
-                C_0x8004.Resp resp_0x8004 = SJsonUtils.fromJson(msg, C_0x8004.Resp.class);
-                C_0x8004.m_0x8004_resp(result, resp_0x8004, errorMiofMsg);
+                C_0x8004.m_0x8004_resp(msg);
                 break;
+
             case "0x8005"://查询好友关系
-                C_0x8005.Resp resp_0x8005 = SJsonUtils.fromJson(msg, C_0x8005.Resp.class);
-                C_0x8005.m_0x8005_resp(result, resp_0x8005, errorMiofMsg);
+                C_0x8005.m_0x8005_resp(result, msg);
                 break;
-            case "0x8015":
-                C_0x8015.Resp resp_0x8015 = SJsonUtils.fromJson(msg, C_0x8015.Resp.class);
-                C_0x8015.m_0x8015_resp(result, resp_0x8015, errorMiofMsg);
+
+            case "0x8015"://修改备注名
+                C_0x8015.m_0x8015_resp(msg);
                 break;
-            case "0x8016":
-                C_0x8016.Resp resp_0x8016 = SJsonUtils.fromJson(msg, C_0x8016.Resp.class);
-                C_0x8016.m_0x8016_resp(result, resp_0x8016, errorMiofMsg);
+
+            case "0x8016"://查询最新版本
+                C_0x8016.m_0x8016_resp(msg);
                 break;
+
             case "0x8017"://用户注册
-                C_0x8017.Resp resp_0x8017 = SJsonUtils.fromJson(msg, C_0x8017.Resp.class);
-                C_0x8017.m_0x8017_resp(result, resp_0x8017, errorMiofMsg);
+                C_0x8017.m_0x8017_resp(msg);
                 break;
+
             case "0x8018"://登录
-                C_0x8018.Resp resp_0x8018 = SJsonUtils.fromJson(msg, C_0x8018.Resp.class);
-                C_0x8018.m_0x8018_resp(result, resp_0x8018, errorMiofMsg);
+                C_0x8018.m_0x8018_resp(msg);
                 break;
+
             case "0x8019"://更新设备信息
-                C_0x8019.Resp resp_0x8019 = SJsonUtils.fromJson(msg, C_0x8019.Resp.class);
-                C_0x8019.m_0x8019_resp(result, resp_0x8019, errorMiofMsg);
+                C_0x8019.m_0x8019_resp(msg);
                 break;
+
             case "0x8020"://更新用户信息
-                C_0x8020.Resp reap_0x8020 = SJsonUtils.fromJson(msg, C_0x8020.Resp.class);
-                C_0x8020.m_0x8020_resp(result, reap_0x8020, errorMiofMsg);
+                C_0x8020.m_0x8020_resp(msg);
                 break;
+
             case "0x8021"://获取验证码
-                C_0x8021.Resp resp_0x8021 = SJsonUtils.fromJson(msg, C_0x8021.Resp.class);
-                C_0x8021.m_0x8021_resp(result, resp_0x8021, errorMiofMsg);
-
+                C_0x8021.m_0x8021_resp(msg);
                 break;
+
             case "0x8022"://检验验证码
-                C_0x8022.Resp resp_0x8022 = SJsonUtils.fromJson(msg, C_0x8022.Resp.class);
-                C_0x8022.m_0x8022_resp(result, resp_0x8022, errorMiofMsg);
-                break;
-            case "0x8023"://请求发送邮件
-                C_0x8023.Resp resp_0x8023 = SJsonUtils.fromJson(msg, C_0x8023.Resp.class);
-                C_0x8023.m_0x8023_resp(result, resp_0x8023, errorMiofMsg);
-                break;
-            case "0x8024"://查询用户信息
-                C_0x8024.Resp resp_0x8024 = SJsonUtils.fromJson(msg, C_0x8024.Resp.class);
-                C_0x8024.m_0x8024_resp(result, resp_0x8024, errorMiofMsg);
-                break;
-            case "0x8025"://修改密码
-                C_0x8025.Resp resp_0x8025 = SJsonUtils.fromJson(msg, C_0x8025.Resp.class);
-                C_0x8025.m_0x8025_resp(result, resp_0x8025, errorMiofMsg);
-                break;
-            case "0x8026"://手机重置密码
-                C_0x8026.Resp resp_0x8026 = SJsonUtils.fromJson(msg, C_0x8026.Resp.class);
-                C_0x8026.m_0x8026_resp(result, resp_0x8026, errorMiofMsg);
-                break;
-            case "0x8200"://消息透传
-                C_0x8200.Resp resp_0x8200 = SJsonUtils.fromJson(msg, C_0x8200.Resp.class);
-                C_0x8200.m_0x8200_resp(result, resp_0x8200, errorMiofMsg);
-                break;
-            case "0x9998"://终端上线
-                C_0x9998.Resp resp_0x9998 = SJsonUtils.fromJson(msg, C_0x9998.Resp.class);
-                C_0x9998.m_0x9998_resp(result, resp_0x9998, errorMiofMsg);
-                break;
-            case "0x9999"://终端下线
-                C_0x9999.Resp resp_0x9999 = SJsonUtils.fromJson(msg, C_0x9999.Resp.class);
-                C_0x9999.m_0x9999_resp(result, resp_0x9999, errorMiofMsg);
+                C_0x8022.m_0x8022_resp(msg);
                 break;
 
+            case "0x8023"://请求发送邮件
+                C_0x8023.m_0x8023_resp(msg);
+                break;
+
+            case "0x8024"://查询用户信息
+                C_0x8024.m_0x8024_resp(msg);
+                break;
+
+            case "0x8025"://修改密码
+                C_0x8025.m_0x8025_resp(msg);
+                break;
+
+            case "0x8026"://手机重置密码
+                C_0x8026.m_0x8026_resp(msg);
+                break;
+
+            case "0x8200"://消息透传
+
+                C_0x8200.m_0x8200_resp(msg);
+                break;
+
+            case "0x9998"://终端上线
+
+                C_0x9998.m_0x9998_resp(msg);
+                break;
+
+            case "0x9999"://终端下线
+
+                C_0x9999.m_0x9999_resp(msg);
+                break;
 
             default:
 

@@ -86,7 +86,7 @@ public class StartaiPingListener implements StartaiTimerPingSender.PingListener 
      *
      * @param instance
      */
-    private void calculationWeight(long delay, StartaiMqttPersistent instance) {
+    public void calculationWeight(long delay, StartaiMqttPersistent instance) {
 
         C_0x8000.Resp.ContentBean areaNodeBeans = GlobalVariable.areaNodeBean;
 

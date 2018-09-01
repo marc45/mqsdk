@@ -36,6 +36,7 @@ public class UserBusi {
 
         UserBean userBean = new UserBean(currUserFromSp.getUserid(), currUserFromSp.getToken(), currUserFromSp.getExpire_in(), currUserFromSp.getuName(), 0, 1);
         SDBmanager.getInstance().addOrUpdateUser(userBean);
+        SPController.setUserInfo(null);
         return currUserFromSp;
 
     }
@@ -54,6 +55,12 @@ public class UserBusi {
 
         return userInfo;
 
+    }
+
+
+
+    public void resetDBUser() {
+        SDBmanager.getInstance().resetUser();
     }
 
 

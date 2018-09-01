@@ -16,6 +16,7 @@ import cn.com.startai.mqsdk.util.eventbus.E_0x8002_Resp;
 import cn.com.startai.mqsdk.util.view.RadarView;
 import cn.com.startai.mqsdk.util.view.RandomTextView;
 import cn.com.startai.mqttsdk.StartAI;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
 import cn.com.startai.mqttsdk.utils.udp.LanDevice;
 import cn.com.startai.mqttsdk.utils.udp.LanDeviceFinder;
 
@@ -180,14 +181,25 @@ public class LanDeviceFindActivity extends BaseActivity {
     }
 
     @Override
-    public void onBindResult(E_0x8002_Resp resp) {
-        super.onBindResult(resp);
-        int result = resp.getResult();
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "绑定成功" + resp.getBebinding());
+    public void onBindResult(C_0x8002.Resp resp, String id, C_0x8002.Resp.ContentBean.BebindingBean bebinding) {
+        if (resp.getResult() == 1) {
+            TAndL.TL(getApplicationContext(), "绑定成功" + "id = " + bebinding + " bebinding = " + bebinding);
             finish();
         } else {
-            TAndL.TL(getApplicationContext(), "绑定失败 " + resp.getErrorMsg());
+            TAndL.TL(getApplicationContext(), "绑定失败 " + resp);
+        }
+
+    }
+
+    @Override
+    public void onBindResult(int result, String errorCode, String errorMsg, String id, C_0x8002.Resp.ContentBean.BebindingBean bebinding) {
+        super.onBindResult(result, errorCode, errorMsg, id, bebinding);
+
+        if (result == 1) {
+            TAndL.TL(getApplicationContext(), "绑定成功" + "id = " + bebinding + " bebinding = " + bebinding);
+            finish();
+        } else {
+            TAndL.TL(getApplicationContext(), "绑定失败 " + errorMsg);
         }
     }
 

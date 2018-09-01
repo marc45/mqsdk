@@ -9,11 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8015_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8015;
-import cn.com.startai.mqttsdk.control.SPController;
 
 public class UpdateRemarkActivity extends BaseActivity {
 
@@ -58,19 +56,38 @@ public class UpdateRemarkActivity extends BaseActivity {
     }
 
     @Override
-    public void onUpdateRemarkResult(E_0x8015_Resp resp) {
-        super.onUpdateRemarkResult(resp);
-        int result = resp.getResult();
-        if (result == 1) {
-            if (resp.getContentBean().getFid().equals(device.getId())) {
-                TAndL.TL(getApplicationContext(), "备注修改成功");
-                etRemark.setText(resp.getContentBean().getRemark());
+    public void onUpdateRemarkResult( C_0x8015.Resp resp) {
+
+        if (resp.getResult() == 1) {
+            if (resp.getContent().getFid().equals(device.getId())) {
+                TAndL.TL(getApplicationContext(), "备注修改成功 " + resp);
+                etRemark.setText(resp.getContent().getRemark());
                 finish();
             }
         } else {
-            TAndL.TL(getApplicationContext(), "备注修改失败");
+            TAndL.TL(getApplicationContext(), "备注修改失败 " + resp);
         }
+
+
     }
+
+    @Override
+    public void onUpdateRemarkResult(int result, String errorCode, String errorMsg, C_0x8015.Resp.ContentBean contentBean) {
+        super.onUpdateRemarkResult(result, errorCode, errorMsg, contentBean);
+
+
+        if (result == 1) {
+            if (contentBean.getFid().equals(device.getId())) {
+                TAndL.TL(getApplicationContext(), "备注修改成功 " + contentBean);
+                etRemark.setText(contentBean.getRemark());
+                finish();
+            }
+        } else {
+            TAndL.TL(getApplicationContext(), "备注修改失败 " + errorMsg);
+        }
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

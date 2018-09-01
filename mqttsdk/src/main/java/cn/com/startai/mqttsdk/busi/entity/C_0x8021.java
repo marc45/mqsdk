@@ -14,6 +14,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -60,30 +61,22 @@ public class C_0x8021 {
     /**
      * 获取验证码
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8021_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8021_resp(String miof) {
 
-        if (result == 1 && resp != null) {
-            SLog.d(TAG, "获取验证码成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetIdentifyResult(result, "", "", resp.getContent());
-        } else if (result == 0 && errorMiofMsg != null) {
-            SLog.d(TAG, "获取验证码失败");
-
-            Req.ContentBean contentBean = maps.get(resp.getMsgid());
-
-            Resp.ContentBean re = new Resp.ContentBean();
-            if (contentBean != null) {
-                re.setMobile(contentBean.getMobile());
-                re.setType(contentBean.getType());
-
-            }
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetIdentifyResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), re);
-        } else {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+        if (resp.getResult() == 1) {
+
+            SLog.e(TAG, "获取验证码成功");
+        } else {
+            SLog.e(TAG, "获取验证码失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetIdentifyResult(resp);
 
     }
 
@@ -156,6 +149,23 @@ public class C_0x8021 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -164,7 +174,7 @@ public class C_0x8021 {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
             private String mobile;
             /**
@@ -173,6 +183,26 @@ public class C_0x8021 {
              * 3表示用户注册
              */
             private int type;
+            private Req.ContentBean errcontent;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", mobile='" + mobile + '\'' +
+                        ", type=" + type +
+                        ", errcontent=" + errcontent +
+                        '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
 
             public ContentBean() {
             }
@@ -180,14 +210,6 @@ public class C_0x8021 {
             public ContentBean(String mobile, int type) {
                 this.mobile = mobile;
                 this.type = type;
-            }
-
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "mobile='" + mobile + '\'' +
-                        ", type=" + type +
-                        '}';
             }
 
             public String getMobile() {

@@ -30,10 +30,10 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8018 {
 
-    private static String TAG = C_0x8018.class.getSimpleName();
+    public static String TAG = C_0x8018.class.getSimpleName();
 
 
-    private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
+    public static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
 
     /**
@@ -51,7 +51,7 @@ public class C_0x8018 {
         //当前登录的用户
         UserBean currUserFromDb = new UserBusi().getCurrUserFromDb();
 
-        if (currUserFromDb == null||currUserFromDb.getType() == 0) {
+        if (currUserFromDb == null || currUserFromDb.getType() == 0) {
             SLog.d(TAG, "当前未登录用户，需要登录");
         } else {
 
@@ -74,7 +74,11 @@ public class C_0x8018 {
                     contentBean.setExpire_in(currUserFromDb.getExpire_in());
                     contentBean.setUserid(currUserFromDb.getUserid());
 
-                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onLoginResult(1, "", "", contentBean);
+                    Resp resp = new Resp();
+                    resp.setContent(contentBean);
+                    resp.setResult(1);
+                    resp.setToid(contentBean.getUserid());
+                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onLoginResult(resp);
                     return;
                 }
 
@@ -157,17 +161,23 @@ public class C_0x8018 {
     /**
      * 处理登录结果
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8018_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8018_resp(String miof) {
 
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        SLog.d(TAG, "resp = " + resp);
+        if (resp == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
 
-        if (result == 1 && resp != null) {
+        if (resp.getResult() == 1) {
+            SLog.e(TAG, "登录成功");
+
             Resp.ContentBean content = resp.getContent();
 
-            SPController.setUserInfo(resp.getContent());
+//            SPController.setUserInfo(resp.getContent());
 
             SDBmanager.getInstance().resetUser();
             //保存本地登录状态
@@ -176,28 +186,16 @@ public class C_0x8018 {
             //订阅 userid相关主题
             StartaiMqttPersistent.getInstance().subUserTopic();
 
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onLoginResult(result, "", "", content);
-
-
             //订阅对应主题
             StartaiMqttPersistent.getInstance().subFriendReportTopic();
 
-        } else if (result == 0 && errorMiofMsg != null) {
-
-            Req.ContentBean req = maps.get(resp.getMsgid());
-
-
-            Resp.ContentBean contentBean = new Resp.ContentBean();
-            if (req != null) {
-                contentBean.setType(req.getType());
-                contentBean.setuName(req.getUname());
-            }
-
-            //登录失败
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onLoginResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), contentBean);
         } else {
-            SLog.e(TAG, "返回数据格式错误");
+
+            SLog.e(TAG, "登录失败");
         }
+
+        //登录失败
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onLoginResult(resp);
 
     }
 
@@ -287,6 +285,23 @@ public class C_0x8018 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -295,23 +310,44 @@ public class C_0x8018 {
             this.content = content;
         }
 
-        public static class ContentBean {
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "userid='" + userid + '\'' +
-                        ", token='" + token + '\'' +
-                        ", expire_in=" + expire_in +
-                        ", uname='" + uname + '\'' +
-                        ", type=" + type +
-                        '}';
-            }
+        public static class ContentBean extends BaseContentBean {
 
             private String userid;//用户id
             private String token; //用户token
             private long expire_in; //token时效
             private String uname;  // 用户名
             private int type;// 登录类型
+            private Req.ContentBean errcontent;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", userid='" + userid + '\'' +
+                        ", token='" + token + '\'' +
+                        ", expire_in=" + expire_in +
+                        ", uname='" + uname + '\'' +
+                        ", type=" + type +
+                        ", errcontent=" + errcontent +
+                        '}';
+            }
+
+            public String getUname() {
+                return uname;
+            }
+
+            public void setUname(String uname) {
+                this.uname = uname;
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
 
             public ContentBean(String userid, String token, long expire_in, String uName, int type) {
                 this.userid = userid;

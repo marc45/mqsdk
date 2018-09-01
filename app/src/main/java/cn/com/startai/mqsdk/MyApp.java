@@ -2,21 +2,20 @@ package cn.com.startai.mqsdk;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 
 import com.blankj.utilcode.util.Utils;
 import com.facebook.stetho.Stetho;
 
 import org.greenrobot.eventbus.EventBus;
 
-import cn.com.startai.mqsdk.listener.MyPushListener;
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqsdk.util.eventbus.E_Conn_Break;
 import cn.com.startai.mqsdk.util.eventbus.E_Conn_Failed;
 import cn.com.startai.mqsdk.util.eventbus.E_Conn_Success;
 import cn.com.startai.mqsdk.util.eventbus.EventBean;
 import cn.com.startai.mqttsdk.StartAI;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
+import cn.com.startai.mqttsdk.event.ICommonStateListener;
 import cn.com.startai.mqttsdk.event.IConnectionStateListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
@@ -75,7 +74,18 @@ public class MyApp extends Application {
 //        StartAI.getInstance().getPersisitnet().setEventDispatcher(PersistentEventChargerDispatcher.getInstance());
 
 
-        StartAI.getInstance().getPersisitnet().getEventDispatcher().registerOnTunnelStateListener(new IConnectionStateListener() {
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().registerOnTunnelStateListener(new ICommonStateListener() {
+            /**
+             * 登录 tokent 失效
+             *
+             * @param resp
+             */
+            @Override
+            public void onTokenExpire(C_0x8018.Resp.ContentBean resp) {
+                TAndL.TL(getApplicationContext(), "token过期，" + resp);
+                EventBus.getDefault().post(new EventBean(EventBean.S_2_A_TOKEN_EXPIRE, resp));
+            }
+
             @Override
             public void onConnectFail(int errorCode, String errorMsg) {
                 TAndL.TL(getApplicationContext(), "连接失败，" + errorMsg);
@@ -101,8 +111,9 @@ public class MyApp extends Application {
         });
 
 
-        StartAI.getInstance().getPersisitnet().getEventDispatcher().registerOnPushListener(new MyPushListener());
     }
+
+
 }
 
 

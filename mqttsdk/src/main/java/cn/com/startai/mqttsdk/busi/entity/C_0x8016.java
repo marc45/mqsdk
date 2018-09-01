@@ -7,9 +7,11 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -47,20 +49,22 @@ public class C_0x8016 {
     /**
      * 查询最新版本
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8016_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8016_resp( String miof) {
 
 
-        if (result == 1 && resp != null) {
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetLatestVersionResult(result, "", "",resp.getContent());
-        } else if (result == 0 && errorMiofMsg != null) {
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetLatestVersionResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), null);
-        } else {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+        if (resp.getResult() == 1) {
+            SLog.e(TAG, "查询最新版本成功");
+        } else {
+            SLog.e(TAG, "查询最新版本失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetLatestVersionResult(resp);
 
     }
 
@@ -84,13 +88,23 @@ public class C_0x8016 {
 
             private String os;
             private String packageName;
+            private String appid = MqttConfigure.appid;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
                         "os='" + os + '\'' +
                         ", packageName='" + packageName + '\'' +
+                        ", appid='" + appid + '\'' +
                         '}';
+            }
+
+            public String getAppid() {
+                return appid;
+            }
+
+            public void setAppid(String appid) {
+                this.appid = appid;
             }
 
             public ContentBean() {
@@ -126,6 +140,23 @@ public class C_0x8016 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -134,7 +165,7 @@ public class C_0x8016 {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
             /**
              * os : android
@@ -157,11 +188,14 @@ public class C_0x8016 {
             private String updateLog;
             private int forcedUpdate;
             private String fileName;
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "os='" + os + '\'' +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", os='" + os + '\'' +
                         ", versionName='" + versionName + '\'' +
                         ", versionCode=" + versionCode +
                         ", packageName='" + packageName + '\'' +
@@ -170,7 +204,16 @@ public class C_0x8016 {
                         ", updateLog='" + updateLog + '\'' +
                         ", forcedUpdate=" + forcedUpdate +
                         ", fileName='" + fileName + '\'' +
+                        ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
             }
 
             public String getOs() {
@@ -249,5 +292,6 @@ public class C_0x8016 {
 
 
     }
+
 
 }

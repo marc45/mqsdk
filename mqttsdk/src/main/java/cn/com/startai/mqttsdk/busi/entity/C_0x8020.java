@@ -10,6 +10,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -43,21 +44,26 @@ public class C_0x8020 {
     /**
      * 请求更新用户信息返回结果
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8020_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8020_resp(String miof) {
 
-        if (result == 1 && resp != null) {
-            SLog.d(TAG, "用户信息更新成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserInfoResult(result, "", "", resp.getContent());
-        } else if (result == 0 && errorMiofMsg != null) {
-            SLog.d(TAG, "用户信息更新失败");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserInfoResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), resp.getContent());
-        } else {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+        if (resp.getResult() == 1) {
+
+
+            SLog.e(TAG, "用户信息更新成功");
+        } else {
+
+
+            SLog.e(TAG, "用户信息更新失败");
+
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserInfoResult(resp);
 
     }
 
@@ -108,6 +114,7 @@ public class C_0x8020 {
             private String firstName = null;
             private String lastName = null;
 
+
             @Override
             public String toString() {
                 return "ContentBean{" +
@@ -126,6 +133,7 @@ public class C_0x8020 {
                         ", lastName='" + lastName + '\'' +
                         '}';
             }
+
 
             public String getCountry() {
                 return country;
@@ -243,6 +251,23 @@ public class C_0x8020 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -251,7 +276,7 @@ public class C_0x8020 {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
 
             /**
@@ -282,11 +307,14 @@ public class C_0x8020 {
             private String sex = null;
             private String firstName = null;
             private String lastName = null;
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "userid='" + userid + '\'' +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", userid='" + userid + '\'' +
                         ", userName='" + userName + '\'' +
                         ", birthday='" + birthday + '\'' +
                         ", country='" + country + '\'' +
@@ -299,8 +327,18 @@ public class C_0x8020 {
                         ", sex='" + sex + '\'' +
                         ", firstName='" + firstName + '\'' +
                         ", lastName='" + lastName + '\'' +
+                        ", errcontent=" + errcontent +
                         '}';
             }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
+
 
             public String getCountry() {
                 return country;

@@ -11,16 +11,17 @@ import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 
 public class BaseMessage {
 
-    private String msgcw;
-    private String msgtype;
-    private String fromid;
-    private String toid;
-    private String domain = null;
-    private String appid = MqttConfigure.appid;
-    private Long ts = System.currentTimeMillis();
-    private String msgid = null;
-    private String m_ver = MqttConfigure.m_ver;
-    private Integer result = 0;
+    protected String msgcw;
+    protected String msgtype;
+    protected String fromid;
+    protected String toid;
+    protected String domain = null;
+    protected String appid = MqttConfigure.appid;
+    protected Long ts = System.currentTimeMillis();
+    protected String msgid = null;
+    protected String m_ver = MqttConfigure.m_ver;
+    protected Integer result = 0;
+
 
 
     public String getMsgcw() {

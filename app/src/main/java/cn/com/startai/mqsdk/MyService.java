@@ -4,23 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.blankj.utilcode.util.Utils;
-
-import org.greenrobot.eventbus.EventBus;
-
-import cn.com.startai.mqsdk.listener.MyPushListener;
-import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8001_Resp;
-import cn.com.startai.mqsdk.util.eventbus.EventBean;
-import cn.com.startai.mqttsdk.StartAI;
-import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
-import cn.com.startai.mqttsdk.event.AOnStartaiMessageArriveListener;
-import cn.com.startai.mqttsdk.event.IConnectionStateListener;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
-import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
 /**
  * Created by Robin on 2018/6/22.

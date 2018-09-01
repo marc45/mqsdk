@@ -51,6 +51,32 @@ public class SPController {
 
     }
 
+    private static final String SP_LAST_CHECH_EXPIRE_TIME = "SP_LAST_CHECH_EXPIRE_TIME";
+
+    /**
+     * 获取上次登录登录 时效时间
+     *
+     * @return
+     */
+    public static long getsetLastCheckExpireTime() {
+
+        long aLong = SShareUtils.getLong(SP_LAST_CHECH_EXPIRE_TIME, 0);
+
+        return aLong;
+    }
+
+    /**
+     * 保存此次检查登录 时效时间
+     *
+     * @param time
+     */
+    public static void setLastCheckExpireTime(long time) {
+
+        SShareUtils.putLong(SP_LAST_CHECH_EXPIRE_TIME, time);
+
+    }
+
+
     private static final String SP_LOCATION = "SP_LOCATION";
 
     /**

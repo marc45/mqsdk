@@ -12,6 +12,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -29,9 +30,9 @@ public class C_0x8024 implements Serializable {
      *
      * @param listener
      */
-    public static void m_0x8024_req(IOnCallListener listener) {
+    public static void m_0x8024_req(String userid, IOnCallListener listener) {
 
-        MqttPublishRequest x8024_req_msg = MqttPublishRequestCreator.create_0x8024_req_msg();
+        MqttPublishRequest x8024_req_msg = MqttPublishRequestCreator.create_0x8024_req_msg(userid);
         if (x8024_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8024_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -44,22 +45,21 @@ public class C_0x8024 implements Serializable {
     /**
      * 请求查询 用户信息返回结果
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8024_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-
-        if (result == 1 && resp != null) {
-            SLog.d(TAG, "查询用户信息成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetUserInfoResult(result, "", "", resp.getContent());
-        } else if (result == 0 && errorMiofMsg != null) {
-            SLog.d(TAG, "查询用户信息失败");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetUserInfoResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), resp.getContent());
-        } else {
+    public static void m_0x8024_resp(String miof) {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
 
+        if (resp.getResult() == 1) {
+            SLog.e(TAG, "查询用户信息成功");
+        } else {
+            SLog.e(TAG, "查询用户信息失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetUserInfoResult(resp);
     }
 
     public static class Req {
@@ -114,6 +114,23 @@ public class C_0x8024 implements Serializable {
      */
     public static class Resp extends BaseMessage implements Serializable {
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         private ContentBean content;
 
         public ContentBean getContent() {
@@ -124,7 +141,7 @@ public class C_0x8024 implements Serializable {
             this.content = content;
         }
 
-        public static class ContentBean implements Serializable {
+        public static class ContentBean extends BaseContentBean implements Serializable {
 
 
             /**
@@ -153,14 +170,21 @@ public class C_0x8024 implements Serializable {
             private String headPic = null;
             private String sex = null;
             private String firstName = null;
+            private String email = null;
+            private String mobile = null;
             private String lastName = null;
+
             private int isHavePwd;
 
+
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "userid='" + userid + '\'' +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", userid='" + userid + '\'' +
                         ", userName='" + userName + '\'' +
                         ", birthday='" + birthday + '\'' +
                         ", province='" + province + '\'' +
@@ -171,9 +195,36 @@ public class C_0x8024 implements Serializable {
                         ", headPic='" + headPic + '\'' +
                         ", sex='" + sex + '\'' +
                         ", firstName='" + firstName + '\'' +
+                        ", email='" + email + '\'' +
+                        ", mobile='" + mobile + '\'' +
                         ", lastName='" + lastName + '\'' +
                         ", isHavePwd=" + isHavePwd +
+                        ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
+
+            public String getEmail() {
+                return email;
+            }
+
+            public void setEmail(String email) {
+                this.email = email;
+            }
+
+            public String getMobile() {
+                return mobile;
+            }
+
+            public void setMobile(String mobile) {
+                this.mobile = mobile;
             }
 
             public int getIsHavePwd() {

@@ -44,6 +44,7 @@ public class BaseBusiManager implements IMiofBusi {
      * @param pwd      密码
      * @param listener
      */
+    @Override
     public void register(String uName, String pwd, IOnCallListener listener) {
         C_0x8017.m_0x8017_req(uName, pwd, listener);
     }
@@ -57,10 +58,10 @@ public class BaseBusiManager implements IMiofBusi {
      * @param identifyCode 验证码
      * @param listener
      */
+    @Override
     public void login(String uName, String pwd, String identifyCode, IOnCallListener listener) {
         C_0x8018.m_0x8018_req(uName, pwd, identifyCode, listener);
     }
-
 
 
     /**
@@ -68,9 +69,24 @@ public class BaseBusiManager implements IMiofBusi {
      *
      * @param bebindingid 对端 的用户id或sn
      */
+    @Deprecated
+    @Override
     public void bind(String bebindingid, IOnCallListener listener) {
 
-        C_0x8002.m_0x8002_req(bebindingid, listener);
+        bind("", bebindingid, listener);
+    }
+
+    /**
+     * 添加设备或好友
+     *
+     * @param bindingid   自己的userid
+     * @param bebindingid 对端 的用户id或sn
+     * @param listener
+     */
+    @Override
+    public void bind(String bindingid, String bebindingid, IOnCallListener listener) {
+
+        C_0x8002.m_0x8002_req(bindingid, bebindingid, listener);
     }
 
 
@@ -80,8 +96,22 @@ public class BaseBusiManager implements IMiofBusi {
      * @param bebindingid 对端的用户id 或 sn
      * @param listener
      */
+    @Deprecated
+    @Override
     public void unBind(String bebindingid, IOnCallListener listener) {
-        C_0x8004.m_0x8004_req(bebindingid, listener);
+        unBind("", bebindingid, listener);
+    }
+
+    /**
+     * 删除设备或好友
+     *
+     * @param bindingid   自己的userid
+     * @param bebindingid 对端的用户id 或 sn
+     * @param listener
+     */
+    @Override
+    public void unBind(String bindingid, String bebindingid, IOnCallListener listener) {
+        C_0x8004.m_0x8004_req(bindingid, bebindingid, listener);
     }
 
     /**
@@ -96,8 +126,26 @@ public class BaseBusiManager implements IMiofBusi {
      *             7.查询所有
      * @return
      */
+    @Deprecated
+    @Override
     public void getBindList(int type, IOnCallListener listener) {
-        C_0x8005.m_0x8005_req(type, listener);
+        getBindList("", type, listener);
+    }
+
+    /**
+     * 查询绑定关系
+     *
+     * @param id       userid/sn
+     * @param type     1.查询智能设备列表
+     *                 2.查询用户好友列表
+     *                 3.查询用户-手机列表
+     *                 4.查询所有的好友列表
+     * @param listener
+     * @return
+     */
+    @Override
+    public void getBindList(String id, int type, IOnCallListener listener) {
+        C_0x8005.m_0x8005_req(id, type, listener);
     }
 
 
@@ -111,6 +159,7 @@ public class BaseBusiManager implements IMiofBusi {
      *                 3表示用户注册
      * @param listener
      */
+    @Override
     public void getIdentifyCode(String mobile, int type, IOnCallListener listener) {
         C_0x8021.m_0x8021_req(mobile, type, listener);
     }
@@ -126,6 +175,7 @@ public class BaseBusiManager implements IMiofBusi {
      *                     3表示用户注册
      * @param listener
      */
+    @Override
     public void checkIdentifyCode(String mobile, String identifyCode, int type, IOnCallListener listener) {
         C_0x8022.m_0x8022_req(mobile, identifyCode, type, listener);
     }
@@ -136,6 +186,7 @@ public class BaseBusiManager implements IMiofBusi {
      * @param toid        对端的userid或sn
      * @param dateByteArr 透传的数据
      */
+    @Override
     public void passthrough(String toid, byte[] dateByteArr, IOnCallListener listener) {
 
 
@@ -149,6 +200,7 @@ public class BaseBusiManager implements IMiofBusi {
      * @param toid        对端的 toid
      * @param dateByteArr 透传的数据
      */
+    @Override
     public void passthrough(String toid, String dateByteArr, IOnCallListener listener) {
 
         C_0x8200.m_0x8200_req(toid, dateByteArr, listener);
@@ -198,10 +250,22 @@ public class BaseBusiManager implements IMiofBusi {
     /**
      * 获取用户信息
      */
+    @Deprecated
     @Override
     public void getUserInfo(IOnCallListener listener) {
-        C_0x8024.m_0x8024_req(listener);
+        getUserInfo("", listener);
 
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @param userid
+     * @param listener
+     */
+    @Override
+    public void getUserInfo(String userid, IOnCallListener listener) {
+        C_0x8024.m_0x8024_req(userid, listener);
     }
 
     /**
@@ -223,7 +287,20 @@ public class BaseBusiManager implements IMiofBusi {
      */
     @Override
     public void updateUserPwd(String oldPwd, String newPwd, IOnCallListener listener) {
-        C_0x8025.m_0x8025_req(oldPwd, newPwd, listener);
+        updateUserPwd("", oldPwd, newPwd, listener);
+    }
+
+    /**
+     * 修改用户登录密码
+     *
+     * @param userid   userid
+     * @param oldPwd   老密码
+     * @param newPwd   新密码
+     * @param listener
+     */
+    @Override
+    public void updateUserPwd(String userid, String oldPwd, String newPwd, IOnCallListener listener) {
+        C_0x8025.m_0x8025_req(userid, oldPwd, newPwd, listener);
     }
 
 
@@ -247,7 +324,20 @@ public class BaseBusiManager implements IMiofBusi {
      */
     @Override
     public void updateRemark(String fid, String remark, IOnCallListener listener) {
-        C_0x8015.m_0x8015_req(fid, remark, listener);
+        updateRemark("", fid, remark, listener);
+    }
+
+    /**
+     * 修改好友|设备 备注名
+     *
+     * @param userid   自己id
+     * @param fid      对端 id
+     * @param remark   备注
+     * @param listener
+     */
+    @Override
+    public void updateRemark(String userid, String fid, String remark, IOnCallListener listener) {
+        C_0x8015.m_0x8015_req(userid, fid, remark, listener);
     }
 
     /**
@@ -261,6 +351,7 @@ public class BaseBusiManager implements IMiofBusi {
     public void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener) {
         C_0x8026.m_0x8026_req(mobile, pwd, listener);
     }
+
 
 }
 

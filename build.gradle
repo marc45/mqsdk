@@ -21,6 +21,7 @@ allprojects {
         jcenter()
     }
     tasks.withType(Javadoc) {
+        //防止中文注释出错
         options.addStringOption('Xdoclint:none', '-quiet')
         options.addStringOption('encoding', 'UTF-8')
     }

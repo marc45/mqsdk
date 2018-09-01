@@ -24,11 +24,9 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
-import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.AreaLocation;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -59,7 +57,7 @@ public class MqttPublishRequestCreator {
                 .setMsgtype("0x8000")
                 .setMsgcw("0x07")
                 .setDomain(MqttConfigure.domain)
-                .setContent(new C_0x8000.Req.Content(outterIp)).create();
+                .setContent(new C_0x8000.Req.ContentBean(outterIp)).create();
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -136,12 +134,16 @@ public class MqttPublishRequestCreator {
      *
      * @return
      */
-    public static MqttPublishRequest create_0x8015_req_msg(String fid, String remark) {
+    public static MqttPublishRequest create_0x8015_req_msg(String uid, String fid, String remark) {
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        String userid = "";
-        if (userBean != null) {
-            userid = userBean.getUserid();
+
+        String userid = uid;
+        if (TextUtils.isEmpty(userid)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null) {
+                userid = userBean.getUserid();
+            }
         }
 
         StartaiMessage message = new StartaiMessage.Builder()
@@ -192,11 +194,11 @@ public class MqttPublishRequestCreator {
             type = 2;
         }
         if (type == 0) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 类型不对");
             return null;
         }
         if (TextUtils.isEmpty(pwd)) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 密码为空");
             return null;
         }
 
@@ -237,25 +239,25 @@ public class MqttPublishRequestCreator {
             } else if (!TextUtils.isEmpty(pwd) && !TextUtils.isEmpty(identifyCode)) {
                 type = 5;
             } else {
-                SLog.e(TAG, "参数非法");
+                SLog.e(TAG, "参数非法 类型与 uname不匹配 ");
                 return null;
             }
 
         } else if (SRegexUtil.isUsername(uName)) {
             type = 4;
         } else {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 uname 格式不对");
             return null;
         }
 
         if (type == 1 || type == 2 || type == 4 || type == 5) {
             if (TextUtils.isEmpty(pwd)) {
-                SLog.e(TAG, "参数非法");
+                SLog.e(TAG, "参数非法 密码为空 ");
                 return null;
             }
         } else if (type == 3) {
             if (TextUtils.isEmpty(identifyCode)) {
-                SLog.e(TAG, "参数非法");
+                SLog.e(TAG, "参数非法 验证码为空");
                 return null;
             }
         }
@@ -280,7 +282,7 @@ public class MqttPublishRequestCreator {
     public static MqttPublishRequest create_0x8019_req_msg(C_0x8019.Req.ContentBean contentBean) {
 
         if (contentBean == null) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 参数为空");
             return null;
         }
 
@@ -303,7 +305,7 @@ public class MqttPublishRequestCreator {
     public static MqttPublishRequest create_0x8020_req_msg(C_0x8020.Req.ContentBean contentBean) {
 
         if (contentBean == null) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 参数为空");
             return null;
         }
 
@@ -333,7 +335,7 @@ public class MqttPublishRequestCreator {
     public static MqttPublishRequest<StartaiMessage<C_0x8021.Req.ContentBean>> create_0x8021_req_msg(String mobile, int type) {
 
         if (TextUtils.isEmpty(mobile) || type == 0) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 mobile 为空 或 type 类型不对");
             return null;
         }
 
@@ -362,7 +364,7 @@ public class MqttPublishRequestCreator {
     public static MqttPublishRequest create_0x8022_req_msg(String mobile, String identifyCode, int type) {
 
         if (TextUtils.isEmpty(mobile) || TextUtils.isEmpty(identifyCode) || type == 0) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 mibile 及验证码不能为空 或type类型不对");
             return null;
         }
 
@@ -391,7 +393,7 @@ public class MqttPublishRequestCreator {
 
         boolean isEmail = SRegexUtil.isEmail(email);
         if (!isEmail || (type != 1 && type != 2)) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 email 格式不正确或 type 不匹配");
             return null;
         }
 
@@ -415,14 +417,16 @@ public class MqttPublishRequestCreator {
      *
      * @return
      */
-    public static MqttPublishRequest create_0x8024_req_msg() {
+    public static MqttPublishRequest create_0x8024_req_msg(String uid) {
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        String userid = "";
-        if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-            userid = userBean.getUserid();
+        String userid = uid;
+        if (TextUtils.isEmpty(userid)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                userid = userBean.getUserid();
+            }
         }
-
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype("0x8024")
@@ -442,13 +446,15 @@ public class MqttPublishRequestCreator {
      *
      * @return
      */
-    public static MqttPublishRequest create_0x8025_req_msg(String oldPwd, String newPwd) {
+    public static MqttPublishRequest create_0x8025_req_msg(String uid, String oldPwd, String newPwd) {
 
+        String userid = uid;
+        if (TextUtils.isEmpty(userid)) {
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        String userid = "";
-        if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-            userid = userBean.getUserid();
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                userid = userBean.getUserid();
+            }
         }
 
 //        if (TextUtils.isEmpty(oldPwd) || TextUtils.isEmpty(newPwd)) {
@@ -457,7 +463,7 @@ public class MqttPublishRequestCreator {
 //        }
 
         if (oldPwd.equals(newPwd)) {
-            SLog.e(TAG, "参数非法，密码不能一致");
+            SLog.e(TAG, "参数非法，新旧密码一致");
             return null;
         }
 
@@ -485,12 +491,12 @@ public class MqttPublishRequestCreator {
 
         if (TextUtils.isEmpty(mobile) || TextUtils.isEmpty(pwd)) {
 
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 mobile pwd 不能为空");
             return null;
         }
 
         if (!SRegexUtil.isMobile(mobile)) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 mobile格式不对");
             return null;
         }
 
@@ -519,7 +525,7 @@ public class MqttPublishRequestCreator {
     public static MqttPublishRequest create_0x8200_req_msg(String toid, String data) {
 
         if (TextUtils.isEmpty(toid) || TextUtils.isEmpty(data)) {
-            SLog.e(TAG, "参数非法");
+            SLog.e(TAG, "参数非法 对方id为空 或 数据包为空");
             return null;
         }
 
@@ -539,21 +545,21 @@ public class MqttPublishRequestCreator {
 
     }
 
-
     /**
      * 组添加好友包
      *
      * @param beBindingid 设备的sn
      * @return
      */
-    public static MqttPublishRequest<StartaiMessage<C_0x8002.Req.ContentBean>> create_0x8002_req_msg(String beBindingid) {
+    public static MqttPublishRequest<StartaiMessage<C_0x8002.Req.ContentBean>> create_0x8002_req_msg(String userid, String beBindingid) {
 
+        String bindingid = userid;
+        if (TextUtils.isEmpty(bindingid)) {
 
-
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        String bindingid = "";
-        if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-            bindingid = userBean.getUserid();
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                bindingid = userBean.getUserid();
+            }
         }
 
 
@@ -570,6 +576,7 @@ public class MqttPublishRequestCreator {
         mqttPublishRequest.topic = TopicConsts.getServiceTopic();
         return mqttPublishRequest;
     }
+
 
     /**
      * 组添注销激活包
@@ -601,15 +608,15 @@ public class MqttPublishRequestCreator {
      * @param beBindingid 设备的sn
      * @return
      */
-    public static MqttPublishRequest create_0x8004_req_msg(String beBindingid) {
+    public static MqttPublishRequest create_0x8004_req_msg(String userid, String beBindingid) {
 
-        String bindingid = "";
+        String bindingid = userid;
+        if (TextUtils.isEmpty(bindingid)) {
 
-
-
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-            bindingid = userBean.getUserid();
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                bindingid = userBean.getUserid();
+            }
         }
 
         StartaiMessage message = new StartaiMessage.Builder()
@@ -635,22 +642,24 @@ public class MqttPublishRequestCreator {
      *             4.查询所有的好友列表
      * @return
      */
-    public static MqttPublishRequest<StartaiMessage<C_0x8005.Req.ContentBean>> create_0x8005_req_msg(int type) {
+    public static MqttPublishRequest<StartaiMessage<C_0x8005.Req.ContentBean>> create_0x8005_req_msg(String userid, int type) {
 
 
-        String bindingid = "";
+        String id = userid;
+        if (TextUtils.isEmpty(id)) {
 
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                id = userBean.getUserid();
+            }
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-            bindingid = userBean.getUserid();
         }
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype("0x8005")
                 .setMsgcw("0x07")
                 .setM_ver(MqttConfigure.m_ver)
                 .setTs(System.currentTimeMillis())
-                .setContent(new C_0x8005.Req.ContentBean(bindingid, type)).create();
+                .setContent(new C_0x8005.Req.ContentBean(id, type)).create();
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;

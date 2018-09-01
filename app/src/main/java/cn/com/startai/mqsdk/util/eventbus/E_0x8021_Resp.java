@@ -28,7 +28,7 @@ public class E_0x8021_Resp {
                 "result=" + result +
                 ", errorCode='" + errorCode + '\'' +
                 ", errorMsg='" + errorMsg + '\'' +
-                ", contentBean=" + contentBean +
+                ", errcontent=" + contentBean +
                 '}';
     }
 

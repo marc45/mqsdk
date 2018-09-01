@@ -26,6 +26,7 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.STimerUtil;
@@ -74,15 +75,14 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
     }
 
     @Override
-    public void onPassthrouthResult(E_0x8200_Resp resp) {
-        super.onPassthrouthResult(resp);
+    public void onPassthroughResult(int result, C_0x8200.Resp resp, String errorCode, String errorMsg, String dataString, byte[] dataByteArray) {
+        super.onPassthroughResult(result, resp, errorCode, errorMsg, dataString, dataByteArray);
         if (device != null) {
             String id = device.getId();
-            if (resp.getResp() != null) {
-                if (resp.getResp().getFromid().equals(id)) {
+            if (resp != null) {
+                if (resp.getFromid().equals(id)) {
 //                    TAndL.TL(getApplicationContext(), "透传 result = " + resp.getResult() + "fromid = " + resp.getResp().getFromid() + " errorMsg = " + resp.getErrorMsg() + " data = " + resp.getDataString() + " dataArr = " + Arrays.toString(resp.getDataByteArray()));
 
-                    String dataString = resp.getDataString();
                     recvCountLen += dataString.length();
                     recvCount++;
                     tvRecvCount.setText("共接收 " + recvCount + " 消息 总长度 " + recvCountLen);
@@ -90,18 +90,18 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
                 }
             }
         }
+
     }
 
 
     private void apendLog(String dataString) {
 
 
-
         String currTimeStr = new SimpleDateFormat("HH:mm:ss--sss").format(new Date());
 
         CharSequence text = tvLog.getText();
 
-        if(text.length()>50*1024*1024){
+        if (text.length() > 50 * 1024 * 1024) {
             tvLog.setText("");
         }
 
@@ -110,24 +110,24 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
     }
 
     @Override
-    public void on_0x8101_resp(E_0x8101_Resp resp) {
-        super.on_0x8101_resp(resp);
-        if (device != null) {
-            String id = device.getId();
-            if (resp.getResp() != null) {
-                if (resp.getResp().getFromid().equals(id)) {
-                    TAndL.TL(getApplicationContext(), "设置音量结果 " + resp.getResult() + " value = " + resp.getResp().getContent().getValue());
-                }
-            }
-        }
+    public void onVoiceSetResult(E_0x8101_Resp e_0x8101_resp) {
+        super.onVoiceSetResult(e_0x8101_resp);
+
+        TAndL.TL(getApplicationContext(), "音量设备结果 " + e_0x8101_resp.getResp().getResult() + " resp = " + e_0x8101_resp.getResp() + " respErr = " + e_0x8101_resp.getResp().getContent());
     }
 
     @Override
-    public void onHardwareActivateResult(E_0x8001_Resp_ resp_) {
-        super.onHardwareActivateResult(resp_);
-
-        TAndL.TL(getApplicationContext(), "代激活结果 result = " + resp_.getResult() + " errorMsg = " + resp_.getErrorMsg());
+    public void onHardwareActivateResult(C_0x8001.Resp resp) {
+        TAndL.TL(getApplicationContext(), "代激活结果 result = " + resp);
     }
+
+    @Override
+    public void onHardwareActivateResult(int result, String errorCode, String errorMsg, C_0x8001.Resp.ContentBean contentBean) {
+        super.onHardwareActivateResult(result, errorCode, errorMsg, contentBean);
+
+        TAndL.TL(getApplicationContext(), "代激活结果 result = " + result + " errorMsg = " + errorMsg + " contentBean = " + contentBean);
+    }
+
 
     @Override
     protected void onDestroy() {

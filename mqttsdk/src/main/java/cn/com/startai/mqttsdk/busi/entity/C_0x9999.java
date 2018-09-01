@@ -10,6 +10,7 @@ import cn.com.startai.mqttsdk.control.entity.UserBean;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -33,18 +34,19 @@ public class C_0x9999 {
 
     /**
      * 处理对端的 终端连接断开事件
-     *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
      */
-    public static void m_0x9999_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-        if (resp == null || resp.getContent() == null || TextUtils.isEmpty(resp.getContent().getSn())) {
+    public static void m_0x9999_resp(String miof) {
+
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+
+
+        if (resp == null) {
             SLog.e(TAG, "接收的数据格式错误");
             return;
         }
+
         String sn = resp.getContent().getSn();
-        SLog.d(TAG, "设备离线 " + sn);
+        SLog.e(TAG, "设备离线 " + sn);
 
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
         if (userBean != null) {

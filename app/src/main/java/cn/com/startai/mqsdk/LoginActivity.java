@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8018_Resp;
 import cn.com.startai.mqsdk.util.permission.PermissionHelper;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
@@ -212,22 +211,33 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     }
 
-
     @Override
-    public void onLoginResult(E_0x8018_Resp resp) {
-        super.onLoginResult(resp);
-        int result = resp.getResult();
-        C_0x8018.Resp.ContentBean loginInfo = resp.getLoginInfo();
+    public void onLoginResult( C_0x8018.Resp resp) {
 
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "登录成功 " + loginInfo.getUserid() + " " + loginInfo.getuName() + " " + loginInfo.getType());
+        if (resp.getResult() == 1) {
+            TAndL.TL(getApplicationContext(), "登录成功 " + resp);
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             finish();
-        } else if (result == 0) {
-            String errmsg = resp.getErrorMsg();
-            TAndL.TL(getApplicationContext(), "登录失败 " + errmsg + " loginInfo = " + loginInfo);
+        } else  {
+            TAndL.TL(getApplicationContext(), "登录失败 " + resp);
         }
 
     }
+
+
+    @Override
+    public void onLoginResult(int result, String errorCode, String errorMsg, C_0x8018.Resp.ContentBean loginInfo) {
+        super.onLoginResult(result, errorCode, errorMsg, loginInfo);
+
+        if (result == 1) {
+            TAndL.TL(getApplicationContext(), "登录成功 " + loginInfo);
+            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+            finish();
+        } else if (result == 0) {
+            TAndL.TL(getApplicationContext(), "登录失败 " + errorMsg);
+        }
+
+    }
+
 
 }

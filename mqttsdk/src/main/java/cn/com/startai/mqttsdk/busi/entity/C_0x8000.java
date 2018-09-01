@@ -7,12 +7,12 @@ import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.GlobalVariable;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.STimerUtil;
 
@@ -24,8 +24,6 @@ import cn.com.startai.mqttsdk.utils.STimerUtil;
 public class C_0x8000 {
 
     private static String TAG = C_0x8000.class.getSimpleName();
-
-
 
 
     /**
@@ -48,10 +46,19 @@ public class C_0x8000 {
     /**
      * 处理 节点信息
      *
-     * @param resp
+     * @param miof
      */
-    public static void m_0x8000_resp(int result, C_0x8000.Resp resp, ErrorMiofMsg errorMiofMsg) {
-        if (result == 1 && resp != null) {
+    public static void m_0x8000_resp(String miof) {
+
+
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
+
+        if (resp.getResult() == 1) {
+            SLog.e(TAG, "节点获取成功");
 
             int size = resp.getContent().getNode().size();
             if (size == 0) {
@@ -105,33 +112,31 @@ public class C_0x8000 {
                 }
             }, cycle);
 
-        } else if (result == 0 && errorMiofMsg != null) {
-
         }
     }
 
 
     public static class Req {
-        private Content content;
+        private ContentBean contentBean;
 
-        public static class Content {
+        public static class ContentBean {
             public String ip;
 
-            public Content(String ip) {
+            public ContentBean(String ip) {
                 this.ip = ip;
             }
         }
 
-        public Req(Content content) {
-            this.content = content;
+        public Req(ContentBean contentBean) {
+            this.contentBean = contentBean;
         }
 
-        public Content getContent() {
-            return content;
+        public ContentBean getContentBean() {
+            return contentBean;
         }
 
-        public void setContent(Content content) {
-            this.content = content;
+        public void setContentBean(ContentBean contentBean) {
+            this.contentBean = contentBean;
         }
     }
 
@@ -144,7 +149,7 @@ public class C_0x8000 {
          * apptype : Cloud/BXTM
          * msgid :
          * fromid : SERVICE/NMC/Smart/Controll/H5/0x07
-         * content : {"node":[{"ipport":"47.106.45.110:8883","server_domain":"cn.startai.net:8883","weight":2},{"ipport":"47.252.50.56:8883","server_domain":"us.startai.net:8883","weight":1}],"cycle":86400}
+         * contentBean : {"node":[{"ipport":"47.106.45.110:8883","server_domain":"cn.startai.net:8883","weight":2},{"ipport":"47.252.50.56:8883","server_domain":"us.startai.net:8883","weight":1}],"cycle":86400}
          * result : 1
          * domain : startai
          * m_ver : Json_1.1.4_4.2
@@ -156,6 +161,23 @@ public class C_0x8000 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -165,15 +187,7 @@ public class C_0x8000 {
         }
 
 
-        public static class ContentBean {
-
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "cycle=" + cycle +
-                        ", node=" + node +
-                        '}';
-            }
+        public static class ContentBean extends BaseContentBean {
 
             /**
              * node : [{"server_domain":"ssl:// cn.startai.net:8883","ip":"47.106.45.110","port":8883,"protocol":"ssl","weight":1}]
@@ -182,6 +196,26 @@ public class C_0x8000 {
 
             private int cycle;
             private List<NodeBean> node;
+            private Req.ContentBean errcontent;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", cycle=" + cycle +
+                        ", node=" + node +
+                        ", errcontent=" + errcontent +
+                        '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
 
             public int getCycle() {
                 return cycle;
@@ -256,4 +290,6 @@ public class C_0x8000 {
             }
         }
     }
+
+
 }

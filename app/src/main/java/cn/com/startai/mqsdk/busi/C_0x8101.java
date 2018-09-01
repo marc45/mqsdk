@@ -6,11 +6,15 @@ import org.greenrobot.eventbus.EventBus;
 
 import cn.com.startai.mqsdk.util.eventbus.E_0x8101_Resp;
 import cn.com.startai.mqsdk.util.eventbus.EventBean;
+import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
+import cn.com.startai.mqttsdk.busi.entity.BaseContentBean;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
+import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
  * 登录
@@ -57,44 +61,20 @@ public class C_0x8101 {
     /**
      * 手机端处理设置音量的返回回结果
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
      * @return
      */
-    public static void m_0x8101_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8101_resp(String miof) {
 
-        EventBus.getDefault().post(new EventBean<>(EventBean.S_2_A_0x8101_RESP, new E_0x8101_Resp(result, resp, errorMiofMsg)));
+
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
+        EventBus.getDefault().post(new EventBean<>(EventBean.S_2_A_0x8101_RESP, new E_0x8101_Resp(resp)));
+
 
     }
-
-//    /**
-//     * 受控端处理设置音量业务 并返回结果
-//     *
-//     * @param resp
-//     * @return
-//     */
-//    public static BusiResult m_0x8101_handler(Resp resp) {
-//
-//
-//        if (resp == null || resp.getContent() == null) {
-//            return new BusiResult(0, new BusiResultErrorContent(BusiErrorCode.ERROR_CODE_0x810101));
-//        }
-//
-//
-//        String type = resp.getContent().getType();
-//        int value = resp.getContent().getValue();
-//
-//        if (value < 0) {
-//            return new BusiResult(0, new BusiResultErrorContent(BusiErrorCode.ERROR_CODE_0x810102));
-//        }
-//
-//
-//        DeviceControl.setVolum(SmartAdApp.getContext(), type, value);
-//
-//        return new BusiResult(1, resp.getContent());
-//
-//    }
 
 
     public static class Req {
@@ -152,13 +132,31 @@ public class C_0x8101 {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
             public ContentBean(int value) {
                 this.value = value;
             }
 
             private String type;
             private int value;
+            private Req.ContentBean errcontent;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "type='" + type + '\'' +
+                        ", value=" + value +
+                        ", errcontent=" + errcontent +
+                        '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
 
             public String getType() {
                 return type;

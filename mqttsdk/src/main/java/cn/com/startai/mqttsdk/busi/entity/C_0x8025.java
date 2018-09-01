@@ -12,6 +12,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -29,9 +30,9 @@ public class C_0x8025 implements Serializable {
      *
      * @param listener
      */
-    public static void m_0x8025_req(String oldPwd, String newPwd, IOnCallListener listener) {
+    public static void m_0x8025_req(String userid, String oldPwd, String newPwd, IOnCallListener listener) {
 
-        MqttPublishRequest x8025_req_msg = MqttPublishRequestCreator.create_0x8025_req_msg(oldPwd, newPwd);
+        MqttPublishRequest x8025_req_msg = MqttPublishRequestCreator.create_0x8025_req_msg(userid, oldPwd, newPwd);
         if (x8025_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8025_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -44,21 +45,21 @@ public class C_0x8025 implements Serializable {
     /**
      * 请求修改密码返回结果
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8025_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8025_resp(String miof) {
 
-        if (result == 1 && resp != null) {
-            SLog.d(TAG, "修改密码成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserPwdResult(result, "", "", resp.getContent());
-        } else if (result == 0 && errorMiofMsg != null) {
-            SLog.d(TAG, "修改密码失败");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserPwdResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), null);
-        } else {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+        if (resp.getResult() == 1) {
+            SLog.e(TAG, "修改密码成功");
+        } else {
+            SLog.e(TAG, "修改密码失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserPwdResult(resp);
 
     }
 
@@ -132,6 +133,23 @@ public class C_0x8025 implements Serializable {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -140,21 +158,32 @@ public class C_0x8025 implements Serializable {
             this.content = content;
         }
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
 
             private String userid = null; //用户id
             private String oldPwd = null; //老密码
             private String newPwd = null; //新密码
-
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "userid='" + userid + '\'' +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", userid='" + userid + '\'' +
                         ", oldPwd='" + oldPwd + '\'' +
                         ", newPwd='" + newPwd + '\'' +
+                        ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
             }
 
             public ContentBean(String userid, String oldPwd, String newPwd) {

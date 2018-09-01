@@ -61,17 +61,31 @@ public class UpdateNickNameActivity extends BaseActivity {
     }
 
     @Override
-    public void onUpdateUserInfoResult(E_0x8020_Resp resp) {
-        super.onUpdateUserInfoResult(resp);
-        int result = resp.getResult();
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "昵称修改成功");
-            AccountActivity.userInfo.setNickName(resp.getMessage().getNickName());
+    public void onUpdateUserInfoResult( C_0x8020.Resp resp) {
+        if (resp.getResult() == 1) {
+            TAndL.TL(getApplicationContext(), "昵称修改成功 " + resp);
+            AccountActivity.userInfo.setNickName(resp.getContent().getNickName());
             finish();
         } else {
-            TAndL.TL(getApplicationContext(), "昵称修改失败");
+            TAndL.TL(getApplicationContext(), "昵称修改失败 " + resp);
         }
+
     }
+
+    @Override
+    public void onUpdateUserInfoResult(int result, String errorCode, String errorMsg, C_0x8020.Resp.ContentBean contentBean) {
+        super.onUpdateUserInfoResult(result, errorCode, errorMsg, contentBean);
+
+        if (result == 1) {
+            TAndL.TL(getApplicationContext(), "昵称修改成功 " + contentBean);
+            AccountActivity.userInfo.setNickName(contentBean.getNickName());
+            finish();
+        } else {
+            TAndL.TL(getApplicationContext(), "昵称修改失败 " + errorMsg);
+        }
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,6 +110,7 @@ public class UpdateNickNameActivity extends BaseActivity {
 
                 contentBean.setUserid(userBean.getUserid());
             }
+
             StartAI.getInstance().getBaseBusiManager().updateUserInfo(contentBean, onCallListener);
 
             return true;

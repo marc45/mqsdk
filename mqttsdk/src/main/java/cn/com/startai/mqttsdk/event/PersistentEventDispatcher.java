@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8003;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8004;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8015;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8016;
@@ -15,6 +17,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
@@ -133,6 +136,31 @@ public class PersistentEventDispatcher {
 
     }
 
+    /**
+     * @param resp
+     */
+    public void onTokenExpire(final C_0x8018.Resp.ContentBean resp) {
+        if (connectStateListenerList != null) {
+            for (final IConnectionStateListener listener : connectStateListenerList) {
+                if (listener.needUISafety()) {
+                    StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            if (listener instanceof ICommonStateListener) {
+                                ((ICommonStateListener) listener).onTokenExpire(resp);
+                            }
+                        }
+                    });
+                } else {
+                    if (listener instanceof ICommonStateListener) {
+                        ((ICommonStateListener) listener).onTokenExpire(resp);
+                    }
+                }
+            }
+        }
+    }
+
     public void onConnectSuccess() {
 
 
@@ -180,12 +208,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 透传消息
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onPassthroughResult(final int result, final C_0x8200.Resp resp, final String errorCode, final String errorMsg, final String passContent) {
+    public void onPassthroughResult(final C_0x8200.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -201,24 +225,28 @@ public class PersistentEventDispatcher {
                             public void run() {
 
                                 try {
-                                    byte[] bytes = SStringUtils.hexStr2ByteArr(passContent.replace(" ", ""));
-                                    list.onPassthroughResult(result, resp, errorCode, errorMsg, passContent, bytes);
+                                    byte[] bytes = SStringUtils.hexStr2ByteArr(resp.getContent().replace(" ", ""));
+                                    list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), bytes);
+                                    list.onPassthroughResult(resp, resp.getContent(), bytes);
                                     return;
                                 } catch (NumberFormatException e) {
 //                                    e.printStackTrace();
                                 }
-                                list.onPassthroughResult(result, resp, errorCode, errorMsg, passContent, null);
+                                list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), null);
+                                list.onPassthroughResult(resp, resp.getContent(), null);
                             }
                         });
                     } else {
                         try {
-                            byte[] bytes = SStringUtils.hexStr2ByteArr(passContent.replace(" ", ""));
-                            list.onPassthroughResult(result, resp, errorCode, errorMsg, passContent, bytes);
+                            byte[] bytes = SStringUtils.hexStr2ByteArr(resp.getContent().replace(" ", ""));
+                            list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), bytes);
+                            list.onPassthroughResult(resp, resp.getContent(), bytes);
                             return;
                         } catch (NumberFormatException e) {
-//                            e.printStackTrace();
+//                                    e.printStackTrace();
                         }
-                        list.onPassthroughResult(result, resp, errorCode, errorMsg, passContent, null);
+                        list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), null);
+                        list.onPassthroughResult(resp, resp.getContent(), null);
                     }
                 }
 
@@ -233,12 +261,9 @@ public class PersistentEventDispatcher {
     /**
      * 回调第三方智能硬件激活结果
      *
-     * @param result
-     * @param contentBean
-     * @param errorCode
-     * @param errorMsg
+     * @param resp
      */
-    public void onHardwareActivateResult(final int result, final String errorCode, final String errorMsg, final C_0x8001.Resp.ContentBean contentBean) {
+    public void onHardwareActivateResult(final C_0x8001.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -250,11 +275,14 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onHardwareActivateResult(result, errorCode, errorMsg, contentBean);
+                                list.onHardwareActivateResult(resp);
+                                list.onHardwareActivateResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
                             }
                         });
                     } else {
-                        list.onHardwareActivateResult(result, errorCode, errorMsg, contentBean);
+                        list.onHardwareActivateResult(resp);
+                        list.onHardwareActivateResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -267,12 +295,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 设备激活结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onActiviteResult(final int result, final String errorCode, final String errorMsg) {
+    public void onActiviteResult(final C_0x8001.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -284,11 +308,18 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onActiviteResult(result, errorCode, errorMsg);
+                                list.onActiviteResult(resp);
+
+                                list.onActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
+
+
                             }
                         });
                     } else {
-                        list.onActiviteResult(result, errorCode, errorMsg);
+                        list.onActiviteResult(resp);
+                        list.onActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
+
+
                     }
                 }
 
@@ -301,12 +332,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 设备注销激活结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onUnActiviteResult(final int result, final String errorCode, final String errorMsg) {
+    public void onUnActiviteResult(final C_0x8003.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -318,11 +345,16 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onUnActiviteResult(result, errorCode, errorMsg);
+                                list.onUnActiviteResult(resp);
+                                list.onUnActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
+
+
                             }
                         });
                     } else {
-                        list.onUnActiviteResult(result, errorCode, errorMsg);
+                        list.onUnActiviteResult(resp);
+                        list.onUnActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
+
                     }
                 }
 
@@ -335,11 +367,8 @@ public class PersistentEventDispatcher {
     /**
      * 修改备注名返回
      *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onUpdateRemarkResult(final int result, final String errorCode, final String errorMsg, final C_0x8015.Resp.ContentBean contentBean) {
+    public void onUpdateRemarkResult(final C_0x8015.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -351,12 +380,14 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onUpdateRemarkResult(result, errorCode, errorMsg, contentBean);
+                                list.onUpdateRemarkResult(resp);
+                                list.onUpdateRemarkResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
                             }
                         });
                     } else {
-                        list.onUpdateRemarkResult(result, errorCode, errorMsg, contentBean);
 
+                        list.onUpdateRemarkResult(resp);
+                        list.onUpdateRemarkResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
                     }
                 }
 
@@ -370,12 +401,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 查询最新软件版本返回
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onGetLatestVersionResult(final int result, final String errorCode, final String errorMsg, final C_0x8016.Resp.ContentBean contentBean) {
+    public void onGetLatestVersionResult(final C_0x8016.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -387,11 +414,14 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onGetLatestVersionResult(result, errorCode, errorMsg, contentBean);
+                                list.onGetLatestVersionResult(resp);
+                                list.onGetLatestVersionResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                             }
                         });
                     } else {
-                        list.onGetLatestVersionResult(result, errorCode, errorMsg, contentBean);
+                        list.onGetLatestVersionResult(resp);
+                        list.onGetLatestVersionResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
 
                     }
                 }
@@ -405,12 +435,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 注册结果返回
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onRegisterResult(final int result, final String errorCode, final String errorMsg, final C_0x8017.Resp.ContentBean resp) {
+    public void onRegisterResult(final C_0x8017.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -422,11 +448,16 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onRegisterResult(result, errorCode, errorMsg, resp);
+                                list.onRegisterResult(resp);
+                                list.onRegisterResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
+
                             }
                         });
                     } else {
-                        list.onRegisterResult(result, errorCode, errorMsg, resp);
+                        list.onRegisterResult(resp);
+                        list.onRegisterResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -460,6 +491,7 @@ public class PersistentEventDispatcher {
                         });
                     } else {
                         list.onLogoutResult(result, errorCode, errorMsg);
+
                     }
                 }
 
@@ -471,13 +503,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 回调登录 结果到应用层
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
-     * @param loginInfo
      */
-    public void onLoginResult(final int result, final String errorCode, final String errorMsg, final C_0x8018.Resp.ContentBean loginInfo) {
+    public void onLoginResult(final C_0x8018.Resp resp) {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
@@ -488,11 +515,15 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onLoginResult(result, errorCode, errorMsg, loginInfo);
+                                list.onLoginResult(resp);
+                                list.onLoginResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                             }
                         });
                     } else {
-                        list.onLoginResult(result, errorCode, errorMsg, loginInfo);
+                        list.onLoginResult(resp);
+                        list.onLoginResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -503,12 +534,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 回调获取验证码结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onGetIdentifyResult(final int result, final String errorCode, final String errorMsg, final C_0x8021.Resp.ContentBean contentBean) {
+    public void onGetIdentifyResult(final C_0x8021.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -520,13 +547,15 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onGetIdentifyCodeResult(result, errorCode, errorMsg);
-                                list.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
+                                list.onGetIdentifyCodeResult(resp);
+                                list.onGetIdentifyCodeResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                             }
                         });
                     } else {
-                        list.onGetIdentifyCodeResult(result, errorCode, errorMsg);
-                        list.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
+                        list.onGetIdentifyCodeResult(resp);
+                        list.onGetIdentifyCodeResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -536,12 +565,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 回调邮件发送结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onSendEmailResult(final int result, final String errorCode, final String errorMsg, final C_0x8023.Resp.ContentBean contentBean) {
+    public void onSendEmailResult(final C_0x8023.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -553,11 +578,16 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onSendEmailResult(result, errorCode, errorMsg, contentBean);
+                                list.onSendEmailResult(resp);
+                                list.onSendEmailResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
+
                             }
                         });
                     } else {
-                        list.onSendEmailResult(result, errorCode, errorMsg, contentBean);
+                        list.onSendEmailResult(resp);
+                        list.onSendEmailResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -568,12 +598,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 回调更新用户信息结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onGetUserInfoResult(final int result, final String errorCode, final String errorMsg, final C_0x8024.Resp.ContentBean contentBean) {
+    public void onGetUserInfoResult(final C_0x8024.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -585,11 +611,14 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onGetUserInfoResult(result, errorCode, errorMsg, contentBean);
+                                list.onGetUserInfoResult(resp);
+                                list.onGetUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                             }
                         });
                     } else {
-                        list.onGetUserInfoResult(result, errorCode, errorMsg, contentBean);
+                        list.onGetUserInfoResult(resp);
+                        list.onGetUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
                     }
                 }
 
@@ -601,12 +630,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 修改密码结果回调
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onUpdateUserPwdResult(final int result, final String errorCode, final String errorMsg, final C_0x8025.Resp.ContentBean contentBean) {
+    public void onUpdateUserPwdResult(final C_0x8025.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -618,11 +643,15 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onUpdateUserPwdResult(result, errorCode, errorMsg, contentBean);
+                                list.onUpdateUserPwdResult(resp);
+                                list.onUpdateUserPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                             }
                         });
                     } else {
-                        list.onUpdateUserPwdResult(result, errorCode, errorMsg, contentBean);
+                        list.onUpdateUserPwdResult(resp);
+                        list.onUpdateUserPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -634,12 +663,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 手机重置登录密码 结果回调
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onResetMobileLoginPwdResult(final int result, final String errorCode, final String errorMsg, final C_0x8026.Resp.ContentBean contentBean) {
+    public void onResetMobileLoginPwdResult(final C_0x8026.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -651,11 +676,15 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onResetMobileLoginPwdResult(result, errorCode, errorMsg, contentBean);
+                                list.onResetMobileLoginPwdResult(resp);
+                                list.onResetMobileLoginPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                             }
                         });
                     } else {
-                        list.onResetMobileLoginPwdResult(result, errorCode, errorMsg, contentBean);
+                        list.onResetMobileLoginPwdResult(resp);
+                        list.onResetMobileLoginPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
                     }
                 }
 
@@ -667,12 +696,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 回调更新用户信息结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onUpdateUserInfoResult(final int result, final String errorCode, final String errorMsg, final C_0x8020.Resp.ContentBean contentBean) {
+    public void onUpdateUserInfoResult(final C_0x8020.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -684,11 +709,17 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onUpdateUserInfoResult(result, errorCode, errorMsg, contentBean);
+                                list.onUpdateUserInfoResult(resp);
+                                list.onUpdateUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
+
                             }
                         });
                     } else {
-                        list.onUpdateUserInfoResult(result, errorCode, errorMsg, contentBean);
+                        list.onUpdateUserInfoResult(resp);
+                        list.onUpdateUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+
+
                     }
                 }
 
@@ -699,12 +730,8 @@ public class PersistentEventDispatcher {
 
     /**
      * 回调 检验验证码结果
-     *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      */
-    public void onCheckIdentifyResult(final int result, final String errorCode, final String errorMsg) {
+    public void onCheckIdentifyResult(final C_0x8022.Resp resp) {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
@@ -715,11 +742,16 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onCheckIdetifyResult(result, errorCode, errorMsg);
+                                list.onCheckIdetifyResult(resp);
+                                list.onCheckIdetifyResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
+
+
                             }
                         });
                     } else {
-                        list.onCheckIdetifyResult(result, errorCode, errorMsg);
+                        list.onCheckIdetifyResult(resp);
+                        list.onCheckIdetifyResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
+
                     }
                 }
 
@@ -727,16 +759,14 @@ public class PersistentEventDispatcher {
             }
         }
     }
+
 
     /**
      * 回调绑定结果
      *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      * @param bebindInfo
      */
-    public void onBindResult(final int result, final String errorCode, final String errorMsg, final String id, final C_0x8002.Resp.ContentBean.BebindingBean bebindInfo) {
+    public void onBindResult(final C_0x8002.Resp resp, final String id, final C_0x8002.Resp.ContentBean.BebindingBean bebindInfo) {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
@@ -747,11 +777,14 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onBindResult(result, errorCode, errorMsg, id, bebindInfo);
+                                list.onBindResult(resp, id, bebindInfo);
+                                list.onBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, bebindInfo);
+
                             }
                         });
                     } else {
-                        list.onBindResult(result, errorCode, errorMsg, id, bebindInfo);
+                        list.onBindResult(resp, id, bebindInfo);
+                        list.onBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, bebindInfo);
                     }
                 }
 
@@ -760,15 +793,13 @@ public class PersistentEventDispatcher {
         }
     }
 
+
     /**
      * 解绑回调
      *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      * @param beunbindid
      */
-    public void onUnBindResult(final int result, final String errorCode, final String errorMsg, final String id, final String beunbindid) {
+    public void onUnBindResult(final C_0x8004.Resp resp, final String id, final String beunbindid) {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
@@ -779,11 +810,15 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onUnBindResult(result, errorCode, errorMsg, id, beunbindid);
+                                list.onUnBindResult(resp, id, beunbindid);
+                                list.onUnBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, beunbindid);
+
+
                             }
                         });
                     } else {
-                        list.onUnBindResult(result, errorCode, errorMsg, id, beunbindid);
+                        list.onUnBindResult(resp, id, beunbindid);
+                        list.onUnBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, beunbindid);
                     }
                 }
 
@@ -826,15 +861,13 @@ public class PersistentEventDispatcher {
 
     }
 
+
     /**
      * 回调查询绑定关系
      *
-     * @param result
-     * @param errorCode
-     * @param errorMsg
      * @param bindList
      */
-    public void onGetBindListResult(final int result, final String errorCode, final String errorMsg, final String id, final ArrayList<C_0x8005.Resp.ContentBean> bindList) {
+    public void onGetBindListResult(final int result, final C_0x8005.RespErr respErr, final String id, final ArrayList<C_0x8005.Resp.ContentBean> bindList) {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
@@ -845,11 +878,14 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onGetBindListResult(result, errorCode, errorMsg, id, bindList);
+                                list.onGetBindListResult(result, respErr, id, bindList);
+                                list.onGetBindListResult(result, respErr == null ? "" : respErr.getContent().getErrcode(), respErr == null ? "" : respErr.getContent().getErrmsg(), id, bindList);
+
                             }
                         });
                     } else {
-                        list.onGetBindListResult(result, errorCode, errorMsg, id, bindList);
+                        list.onGetBindListResult(result, respErr, id, bindList);
+                        list.onGetBindListResult(result, respErr == null ? "" : respErr.getContent().getErrcode(), respErr == null ? "" : respErr.getContent().getErrmsg(), id, bindList);
                     }
                 }
 

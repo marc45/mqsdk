@@ -13,6 +13,7 @@ import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -46,28 +47,37 @@ public class C_0x8001 {
     /**
      * 处理激活返回
      *
-     * @param result       成功 1 失败 0
-     * @param resp         成功实体
-     * @param errorMiofMsg 失败实体
+     * @param miof   失败实体
      */
-    public static void m_0x8001_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-        SLog.e(TAG, "设备激活" + (result == 1 ? "成功" : "失败"));
-        if (result == 1 && resp != null) {
+    public static void m_0x8001_resp(String miof) {
+
+
+
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
+
+        if (resp.getResult() == 1) {
+
             //自己激活成功
             if (MqttConfigure.getSn(StartAI.getContext()).equals(resp.content.getSn())) {
                 SPController.setIsActivite(true);
-                StartAI.getInstance().getPersisitnet().getEventDispatcher().onActiviteResult(resp.getResult(), "", "");
+                StartAI.getInstance().getPersisitnet().getEventDispatcher().onActiviteResult(resp);
 
                 StartaiMqttPersistent.getInstance().checkGetAreaNode();
 
                 C_0x9998.m_0x9998_req(null);
-
+                SLog.e(TAG, "激活成功");
             } else {
                 //代发的激活包 激活成功
-                StartAI.getInstance().getPersisitnet().getEventDispatcher().onHardwareActivateResult(result, "", "", resp.content);
+                SLog.e(TAG, "代激活成功");
+                StartAI.getInstance().getPersisitnet().getEventDispatcher().onHardwareActivateResult(resp);
             }
-        } else if (result == 0 && errorMiofMsg != null) {
-            String errcode = errorMiofMsg.getContent().getErrcode();
+        } else {
+
+            String errcode = resp.getContent().getErrcode();
             //自己激活失败
             if ("0x800101".equals(errcode)
                     || "0x800102".equals(errcode)
@@ -76,15 +86,14 @@ public class C_0x8001 {
                     || "000000".equals(errcode)
                     || "0x800105".equals(errcode)
                     ) {
-                SLog.e(TAG, "errorMsg = " + errorMiofMsg.getContent().getErrmsg());
-//                SPController.setIsActivite(false);
-                StartAI.getInstance().getPersisitnet().getEventDispatcher().onActiviteResult(resp.getResult(), errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg());
+                SLog.e(TAG, "激活失败");
+                StartAI.getInstance().getPersisitnet().getEventDispatcher().onActiviteResult(resp);
             } else {
+                SLog.e(TAG, "代激活失败");
                 //代发的激活失败
-                StartAI.getInstance().getPersisitnet().getEventDispatcher().onHardwareActivateResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), null);
+                StartAI.getInstance().getPersisitnet().getEventDispatcher().onHardwareActivateResult(resp);
             }
-        } else {
-            SLog.e(TAG, "返回数据格式错误");
+
         }
 
     }
@@ -93,7 +102,7 @@ public class C_0x8001 {
 
         private ContentBean content;
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
             /*
             终端请求云端注册业务，clientid项为GUID，clientid,sn,apptype, m_ver,appid,domian不能为空
@@ -309,7 +318,32 @@ activateType:激活类型 如果APP代智能设备激活 值为2 ,自己激活�
 
         private ContentBean content;
 
-        public static class ContentBean {
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
+        public ContentBean getContent() {
+            return content;
+        }
+
+        public void setContent(ContentBean content) {
+            this.content = content;
+        }
+
+        public static class ContentBean extends BaseContentBean {
 
             /*
                       终端请求云端注册业务，clientid项为GUID，clientid,sn,apptype, m_ver,appid,domian不能为空
@@ -326,6 +360,32 @@ activateType:激活类型 如果APP代智能设备激活 值为2 ,自己激活�
             private String clientid;
             private String m_ver;
             private int activateType;
+            private Req.ContentBean errcontent;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", apptype='" + apptype + '\'' +
+                        ", domain='" + domain + '\'' +
+                        ", sn='" + sn + '\'' +
+                        ", appid='" + appid + '\'' +
+                        ", clientid='" + clientid + '\'' +
+                        ", m_ver='" + m_ver + '\'' +
+                        ", activateType=" + activateType +
+                        ", errcontent=" + errcontent +
+                        ", firmwareParam=" + firmwareParam +
+                        '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
 
             public int getActivateType() {
                 return activateType;

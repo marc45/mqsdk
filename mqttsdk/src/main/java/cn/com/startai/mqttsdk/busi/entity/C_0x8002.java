@@ -17,6 +17,7 @@ import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -30,25 +31,18 @@ public class C_0x8002 {
     private static String TAG = C_0x8002.class.getSimpleName();
 
 
-//    private static HashMap<String, String> maps = new HashMap<>();
-
     /**
      * 添加设备或好友
      *
      * @param bebindid 对端 的user或sn
      */
-    public static void m_0x8002_req(String bebindid, IOnCallListener listener) {
+    public static void m_0x8002_req(String userid, String bebindid, IOnCallListener listener) {
 
-        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8002_req_msg = MqttPublishRequestCreator.create_0x8002_req_msg(bebindid);
+        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8002_req_msg = MqttPublishRequestCreator.create_0x8002_req_msg(userid, bebindid);
         if (x8002_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8002_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
         }
-
-
-//        String uuid = UUID.randomUUID().toString();
-//        maps.put(uuid, x8002_req_msg.message.getContent().getBindingid());
-//        x8002_req_msg.message.setMsgid(uuid);
 
         StartaiMqttPersistent.getInstance().send(x8002_req_msg, listener);
 
@@ -57,13 +51,9 @@ public class C_0x8002 {
     /**
      * 绑定消息
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8002_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
-
-
+    public static void m_0x8002_resp(String miof) {
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
         String id = "";
         if (userBean != null) {
@@ -72,9 +62,13 @@ public class C_0x8002 {
             id = MqttConfigure.getSn(StartAI.getContext());
 
         }
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
 
-
-        if (result == 1 && resp != null) {
+        if (resp.getResult() == 1) {
             SLog.d(TAG, "绑定成功");
 
             Resp.ContentBean.BebindingBean bebinding = null;
@@ -86,7 +80,7 @@ public class C_0x8002 {
                 bebinding = resp.getContent().getBebinding();
             }
 
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(result, "", "", id, bebinding);
+            StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(resp, id, bebinding);
 
             if (userBean != null) {
 
@@ -96,18 +90,16 @@ public class C_0x8002 {
                 StartaiMqttPersistent.getInstance().subFriendReportTopic();
 
             }
-
-        } else if (result == 0 && errorMiofMsg != null) {
-
+        } else {
             SLog.e(TAG, "绑定失败");
 
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), id, null);
+            StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(resp, id, null);
 
-        } else {
-            SLog.e(TAG, "返回数据格式错误");
         }
 
+
     }
+
 
     /**
      * 绑定请求json 对应实体类
@@ -165,6 +157,23 @@ public class C_0x8002 {
 
         private ContentBean content;
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public ContentBean getContent() {
             return content;
         }
@@ -173,15 +182,7 @@ public class C_0x8002 {
             this.content = content;
         }
 
-        public static class ContentBean {
-
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "binding=" + binding +
-                        ", bebinding=" + bebinding +
-                        '}';
-            }
+        public static class ContentBean extends BaseContentBean {
 
             /**
              * binding : {"id":"","apptype":"","featureid":"","connstatus":""}
@@ -190,6 +191,26 @@ public class C_0x8002 {
 
             private BindingBean binding;
             private BebindingBean bebinding;
+            private Req.ContentBean errcontent;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", binding=" + binding +
+                        ", bebinding=" + bebinding +
+                        ", errcontent=" + errcontent +
+                        '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
+            }
 
             public BindingBean getBinding() {
                 return binding;

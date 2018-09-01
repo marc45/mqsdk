@@ -16,6 +16,9 @@ import cn.com.startai.mqsdk.util.eventbus.E_0x8021_Resp;
 import cn.com.startai.mqsdk.util.eventbus.E_0x8022_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
 import cn.com.startai.mqttsdk.event.AOnStartaiMessageArriveListener;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
@@ -107,23 +110,50 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void onRegisterResult(E_0x8017_Resp resp) {
-        super.onRegisterResult(resp);
-        TAndL.TL(getApplicationContext(), "注册结果 result = " + resp.getResult() + " errorMsg = " + resp.getErrorMsg());
+    public void onRegisterResult(C_0x8017.Resp resp) {
+        TAndL.TL(getApplicationContext(), "注册结果 result = " + resp);
+
     }
 
     @Override
-    public void onGetIdentifyResult(E_0x8021_Resp resp) {
-        super.onGetIdentifyResult(resp);
+    public void onRegisterResult(int result, String errorCode, String errorMsg, C_0x8017.Resp.ContentBean resp) {
+        super.onRegisterResult(result, errorCode, errorMsg, resp);
+        TAndL.TL(getApplicationContext(), "注册结果 result = " + result + " errorMsg = " + errorMsg + " resp = " + resp);
+    }
 
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp.getResult() + " " + resp.getErrorMsg() + resp.getContentBean());
+
+    @Override
+    public void onGetIdentifyCodeResult(C_0x8021.Resp resp) {
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp);
     }
 
     @Override
-    public void onCheckIdentifyResult(E_0x8022_Resp resp) {
-        super.onCheckIdentifyResult(resp);
-        TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + resp.getResult() + " errorMsg = " + resp.getErrorMsg());
+    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg) {
+        super.onGetIdentifyCodeResult(result, errorCode, errorMsg);
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg);
     }
+
+    @Override
+    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg, C_0x8021.Resp.ContentBean contentBean) {
+        super.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
+
+    }
+
+
+    @Override
+    public void onCheckIdetifyResult(C_0x8022.Resp resp) {
+        TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + resp);
+    }
+
+    @Override
+    public void onCheckIdetifyResult(int result, String errorCode, String errorMsg) {
+        super.onCheckIdetifyResult(result, errorCode, errorMsg);
+
+        TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + result + " errorMsg = " + errorMsg);
+
+    }
+
 
     @Override
     protected void onDestroy() {

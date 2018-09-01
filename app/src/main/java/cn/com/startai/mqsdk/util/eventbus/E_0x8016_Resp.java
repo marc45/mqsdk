@@ -30,7 +30,7 @@ public class E_0x8016_Resp {
                 "result=" + result +
                 ", errorCode='" + errorCode + '\'' +
                 ", errorMsg='" + errorMsg + '\'' +
-                ", contentBean=" + contentBean +
+                ", errcontent=" + contentBean +
                 '}';
     }
 

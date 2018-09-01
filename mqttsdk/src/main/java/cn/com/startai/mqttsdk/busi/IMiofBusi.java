@@ -40,7 +40,16 @@ public interface IMiofBusi {
      *
      * @param bebindingid 对端 的用户id或sn
      */
+    @Deprecated
     void bind(String bebindingid, IOnCallListener listener);
+
+    /**
+     * 添加设备或好友
+     *
+     * @param bindingid   自己的userid
+     * @param bebindingid 对端 的用户id或sn
+     */
+    void bind(String bindingid, String bebindingid, IOnCallListener listener);
 
 
     /**
@@ -49,7 +58,17 @@ public interface IMiofBusi {
      * @param bebindingid 对端的用户id 或 sn
      * @param listener
      */
+    @Deprecated
     void unBind(String bebindingid, IOnCallListener listener);
+
+    /**
+     * 删除设备或好友
+     *
+     * @param bindingid   自己的userid
+     * @param bebindingid 对端的用户id 或 sn
+     * @param listener
+     */
+    void unBind(String bindingid, String bebindingid, IOnCallListener listener);
 
     /**
      * 查询绑定关系
@@ -60,7 +79,21 @@ public interface IMiofBusi {
      *             4.查询所有的好友列表
      * @return
      */
+    @Deprecated
     void getBindList(int type, IOnCallListener listener);
+
+    /**
+     * 查询绑定关系
+     *
+     * @param id   userid/sn
+     * @param type 1.查询智能设备列表
+     *             2.查询用户好友列表
+     *             3.查询用户-手机列表
+     *             4.查询所有的好友列表
+     * @return
+     */
+    void getBindList(String id, int type, IOnCallListener listener);
+
 
     /**
      * 获取手机验证码
@@ -138,6 +171,14 @@ public interface IMiofBusi {
      */
     void getUserInfo(IOnCallListener listener);
 
+    /**
+     * 查询用户信息
+     *
+     * @param userid
+     * @param listener
+     */
+    void getUserInfo(String userid, IOnCallListener listener);
+
 
     /**
      * 获取最新软件版本
@@ -156,8 +197,19 @@ public interface IMiofBusi {
      * @param newPwd   新密码
      * @param listener
      */
+    @Deprecated
     void updateUserPwd(String oldPwd, String newPwd, IOnCallListener listener);
 
+
+    /**
+     * 修改用户登录密码
+     *
+     * @param userid   userid
+     * @param oldPwd   老密码
+     * @param newPwd   新密码
+     * @param listener
+     */
+    void updateUserPwd(String userid, String oldPwd, String newPwd, IOnCallListener listener);
 
     /**
      * 请求发送邮件
@@ -171,11 +223,23 @@ public interface IMiofBusi {
     /**
      * 修改好友|设备 备注名
      *
-     * @param fid
-     * @param remark
+     * @param fid      对端 id
+     * @param remark   备注
      * @param listener
      */
+    @Deprecated
     void updateRemark(String fid, String remark, IOnCallListener listener);
+
+    /**
+     * 修改好友|设备 备注名
+     *
+     * @param userid   自己id
+     * @param fid      对端 id
+     * @param remark   备注
+     * @param listener
+     */
+    void updateRemark(String userid, String fid, String remark, IOnCallListener listener);
+
 
     /**
      * 重置手机登录密码
@@ -184,7 +248,9 @@ public interface IMiofBusi {
      * @param pwd      登录密码
      * @param listener
      */
+    @Deprecated
     void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener);
+
 
 }
 

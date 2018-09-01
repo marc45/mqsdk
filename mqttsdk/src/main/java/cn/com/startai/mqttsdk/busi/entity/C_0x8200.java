@@ -5,11 +5,11 @@ import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -36,7 +36,7 @@ public class C_0x8200 {
         if (x8200_req_msg != null) {
 
             StartaiMqttPersistent.getInstance().send(x8200_req_msg, listener);
-        }else{
+        } else {
             CallbackManager.callbackMessageSendResult(false, listener, x8200_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
         }
 
@@ -45,22 +45,18 @@ public class C_0x8200 {
     /**
      * 处理消息透传返回
      */
-    public static void m_0x8200_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8200_resp(String miof) {
+
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
 
         SLog.e(TAG, "透传消息");
-        String passContent = "";
-        String errorCode = "";
-        String errorMsg = "";
-        if (resp != null) {
-            passContent = resp.getContent();
-        }
-        if (errorMiofMsg != null) {
-            errorCode = errorMiofMsg.getContent().getErrcode();
-            errorMsg = errorMiofMsg.getContent().getErrmsg();
-        }
-        StartAI.getInstance().getPersisitnet().getEventDispatcher().onPassthroughResult(result,resp, errorCode, errorMsg, passContent);
-    }
 
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onPassthroughResult(resp);
+    }
 
 
     /**
@@ -89,6 +85,23 @@ public class C_0x8200 {
     public static class Resp extends BaseMessage {
 
         private String content;
+
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content='" + content + '\'' +
+                    '}';
+        }
 
         public Resp(String content) {
             this.content = content;

@@ -10,6 +10,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -31,9 +32,9 @@ public class C_0x8015 {
      * @param remark   备注名
      * @param listener
      */
-    public static void m_0x8015_req(String fid, String remark, IOnCallListener listener) {
+    public static void m_0x8015_req(String userid, String fid, String remark, IOnCallListener listener) {
 
-        MqttPublishRequest x8015_req_msg = MqttPublishRequestCreator.create_0x8015_req_msg(fid, remark);
+        MqttPublishRequest x8015_req_msg = MqttPublishRequestCreator.create_0x8015_req_msg(userid, fid, remark);
         if (x8015_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8015_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -47,22 +48,23 @@ public class C_0x8015 {
     /**
      * 修改备注名
      *
-     * @param result
-     * @param resp
-     * @param errorMiofMsg
+     * @param miof
      */
-    public static void m_0x8015_resp(int result, Resp resp, ErrorMiofMsg errorMiofMsg) {
+    public static void m_0x8015_resp(String miof) {
 
 
-        if (result == 1 && resp != null) {
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateRemarkResult(result, "", "", resp.getContent());
-            SLog.e(TAG, "修改备注名成功");
-        } else if (result == 0 && errorMiofMsg != null) {
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateRemarkResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), null);
-            SLog.e(TAG, "修改备注名失败");
-        } else {
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
+            return;
         }
+        if (resp.getResult() == 1) {
+
+            SLog.e(TAG, "修改备注名成功");
+        } else {
+            SLog.e(TAG, "修改备注名失败");
+        }
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateRemarkResult(resp);
 
     }
 
@@ -147,12 +149,29 @@ public class C_0x8015 {
             return content;
         }
 
+        @Override
+        public String toString() {
+            return "Resp{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", content=" + content +
+                    '}';
+        }
+
         public void setContent(ContentBean content) {
             this.content = content;
         }
 
 
-        public static class ContentBean {
+        public static class ContentBean extends BaseContentBean {
 
 
             /**
@@ -164,14 +183,26 @@ public class C_0x8015 {
             private String id;
             private String fid;
             private String remark;
+            private Req.ContentBean errcontent;
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "id='" + id + '\'' +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", id='" + id + '\'' +
                         ", fid='" + fid + '\'' +
                         ", remark='" + remark + '\'' +
+                        ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public Req.ContentBean getErrcontent() {
+                return errcontent;
+            }
+
+            public void setErrcontent(Req.ContentBean errcontent) {
+                this.errcontent = errcontent;
             }
 
             public String getId() {
@@ -201,5 +232,6 @@ public class C_0x8015 {
 
 
     }
+
 
 }

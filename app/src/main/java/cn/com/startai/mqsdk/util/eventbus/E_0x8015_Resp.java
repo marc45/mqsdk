@@ -31,7 +31,7 @@ public class E_0x8015_Resp {
                 "result=" + result +
                 ", errorCode='" + errorCode + '\'' +
                 ", errorMsg='" + errorMsg + '\'' +
-                ", contentBean=" + contentBean +
+                ", errcontent=" + contentBean +
                 '}';
     }
 
