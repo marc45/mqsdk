@@ -62,6 +62,12 @@ public class C_0x8015 {
 
             SLog.e(TAG, "修改备注名成功");
         } else {
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setId(errcontent.getId());
+            content.setFid(errcontent.getFid());
+            content.setRemark(errcontent.getRemark());
+
             SLog.e(TAG, "修改备注名失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateRemarkResult(resp);

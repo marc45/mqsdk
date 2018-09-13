@@ -3,6 +3,9 @@ package cn.com.startai.mqttsdk.utils;
 
 import android.text.TextUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by Robin on 2018/4/16.
  * qq: 419109715 彬影
@@ -10,12 +13,13 @@ import android.text.TextUtils;
 
 public class SStringUtils {
 
+    private static String TAG = "SStringUtils";
+
     /**
      * 将byte数组转换为表示16进制值的字符串， 如：byte[]{8,18}转换为：0813， 和public static byte[]
      * hexStr2ByteArr(String strIn) 互为可逆的转换过程
      *
-     * @param arrB
-     *            需要转换的byte数组
+     * @param arrB 需要转换的byte数组
      * @return 转换后的字符串
      */
     public static String byteArr2HexStr(byte[] arrB) {
@@ -61,8 +65,7 @@ public class SStringUtils {
      * 将表示16进制值的字符串转换为byte数组， 和public static String byteArr2HexStr(byte[] arrB)
      * 互为可逆的转换过程
      *
-     * @param strIn
-     *            需要转换的字符串
+     * @param strIn 需要转换的字符串
      * @return 转换后的byte数组
      * @throws NumberFormatException
      */
@@ -79,11 +82,10 @@ public class SStringUtils {
     }
 
     /**
-     *
      * byte数组转换成16进制字符数组
+     *
      * @param src
      * @return
-     *
      */
 
     public static String[] bytesToHexStrings(byte[] src) {
@@ -105,11 +107,12 @@ public class SStringUtils {
     }
 
     /**
-     *  从对象中获取整型数据
+     * 从对象中获取整型数据
+     *
      * @param obj
      * @return
      */
-    public static int getIntValueFromObject(Object obj){
+    public static int getIntValueFromObject(Object obj) {
         int status = -2;
         if (obj instanceof Double) {
             status = ((Double) (obj)).intValue();
@@ -127,7 +130,7 @@ public class SStringUtils {
      * <p>
      * Checks if a String is whitespace, empty ("") or null.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.isBlank(null)      = true
      * StringUtils.isBlank("")        = true
@@ -136,8 +139,7 @@ public class SStringUtils {
      * StringUtils.isBlank("  bob  ") = false
      * </pre>
      *
-     * @param str
-     *            the String to check, may be null
+     * @param str the String to check, may be null
      * @return <code>true</code> if the String is null, empty or whitespace
      */
     public static boolean isBlank(String str) {
@@ -157,7 +159,7 @@ public class SStringUtils {
      * <p>
      * Checks if a String is not empty (""), not null and not whitespace only.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.isNotBlank(null)      = false
      * StringUtils.isNotBlank("")        = false
@@ -166,10 +168,9 @@ public class SStringUtils {
      * StringUtils.isNotBlank("  bob  ") = true
      * </pre>
      *
-     * @param str
-     *            the String to check, may be null
+     * @param str the String to check, may be null
      * @return <code>true</code> if the String is not empty and not null and not
-     *         whitespace
+     * whitespace
      */
     public static boolean isNotBlank(String str) {
         return !TextUtils.isEmpty(str);
@@ -179,12 +180,12 @@ public class SStringUtils {
      * <p>
      * Check if a String starts with a specified prefix.
      * </p>
-     *
+     * <p>
      * <p>
      * <code>null</code>s are handled without exceptions. Two <code>null</code>
      * references are considered to be equal. The comparison is case sensitive.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.startsWith(null, null)      = true
      * StringUtils.startsWith(null, "abc")     = false
@@ -193,13 +194,11 @@ public class SStringUtils {
      * StringUtils.startsWith("ABCDEF", "abc") = false
      * </pre>
      *
-     * @see String#startsWith(String)
-     * @param str
-     *            the String to check, may be null
-     * @param prefix
-     *            the prefix to find, may be null
+     * @param str    the String to check, may be null
+     * @param prefix the prefix to find, may be null
      * @return <code>true</code> if the String starts with the prefix, case
-     *         sensitive, or both <code>null</code>
+     * sensitive, or both <code>null</code>
+     * @see String#startsWith(String)
      * @since 2.4
      */
     public static boolean startsWith(String str, String prefix) {
@@ -212,16 +211,13 @@ public class SStringUtils {
      * insensitive).
      * </p>
      *
-     * @see String#startsWith(String)
-     * @param str
-     *            the String to check, may be null
-     * @param prefix
-     *            the prefix to find, may be null
-     * @param ignoreCase
-     *            inidicates whether the compare should ignore case (case
-     *            insensitive) or not.
+     * @param str        the String to check, may be null
+     * @param prefix     the prefix to find, may be null
+     * @param ignoreCase inidicates whether the compare should ignore case (case
+     *                   insensitive) or not.
      * @return <code>true</code> if the String starts with the prefix or both
-     *         <code>null</code>
+     * <code>null</code>
+     * @see String#startsWith(String)
      */
     private static boolean startsWith(String str, String prefix, boolean ignoreCase) {
         if (str == null || prefix == null) {
@@ -237,11 +233,11 @@ public class SStringUtils {
      * <p>
      * Replaces a String with another String inside a larger String, once.
      * </p>
-     *
+     * <p>
      * <p>
      * A <code>null</code> reference passed to this method is a no-op.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.replaceOnce(null, *, *)        = null
      * StringUtils.replaceOnce("", *, *)          = ""
@@ -253,16 +249,13 @@ public class SStringUtils {
      * StringUtils.replaceOnce("aba", "a", "z")   = "zba"
      * </pre>
      *
-     * @see #replace(String text, String searchString, String replacement, int
-     *      max)
-     * @param text
-     *            text to search and replace in, may be null
-     * @param searchString
-     *            the String to search for, may be null
-     * @param replacement
-     *            the String to replace with, may be null
+     * @param text         text to search and replace in, may be null
+     * @param searchString the String to search for, may be null
+     * @param replacement  the String to replace with, may be null
      * @return the text with any replacements processed, <code>null</code> if
-     *         null String input
+     * null String input
+     * @see #replace(String text, String searchString, String replacement, int
+     * max)
      */
     public static String replaceOnce(String text, String searchString, String replacement) {
         return replace(text, searchString, replacement, 1);
@@ -272,7 +265,7 @@ public class SStringUtils {
      * <p>
      * Checks if a String is empty ("") or null.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.isEmpty(null)      = true
      * StringUtils.isEmpty("")        = true
@@ -280,14 +273,13 @@ public class SStringUtils {
      * StringUtils.isEmpty("bob")     = false
      * StringUtils.isEmpty("  bob  ") = false
      * </pre>
-     *
+     * <p>
      * <p>
      * NOTE: This method changed in Lang version 2.0. It no longer trims the
      * String. That functionality is available in isBlank().
      * </p>
      *
-     * @param str
-     *            the String to check, may be null
+     * @param str the String to check, may be null
      * @return <code>true</code> if the String is empty or null
      */
     public static boolean isEmpty(String str) {
@@ -299,11 +291,11 @@ public class SStringUtils {
      * Replaces a String with another String inside a larger String, for the
      * first <code>max</code> values of the search String.
      * </p>
-     *
+     * <p>
      * <p>
      * A <code>null</code> reference passed to this method is a no-op.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.replace(null, *, *, *)         = null
      * StringUtils.replace("", *, *, *)           = ""
@@ -319,17 +311,13 @@ public class SStringUtils {
      * StringUtils.replace("abaa", "a", "z", -1)  = "zbzz"
      * </pre>
      *
-     * @param text
-     *            text to search and replace in, may be null
-     * @param searchString
-     *            the String to search for, may be null
-     * @param replacement
-     *            the String to replace it with, may be null
-     * @param max
-     *            maximum number of values to replace, or <code>-1</code> if no
-     *            maximum
+     * @param text         text to search and replace in, may be null
+     * @param searchString the String to search for, may be null
+     * @param replacement  the String to replace it with, may be null
+     * @param max          maximum number of values to replace, or <code>-1</code> if no
+     *                     maximum
      * @return the text with any replacements processed, <code>null</code> if
-     *         null String input
+     * null String input
      */
     public static String replace(String text, String searchString, String replacement, int max) {
         if (isEmpty(text) || isEmpty(searchString) || replacement == null || max == 0) {
@@ -362,12 +350,12 @@ public class SStringUtils {
      * Checks if the String contains only unicode digits. A decimal point is not
      * a unicode digit and returns false.
      * </p>
-     *
+     * <p>
      * <p>
      * <code>null</code> will return <code>false</code>. An empty String
      * (length()=0) will return <code>true</code>.
      * </p>
-     *
+     * <p>
      * <pre>
      * StringUtils.isNumeric(null)   = false
      * StringUtils.isNumeric("")     = true
@@ -379,8 +367,7 @@ public class SStringUtils {
      * StringUtils.isNumeric("12.3") = false
      * </pre>
      *
-     * @param str
-     *            the String to check, may be null
+     * @param str the String to check, may be null
      * @return <code>true</code> if only contains digits, and is non-null
      */
     public static boolean isNumeric(String str) {
@@ -423,6 +410,43 @@ public class SStringUtils {
         return false;
     }
 
+
+    static Pattern p = null;
+
+    /**
+     * 判断字符串是否是乱码
+     *
+     * @param strName 字符串
+     * @return 是否是乱码
+     */
+    public static boolean isMessyCode(String strName) {
+        if (p == null) {
+            SLog.d(TAG, "before compile");
+            p = Pattern.compile("\\s*|t*|r*|n*");
+            SLog.d(TAG, "after compile");
+        }
+        Matcher m = p.matcher(strName);
+        String after = m.replaceAll("");
+        String temp = after.replaceAll("\\p{P}", "");
+        char[] ch = temp.trim().toCharArray();
+        float chLength = ch.length;
+        float count = 0;
+        for (int i = 0; i < ch.length; i++) {
+            char c = ch[i];
+            if (!Character.isLetterOrDigit(c)) {
+                if (!isChinese(c)) {
+                    count = count + 1;
+                }
+            }
+        }
+        float result = count / chLength;
+        if (result > 0.4) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 
 
 }

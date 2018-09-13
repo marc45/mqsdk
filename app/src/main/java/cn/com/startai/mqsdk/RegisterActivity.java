@@ -1,28 +1,18 @@
 package cn.com.startai.mqsdk;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import cn.com.startai.mqsdk.listener.MySendListener;
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqsdk.util.TimeCount;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8017_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8021_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8022_Resp;
 import cn.com.startai.mqttsdk.StartAI;
-import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
-import cn.com.startai.mqttsdk.event.AOnStartaiMessageArriveListener;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
-import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 
 public class RegisterActivity extends BaseActivity implements View.OnClickListener {
 
@@ -89,7 +79,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         if (i == R.id.bt_register_getidentify) {
             timeCount.start();
 
-            StartAI.getInstance().getBaseBusiManager().getIdentifyCode(mobile, 3, onCallListener);
+            StartAI.getInstance().getBaseBusiManager().getIdentifyCode(mobile, Type.GetIdentifyCode.REGISTER, onCallListener);
 
 
         } else if (i == R.id.bt_register_register) {
@@ -100,8 +90,8 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
 
         } else if (i == R.id.bt_register_check_identify) {
             String identify = etIdentify.getText().toString();
-            int type = 3;
-            StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, identify, type, onCallListener);
+
+            StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, identify, Type.CheckIdentifyCode.REGISTER, onCallListener);
 
 
         }
@@ -112,46 +102,32 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onRegisterResult(C_0x8017.Resp resp) {
         TAndL.TL(getApplicationContext(), "注册结果 result = " + resp);
-
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
+            //注册成功
+        } else {
+            //注册失败
+        }
     }
 
-    @Override
-    public void onRegisterResult(int result, String errorCode, String errorMsg, C_0x8017.Resp.ContentBean resp) {
-        super.onRegisterResult(result, errorCode, errorMsg, resp);
-        TAndL.TL(getApplicationContext(), "注册结果 result = " + result + " errorMsg = " + errorMsg + " resp = " + resp);
-    }
 
 
     @Override
     public void onGetIdentifyCodeResult(C_0x8021.Resp resp) {
         TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp);
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
+            //获取验证码成功
+        } else {
+            //获取验证码失败
+        }
     }
 
-    @Override
-    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg) {
-        super.onGetIdentifyCodeResult(result, errorCode, errorMsg);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg);
-    }
 
-    @Override
-    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg, C_0x8021.Resp.ContentBean contentBean) {
-        super.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
 
-    }
 
 
     @Override
     public void onCheckIdetifyResult(C_0x8022.Resp resp) {
         TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + resp);
-    }
-
-    @Override
-    public void onCheckIdetifyResult(int result, String errorCode, String errorMsg) {
-        super.onCheckIdetifyResult(result, errorCode, errorMsg);
-
-        TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + result + " errorMsg = " + errorMsg);
-
     }
 
 

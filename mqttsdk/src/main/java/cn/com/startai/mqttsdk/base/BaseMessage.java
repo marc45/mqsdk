@@ -11,6 +11,10 @@ import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 
 public class BaseMessage {
 
+    public static final int RESULT_SUCCESS = 1;
+    public static final int RESULT_ERROR = 0;
+    public static final int RESULT_STATUS = -1;
+
     protected String msgcw;
     protected String msgtype;
     protected String fromid;
@@ -21,7 +25,6 @@ public class BaseMessage {
     protected String msgid = null;
     protected String m_ver = MqttConfigure.m_ver;
     protected Integer result = 0;
-
 
 
     public String getMsgcw() {

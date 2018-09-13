@@ -24,6 +24,8 @@ public class UserBusi {
         UserBean currUserFromDb = getCurrUserFromDb();
         if (currUserFromDb != null) {
             C_0x8018.Resp.ContentBean contentBean = new C_0x8018.Resp.ContentBean(currUserFromDb.getUserid(), currUserFromDb.getToken(), currUserFromDb.getExpire_in(), currUserFromDb.getUName(), currUserFromDb.getType());
+            //清空sp保存的user
+            SPController.setUserInfo(null);
             return contentBean;
         }
 
@@ -56,7 +58,6 @@ public class UserBusi {
         return userInfo;
 
     }
-
 
 
     public void resetDBUser() {

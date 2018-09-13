@@ -56,7 +56,7 @@ public class UpdateRemarkActivity extends BaseActivity {
     }
 
     @Override
-    public void onUpdateRemarkResult( C_0x8015.Resp resp) {
+    public void onUpdateRemarkResult(C_0x8015.Resp resp) {
 
         if (resp.getResult() == 1) {
             if (resp.getContent().getFid().equals(device.getId())) {
@@ -68,23 +68,6 @@ public class UpdateRemarkActivity extends BaseActivity {
             TAndL.TL(getApplicationContext(), "备注修改失败 " + resp);
         }
 
-
-    }
-
-    @Override
-    public void onUpdateRemarkResult(int result, String errorCode, String errorMsg, C_0x8015.Resp.ContentBean contentBean) {
-        super.onUpdateRemarkResult(result, errorCode, errorMsg, contentBean);
-
-
-        if (result == 1) {
-            if (contentBean.getFid().equals(device.getId())) {
-                TAndL.TL(getApplicationContext(), "备注修改成功 " + contentBean);
-                etRemark.setText(contentBean.getRemark());
-                finish();
-            }
-        } else {
-            TAndL.TL(getApplicationContext(), "备注修改失败 " + errorMsg);
-        }
 
     }
 
@@ -102,7 +85,9 @@ public class UpdateRemarkActivity extends BaseActivity {
         if (id == R.id.action_settings) {
             String remark = etRemark.getText().toString();
 
-            StartAI.getInstance().getBaseBusiManager().updateRemark(device.getId(), remark, onCallListener);
+            StartAI.getInstance().getBaseBusiManager().updateRemark( device.getId(), remark, onCallListener);
+
+
 
             return true;
 

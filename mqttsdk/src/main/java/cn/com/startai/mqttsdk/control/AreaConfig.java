@@ -24,8 +24,8 @@ public class AreaConfig {
     private static String TAG = "AreaConfig";
 
     //{"as":"AS4134 No.31,Jin-rong Street","city":"Guangzhou","country":"China","countryCode":"CN","isp":"China Telecom Guangdong","lat":23.1167,"lon":113.25,"org":"China Telecom","query":"59.42.207.3","region":"GD","regionName":"Guangdong","status":"success","timezone":"Asia/Shanghai","zip":""}
-      private static  String url = "http://ip-api.com/json/";
-//    static String url = "http://192.168.1.147:8080/service/getIp";
+    private static String url = "http://ip-api.com/json/";
+//    private static String url = "http://192.168.1.206:8079/service/getipinfo";
 //        String url = "http://jinjian.mynatapp.cc/service/getIp";
 
 
@@ -68,7 +68,6 @@ public class AreaConfig {
             areaLocation = SJsonUtils.fromJson(strber.toString(), AreaLocation.class);
 
 
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -92,7 +91,7 @@ public class AreaConfig {
 
         }
 
-        if(areaLocation!=null){
+        if (areaLocation != null) {
             SPController.setLocation(areaLocation);
         }
         return areaLocation;

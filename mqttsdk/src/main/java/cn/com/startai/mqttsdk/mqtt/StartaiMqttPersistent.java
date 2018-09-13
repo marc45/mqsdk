@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import javax.net.ssl.SNIHostName;
 
 import cn.com.startai.mqttsdk.IPersisitentNet;
 import cn.com.startai.mqttsdk.PersistentConnectState;
@@ -60,6 +63,7 @@ import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+import cn.com.startai.mqttsdk.utils.SStringUtils;
 import cn.com.startai.mqttsdk.utils.task.CheckActiviteTask;
 import cn.com.startai.mqttsdk.utils.task.CheckAreNodeTask;
 import cn.com.startai.mqttsdk.utils.task.CheckUnCompleteMsgTask;
@@ -120,7 +124,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
     }
 
 
-    private Handler mainHandler = new Handler();
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public Handler getMainHandler() {
         return mainHandler;
@@ -273,7 +277,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
         if (connectStatus != PersistentConnectState.CONNECTED) {
             SLog.e(TAG, "终端未连接，消息发送失败");
-            CallbackManager.callbackMessageSendResult(false, listener, request, new StartaiError(StartaiError.ERROR_SEND_NET));
+            CallbackManager.callbackMessageSendResult(false, listener, request, new StartaiError(StartaiError.ERROR_SEND_CLIENT_DISCONNECT));
 
             return;
         }
@@ -302,19 +306,18 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             StartaiMessage message = (StartaiMessage) request.message;
 
 
-            if (TextUtils.isEmpty(message.getMsgtype())
-                    || TextUtils.isEmpty(message.getMsgcw())) {
-                SLog.e(TAG, "msgtype or msgcw is empty");
-                return;
-            }
-
-
             boolean isActivite = SPController.getIsActivite();
             if (!isActivite && !message.getMsgtype().equals("0x8000")
                     && !message.getMsgtype().equals("0x8001")) {
 
                 SLog.e(TAG, "终端未激活，消息发送失败");
                 CallbackManager.callbackMessageSendResult(false, listener, request, new StartaiError(StartaiError.ERROR_SEND_NO_ACTIVITE));
+                return;
+            }
+
+            if (TextUtils.isEmpty(message.getMsgtype())
+                    || TextUtils.isEmpty(message.getMsgcw())) {
+                SLog.e(TAG, "msgtype or msgcw is empty");
                 return;
             }
 
@@ -338,19 +341,6 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                 }
             }
 
-//            if (MqttConfigure.apptype.contains("/controll/")
-//                    && !message.getMsgtype().startsWith("0x80")
-//                    && !message.getMsgtype().startsWith("0x99")
-//                    && !message.getMsgtype().startsWith("0x98")
-//                    && !message.getMsgtype().startsWith("0x82")
-//                    && !message.getMsgtype().startsWith("0x83")
-//                    && (currUser == null || TextUtils.isEmpty(currUser.getUserid()))) {
-//                StartaiError startaiError = new StartaiError(StartaiError.ERROR_SEND_NO_LOGIN);
-//                SLog.e(TAG, startaiError.getErrorMsg());
-//                CallbackManager.callbackMessageSendResult(false, listener, request, startaiError);
-//                return;
-//            }
-
             if (TextUtils.isEmpty(message.getToid())) {
 
                 message.setToid(TopicConsts.CLOUD_TOID);
@@ -358,6 +348,9 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
             }
 
+
+            message.setM_ver(MqttConfigure.m_ver);
+            message.setTs(System.currentTimeMillis());
 
             msgSend = SJsonUtils.toJson(message);
 
@@ -367,7 +360,6 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
             msgSend = (String) request.message;
 
-
         }
 
         try {
@@ -376,15 +368,23 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             mqttMsg.setQos(qos);
             mqttMsg.setRetained(request.retain);
 
-            SLog.d(TAG, "public before");
 
             final String finalTopic = topic;
+            if (SStringUtils.isMessyCode(finalTopic)) {
+                SLog.e(TAG, "主题包含乱码");
+                CallbackManager.callbackMessageSendResult(false, listener, request, new StartaiError(StartaiError.ERROR_SEND_MESSYCODE));
+                return;
+            }
+
+            SLog.d(TAG, "public before");
+
             client.publish(topic, mqttMsg, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
 
                     SLog.d(TAG, "topic = " + finalTopic + "\nqos = " + mqttMsg.getQos() + "\nretain = " + mqttMsg.isRetained() + "\npublish " + new String(mqttMsg.getPayload()));
                     CallbackManager.callbackMessageSendResult(true, listener, request, null);
+
                     if (request.message instanceof StartaiMessage) {
                         StartaiMessage m = (StartaiMessage) request.message;
                         MsgWillSendBean msgWillSendByMsgtype = SDBmanager.getInstance().getMsgWillSendByMsgtype(m.getMsgtype());
@@ -466,9 +466,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
     private boolean initMqttConfiguration(MqttInitParam pa) {
         if (pa == null
                 || TextUtils.isEmpty(pa.appid)
-                || TextUtils.isEmpty(pa.domain)
-                || TextUtils.isEmpty(pa.m_ver)
-                || TextUtils.isEmpty(pa.apptype)) {
+                ) {
             SLog.e(TAG, "Error of initialization parameter");
             return false;
         }
@@ -479,7 +477,9 @@ public class StartaiMqttPersistent implements IPersisitentNet {
         MqttConfigure.appid = pa.appid;
         MqttConfigure.apptype = pa.apptype;
         MqttConfigure.domain = pa.domain;
-        MqttConfigure.m_ver = pa.m_ver;
+        if (!TextUtils.isEmpty(pa.m_ver)) {
+            MqttConfigure.m_ver = pa.m_ver;
+        }
 
 
         return true;
@@ -504,20 +504,20 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             @Override
             public void run() {
 
-//                if (!isAvailableNet()) {
-//                    connectStatus = PersistentConnectState.DISCONNECTED;
-//                    SLog.e(TAG, "network is not available");
-//                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onDisconnect(StartaiError.ERROR_LOST_NET_UNVALAIBLE);
-//                    return;
-//                }
+                if (!isAvailableNet()) {
+                    connectStatus = PersistentConnectState.DISCONNECTED;
+                    SLog.e(TAG, "network is not available");
+                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onDisconnect(StartaiError.ERROR_LOST_NET_UNVALAIBLE);
+                    return;
+                }
 
-//                boolean realConnectToIntnet = isRealConnectToIntnet();
-//                if (!realConnectToIntnet) {
-//                    SLog.e(TAG, "没有真正可用的网络，3秒后重试");
-//                    mConnectHandler.postDelayed(this, 3000);
-//                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onDisconnect(StartaiError.ERROR_LOST_NET_UNVALAIBLE);
-//                    return;
-//                }
+                boolean realConnectToIntnet = isRealConnectToIntnet();
+                if (!realConnectToIntnet) {
+                    SLog.e(TAG, "没有真正可用的网络，3秒后重试");
+                    mConnectHandler.postDelayed(this, 3000);
+                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onDisconnect(StartaiError.ERROR_LOST_NET_UNVALAIBLE);
+                    return;
+                }
 
 
                 if (connectStatus != PersistentConnectState.CONNECTING && connectStatus != PersistentConnectState.CONNECTED) {
@@ -526,7 +526,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
                     //获取位置信息
                     String firstBroke = getFirstBroke();
-//                    String firstBroke = "ssl://192.168.1.189:8883";
+//                    String firstBroke = "ssl://cn2.startai.net:8883";
                     if (TextUtils.isEmpty(firstBroke)) {
                         SLog.e(TAG, "get firstBroke failed");
                         connectStatus = PersistentConnectState.DISCONNECTED;
@@ -618,18 +618,19 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                         if (returnCount == null) {
                             returnCount = 0;
                         }
-
-                        if (returnCount % 5 == 0) {//每五次回调一次连接失败
+                        returnCount++;
+                        if (returnCount % 3 == 0) {//每3次回调一次连接失败
                             if (0 == reasonCode) {
-                                StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectFailed(e.getReasonCode(), "Host is unresolved  " + host);
+                                StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectFailed(StartaiError.ERROR_CONN_NET, "Host is unresolved  " + host);
                             } else {
                                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectFailed(e.getReasonCode(), e.getMessage() + e.getLocalizedMessage());
                             }
 
-                            //连接五次失败 尝试切换节点连接
+                            //连接3次失败 尝试切换节点连接
                             if (returnCount != 0) {
-
+                                SLog.d(TAG, "连接3次失败 尝试切换节点连接");
                                 if (GlobalVariable.areaNodeBean == null) {
+                                    SLog.d(TAG, "未获取过区域节点的情况");
                                     //未获取过区域节点的情况
                                     //如果连接五次失败并且没有获取过区域节点信息
                                     // 换个默认节点连接
@@ -641,14 +642,14 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                                 } else {
                                     //已经获取过区域节点的情况'
                                     //权重 直接减1
-                                    SLog.d(TAG, "手动设置延时 5000 ms");
-                                    pingListener.calculationWeight(5000, getInstance());
+                                    SLog.d(TAG, "手动设置延时 10000 ms");
+                                    pingListener.calculationWeight(10 * 1000, getInstance());
                                 }
                             }
                         }
 
                         sleep(3000);
-                        returnCount++;
+
                         SLog.d(TAG, "hostIndex = " + hostIndex);
                         hostMaps.put(hostIndex, returnCount);
                         SLog.e(TAG, "连接失败,准备重试 " + returnCount);
@@ -699,7 +700,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             long peroid = (System.currentTimeMillis() - time) / 1000;
             long diff = peroid - expire_in;
             SLog.d(TAG, "expire_in = " + expire_in + " peroid " + peroid);
-            if (diff > 0) {
+            if (expire_in > 0 && diff > 0) {
                 SLog.d(TAG, "账号登录状态已过期，需要重新登录");
                 userBusi.resetDBUser();
                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onTokenExpire(currUser);
@@ -985,10 +986,23 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                 public void run() {
                     try {
 
-
                         String msg = new String(mqttMessage.getPayload(), Charset.forName("utf-8"));
                         SLog.d(TAG, "messageArrived topic = " + topic + "\nqos = " + mqttMessage.getQos() + "\nretain = " + mqttMessage.isRetained() + "\n msg = " + msg);
 
+                        if (topic.length() > 64) {
+
+                            C_0x8018.Resp.ContentBean currUser = StartAI.getInstance().getCommonBusiManager().getCurrUser();
+                            if (currUser != null) {
+                                String[] split = topic.split("/");
+
+                                if (split.length > 1 && currUser.getUserid().equals(split[split.length - 2])) {
+                                    if (split[split.length - 1].length() > 30 && !split[split.length - 1].equals(MqttConfigure.getSn(context))) {
+                                        SLog.d(TAG, "不属于自己的消息，不处理");
+                                    }
+                                }
+
+                            }
+                        }
                         getBusiHandler().handMessage(topic, msg);
 
                     } catch (Exception e) {
@@ -1043,6 +1057,10 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             //首次登录
             //没有获取过节点信息，需要去定位获取位置信息 优先连接当地节点（固定几个节点中选择）
             String result = "";
+            if (hostIndex != 0) {
+                //是由于连接一个url很多次未成功，考虑切换url进行连接，固不需要定位
+                return defaultHost;
+            }
             SLog.d(TAG, "没有获取过节点信息，需要去定位来匹配本地节点");
             areaLocation = AreaConfig.getArea();
             if (areaLocation == null) {

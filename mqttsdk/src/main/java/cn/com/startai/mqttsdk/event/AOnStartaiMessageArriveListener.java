@@ -118,11 +118,9 @@ public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriv
 
     /**
      * 获取绑定关系列表回调
-     *
-     * @param id       自己的id
-     * @param bindList 绑定列表
      */
-    public void onGetBindListResult(int result, C_0x8005.RespErr resperr, String id, ArrayList<C_0x8005.Resp.ContentBean> bindList) {
+    public void onGetBindListResult(C_0x8005.Response response) {
+
     }
 
     /**

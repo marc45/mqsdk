@@ -3,24 +3,18 @@ package cn.com.startai.mqsdk;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
-import android.util.TimeUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.time.temporal.ValueRange;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.TimerTask;
 
 import cn.com.startai.mqsdk.busi.C_0x8101;
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8001_Resp_;
 import cn.com.startai.mqsdk.util.eventbus.E_0x8101_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8200_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
@@ -75,8 +69,8 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
     }
 
     @Override
-    public void onPassthroughResult(int result, C_0x8200.Resp resp, String errorCode, String errorMsg, String dataString, byte[] dataByteArray) {
-        super.onPassthroughResult(result, resp, errorCode, errorMsg, dataString, dataByteArray);
+    public void onPassthroughResult(C_0x8200.Resp resp, String dataString, byte[] dataByteArray) {
+        super.onPassthroughResult(resp, dataString, dataByteArray);
         if (device != null) {
             String id = device.getId();
             if (resp != null) {
@@ -92,6 +86,8 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
         }
 
     }
+
+
 
 
     private void apendLog(String dataString) {
@@ -121,12 +117,7 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
         TAndL.TL(getApplicationContext(), "代激活结果 result = " + resp);
     }
 
-    @Override
-    public void onHardwareActivateResult(int result, String errorCode, String errorMsg, C_0x8001.Resp.ContentBean contentBean) {
-        super.onHardwareActivateResult(result, errorCode, errorMsg, contentBean);
 
-        TAndL.TL(getApplicationContext(), "代激活结果 result = " + result + " errorMsg = " + errorMsg + " contentBean = " + contentBean);
-    }
 
 
     @Override
@@ -212,6 +203,10 @@ public class DeviceControlActivity extends BaseActivity implements View.OnClickL
                 STimerUtil.close("etPeroid");
                 String hexStr = etHexStr.getText().toString();
                 StartAI.getInstance().getBaseBusiManager().passthrough(device.getId(), hexStr, lis);
+
+                byte[] bytes =new byte[]{00,11,22,33,44};
+                StartAI.getInstance().getBaseBusiManager().passthrough(device.getId(), bytes, lis);
+
             } else {
                 STimerUtil.schedule("etPeroid", new TimerTask() {
                     @Override

@@ -1,7 +1,6 @@
 package cn.com.startai.mqsdk;
 
 import android.graphics.Paint;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -10,16 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8017_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8023_Resp;
 import cn.com.startai.mqttsdk.StartAI;
-import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
-import cn.com.startai.mqttsdk.event.AOnStartaiMessageArriveListener;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
-import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 
 public class RegisterEmailActivity extends BaseActivity {
 
@@ -59,11 +51,7 @@ public class RegisterEmailActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onRegisterResult(int result, String errorCode, String errorMsg, C_0x8017.Resp.ContentBean resp) {
-        super.onRegisterResult(result, errorCode, errorMsg, resp);
-        TAndL.TL(getApplicationContext(), "注册结果 result = " + result + " errorMsg = " + errorMsg + " resp = " + resp);
-    }
+
 
 
     @Override
@@ -78,19 +66,6 @@ public class RegisterEmailActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onSendEmailResult(int result, String errorCode, String errorMsg, C_0x8023.Resp.ContentBean contentBean) {
-        super.onSendEmailResult(result, errorCode, errorMsg, contentBean);
-
-
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "邮件发送成功 " + contentBean);
-        } else {
-
-            TAndL.TL(getApplicationContext(), "邮件发送失败 " + errorMsg);
-        }
-
-    }
 
 
     private void initListener() {

@@ -33,6 +33,7 @@ import cn.com.startai.mqsdk.util.eventbus.E_Conn_Failed;
 import cn.com.startai.mqsdk.util.eventbus.E_Conn_Success;
 import cn.com.startai.mqsdk.util.permission.DialogHelper;
 import cn.com.startai.mqsdk.util.zxing.ScanActivity;
+import cn.com.startai.mqttsdk.PersistentConnectState;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8004;
@@ -186,9 +187,12 @@ public class HomeActivity extends BaseActivity {
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int i) {
 
-//                                                        StartAI.getInstance().getBaseBusiManager().unBind(item.getId(), onCallListener);
+//
                                                         C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
-                                                        StartAI.getInstance().getBaseBusiManager().unBind(currUser.getUserid(), item.getId(), onCallListener);
+
+
+                                                        StartAI.getInstance().getBaseBusiManager().unBind(item.getId(), onCallListener);
+
 
                                                     }
                                                 })
@@ -220,39 +224,18 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void onBindResult(int result, String errorCode, String errorMsg, String id, C_0x8002.Resp.ContentBean.BebindingBean bebinding) {
-        super.onBindResult(result, errorCode, errorMsg, id, bebinding);
-        TAndL.TL(getApplicationContext(), "添加结果 result = " + result + " errMsg = " + errorMsg + " id = " + id + " bebinding = " + bebinding);
-        if (result == 1) {
-            StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
-        }
-    }
 
     @Override
-    public void onGetBindListResult(int result, C_0x8005.RespErr respErr, String id, ArrayList<C_0x8005.Resp.ContentBean> bindList) {
-        super.onGetBindListResult(result, respErr, id, bindList);
+    public void onGetBindListResult(C_0x8005.Response response) {
+        super.onGetBindListResult(response);
+        TAndL.TL(getApplicationContext(), "获取好友列表 结果" + response.getResult() + " " + response);
+        if (response.getResult() == 1) {
 
-        TAndL.TL(getApplicationContext(), "获取好友列表 结果" + " result = " + result + " respErr = " + respErr + " id = " + id + " bindList = " + bindList);
-        if (result == 1) {
-
-            mAdapter.setList(bindList);
+            mAdapter.setList(response.getResp());
             mAdapter.notifyDataSetChanged();
         }
-
     }
 
-    @Override
-    public void onGetBindListResult(int result, String errorCode, String errorMsg, String id, ArrayList<C_0x8005.Resp.ContentBean> bindList) {
-        super.onGetBindListResult(result, errorCode, errorMsg, id, bindList);
-
-        TAndL.TL(getApplicationContext(), "获取好友列表 结果" + " result = " + result + " errMsg = " + errorMsg + " bindlist = " + bindList);
-        if (result == 1) {
-            mAdapter.setList(bindList);
-            mAdapter.notifyDataSetChanged();
-        }
-
-    }
 
     @Override
     public void onDeviceConnectStatusChange(String userid, int status, String sn) {
@@ -281,19 +264,6 @@ public class HomeActivity extends BaseActivity {
         TAndL.TL(getApplicationContext(), "删除结果 " + resp);
 
         if (resp.getResult() == 1) {
-            StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
-        }
-
-    }
-
-    @Override
-    public void onUnBindResult(int result, String errorCode, String errorMsg, String id, String beUnbindid) {
-        super.onUnBindResult(result, errorCode, errorMsg, id, beUnbindid);
-
-
-        TAndL.TL(getApplicationContext(), "删除结果 " + result + " errmsg = " + errorMsg + " id = " + id + " beunbindid = " + beUnbindid);
-
-        if (result == 1) {
             StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
         }
 
@@ -435,6 +405,7 @@ public class HomeActivity extends BaseActivity {
                                     toScanBarCode();
                                     break;
                                 case 1:
+
 //                                    TAndL.TL(getApplicationContext(), "开发中...");
 
                                     startActivity(new Intent(HomeActivity.this, LanDeviceFindActivity.class));
@@ -495,12 +466,9 @@ public class HomeActivity extends BaseActivity {
 
         } else if (id == R.id.menu_refresh) {
 
-            C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
 
-            if (currUser != null) {
+            StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
 
-                StartAI.getInstance().getBaseBusiManager().getBindList(currUser.getUserid(), 1, onCallListener);
-            }
 
         }
 
@@ -517,9 +485,14 @@ public class HomeActivity extends BaseActivity {
         TAndL.L("connectState = " + connectStatus);
         if (connectStatus) {
             tvConnect.setVisibility(View.GONE);
-            StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
+//            StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
         } else {
-            tvConnect.setVisibility(View.VISIBLE);
+            if (StartAI.getInstance().getPersisitnet().getConnectState() == PersistentConnectState.CONNECTED) {
+                tvConnect.setVisibility(View.GONE);
+            } else {
+                tvConnect.setVisibility(View.VISIBLE);
+
+            }
         }
     }
 }

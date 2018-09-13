@@ -6,6 +6,8 @@ package cn.com.startai.mqttsdk.base;
  */
 
 public class StartaiError {
+
+
     private int errorCode;
     private String errorMsg;
 
@@ -55,6 +57,7 @@ public class StartaiError {
     public static final int ERROR_SEND_NO_ACTIVITE = 5007;
     public static final int ERROR_SEND_PARAM_INVALIBLE = 5008;
     public static final int ERROR_SEND_NO_FID = 5009;
+    public static final int ERROR_SEND_MESSYCODE = 5010;
 
 
     public static final int ERROR_LOST_SAME_CLIENTID = 6001;//帐号在别处登录
@@ -103,6 +106,11 @@ public class StartaiError {
 
                 errorMsg = "消息发送失败，参数非法";
                 break;
+            case ERROR_SEND_MESSYCODE:
+
+                errorMsg = "消息发送失败，发送主题中包含乱码";
+                break;
+
             case ERROR_LOST_NET_UNVALAIBLE:
                 errorMsg = "连接断开，网络不可用";
                 break;
@@ -121,7 +129,7 @@ public class StartaiError {
                 break;
             case ERROR_SEND_CLIENT_DISCONNECT:
 
-                errorMsg = "消息发送失败，发送失败，未连接";
+                errorMsg = "消息发送失败，未连接";
                 break;
             case ERROR_CONN_SERVER:
                 errorMsg = "连接失败，服务器异常";

@@ -59,6 +59,10 @@ public class C_0x8023 {
 
             SLog.e(TAG, "请求发送邮件成功");
         } else {
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setType(errcontent.getType());
+            content.setEmail(errcontent.getEmail());
 
             SLog.e(TAG, "请求发送邮件失败");
         }

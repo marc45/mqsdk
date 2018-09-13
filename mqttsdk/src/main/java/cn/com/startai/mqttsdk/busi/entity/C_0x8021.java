@@ -9,6 +9,7 @@ import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
@@ -27,6 +28,8 @@ public class C_0x8021 {
 
     private static final String TAG = C_0x8021.class.getSimpleName();
     private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
+
+
 
     /**
      * 获取验证码
@@ -74,6 +77,12 @@ public class C_0x8021 {
 
             SLog.e(TAG, "获取验证码成功");
         } else {
+
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setType(errcontent.getType());
+            content.setMobile(errcontent.getMobile());
+
             SLog.e(TAG, "获取验证码失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetIdentifyResult(resp);

@@ -1,16 +1,15 @@
 package cn.com.startai.mqsdk;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8023_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 
 public class ForgetEmailActivity extends BaseActivity {
 
@@ -44,7 +43,7 @@ public class ForgetEmailActivity extends BaseActivity {
     @Override
     public void onSendEmailResult(  C_0x8023.Resp resp) {
 
-        if (resp.getResult() == 1) {
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
             TAndL.TL(getApplicationContext(), "邮件发送成功 " + resp);
         } else {
 
@@ -53,19 +52,7 @@ public class ForgetEmailActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onSendEmailResult(int result, String errorCode, String errorMsg, C_0x8023.Resp.ContentBean contentBean) {
-        super.onSendEmailResult(result, errorCode, errorMsg, contentBean);
 
-
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "邮件发送成功 " + contentBean);
-        } else {
-
-            TAndL.TL(getApplicationContext(), "邮件发送失败 " + errorMsg);
-        }
-
-    }
 
     private void initListener() {
 
@@ -75,7 +62,7 @@ public class ForgetEmailActivity extends BaseActivity {
 
                 String email = etEmail.getText().toString();
 
-                StartAI.getInstance().getBaseBusiManager().sendEmail(email, 2, onCallListener);
+                StartAI.getInstance().getBaseBusiManager().sendEmail(email, Type.SendEmail.FORGET_PWD, onCallListener);
 
             }
         });

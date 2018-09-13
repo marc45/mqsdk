@@ -52,6 +52,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         setSupportActionBar(toolbar);
 
 
+
+
         initView();
         initListener();
         checkSdPermission();
@@ -214,7 +216,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     public void onLoginResult( C_0x8018.Resp resp) {
 
-        if (resp.getResult() == 1) {
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
             TAndL.TL(getApplicationContext(), "登录成功 " + resp);
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             finish();
@@ -222,22 +224,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             TAndL.TL(getApplicationContext(), "登录失败 " + resp);
         }
 
-    }
 
 
-    @Override
-    public void onLoginResult(int result, String errorCode, String errorMsg, C_0x8018.Resp.ContentBean loginInfo) {
-        super.onLoginResult(result, errorCode, errorMsg, loginInfo);
-
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "登录成功 " + loginInfo);
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-            finish();
-        } else if (result == 0) {
-            TAndL.TL(getApplicationContext(), "登录失败 " + errorMsg);
-        }
 
     }
+
+
+
 
 
 }

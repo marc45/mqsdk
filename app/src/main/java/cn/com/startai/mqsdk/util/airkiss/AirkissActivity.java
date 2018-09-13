@@ -29,6 +29,7 @@ import com.tencent.mm.plugin.exdevice.jni.Java2CExDevice;
 import java.net.InetAddress;
 import java.util.List;
 
+import cn.com.startai.airkisssender.StartaiAirkissManager;
 import cn.com.startai.mqsdk.R;
 import cn.com.startai.mqsdk.util.AirkissHelper;
 import cn.com.startai.mqsdk.util.TAndL;
@@ -48,7 +49,6 @@ public class AirkissActivity extends AppCompatActivity {
     private Button btSend;
     private Button btCancel;
 
-    //    private Handler mHandler;
     private long t;
     private TextView tvLog;
 
@@ -76,33 +76,23 @@ public class AirkissActivity extends AppCompatActivity {
         tvLog = findViewById(R.id.tv_log);
         tvLog.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-//        mHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
-//            @Override
-//            public boolean handleMessage(Message msg) {
-//
-//                Log.i(TAG, "what = " + msg.what + " arg1 = " + msg.arg1 + " arg2 = " + msg.arg2);
-//
-//                switch (msg.what) {
-//                    case 1:
-//
-//                        if (msg.arg1 == 0) {
-//                            tvLog.append("\n配置成功 用时 " + ((System.currentTimeMillis() - t) / 1000) + " s");
-//                        } else {
-//                            int errorCode = msg.arg2;
-//                            tvLog.append("\n配置失败 errorCode = " + errorCode);
-//                            Java2CExDevice.stopAirKiss();
-//                        }
-//
-//                        break;
-//
-//                    default:
-//                        break;
-//                }
-//
-//                return false;
-//            }
-//        });
-//        C2JavaExDevice.getInstance().setHandler(mHandler);
+
+
+        StartaiAirkissManager.getInstance().setAirKissListener(new C2JavaExDevice.OnAirKissListener() {
+            @Override
+            public void onAirKissSuccess() {
+                appendLog("配置成功 用时 " + ((System.currentTimeMillis() - t) / 1000) + " s\n");
+                AirkissHelper.getInstance().stop();
+
+            }
+
+            @Override
+            public void onAirKissFailed(int error) {
+                appendLog("配置失败 errorCode = " + error + "\n");
+                Java2CExDevice.stopAirKiss();
+                AirkissHelper.getInstance().stop();
+            }
+        });
         C2JavaExDevice.getInstance().setAirKissListener(new C2JavaExDevice.OnAirKissListener() {
             @Override
             public void onAirKissSuccess() {
@@ -197,6 +187,7 @@ public class AirkissActivity extends AppCompatActivity {
                 //如果需要密码却没有密码 提示需要密码
                 if (security != SECURITY_NONE && TextUtils.isEmpty(pwd)) {
                     appendLog("密码不能为空");
+
                     return;
                 }
 
@@ -205,9 +196,9 @@ public class AirkissActivity extends AppCompatActivity {
 
                 appendLog("\n开始配置... \nssid = " + ssid + " \npwd = " + pwd);
 
-                long timeout = 1000 * 90;
-                Java2CExDevice.startAirKissWithInter(pwd, ssid, aesKey.getBytes(), timeout, processPeroid, datePeroid);
 
+                long timeout = 1000 * 90;
+                StartaiAirkissManager.getInstance().startAirKiss(pwd, ssid, aesKey.getBytes(), timeout, processPeroid, datePeroid);
                 AirkissHelper.getInstance().start(timeout, new AirkissHelper.AirkissHelperListener() {
                     @Override
                     public void onAirkissSuccess(InetAddress inetAddress) {

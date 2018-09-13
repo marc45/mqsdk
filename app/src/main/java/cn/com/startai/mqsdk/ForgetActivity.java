@@ -8,13 +8,11 @@ import android.widget.EditText;
 
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqsdk.util.TimeCount;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8021_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8022_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8026_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 
 public class ForgetActivity extends BaseActivity {
 
@@ -62,7 +60,7 @@ public class ForgetActivity extends BaseActivity {
                 String mobile = etMobile.getText().toString();
 
                 timeCount.start();
-                StartAI.getInstance().getBaseBusiManager().getIdentifyCode(mobile, 2, onCallListener);
+                StartAI.getInstance().getBaseBusiManager().getIdentifyCode(mobile, Type.GetIdentifyCode.FORGET_PWD, onCallListener);
 
             }
         });
@@ -74,7 +72,7 @@ public class ForgetActivity extends BaseActivity {
                 String mobile = etMobile.getText().toString();
                 String code = etCode.getText().toString();
 
-                StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, code, 2, onCallListener);
+                StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, code, Type.CheckIdentifyCode.FORGET_PWD, onCallListener);
 
 
             }
@@ -110,34 +108,26 @@ public class ForgetActivity extends BaseActivity {
     @Override
     public void onGetIdentifyCodeResult(C_0x8021.Resp resp) {
         super.onGetIdentifyCodeResult(resp);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 "+resp);
+        TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp);
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
+            //获取验证码成功
+        } else {
+            //获取验证失败
+        }
     }
 
-    @Override
-    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg) {
-        super.onGetIdentifyCodeResult(result, errorCode, errorMsg);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg);
-    }
-
-    @Override
-    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg, C_0x8021.Resp.ContentBean contentBean) {
-        super.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
-
-    }
 
     @Override
     public void onCheckIdetifyResult(C_0x8022.Resp resp) {
         TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + resp);
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
+            //校验验证码成功
+        } else {
+            //校验验证码失败
+        }
     }
 
-    @Override
-    public void onCheckIdetifyResult(int result, String errorCode, String errorMsg) {
-        super.onCheckIdetifyResult(result, errorCode, errorMsg);
 
-        TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + result + " errorMsg = " + errorMsg);
-
-    }
 
 
     @Override
@@ -153,19 +143,7 @@ public class ForgetActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onResetMobileLoginPwdResult(int result, String errorCode, String errorMsg, C_0x8026.Resp.ContentBean contentBean) {
-        super.onResetMobileLoginPwdResult(result, errorCode, errorMsg, contentBean);
 
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "重置密码成功 " + contentBean);
-            finish();
-        } else {
-            TAndL.TL(getApplicationContext(), "重置密码失败 " + errorMsg);
-        }
-
-
-    }
 
 
     @Override

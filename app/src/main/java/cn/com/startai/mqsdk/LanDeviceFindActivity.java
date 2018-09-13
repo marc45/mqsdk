@@ -2,7 +2,6 @@ package cn.com.startai.mqsdk;
 
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8002_Resp;
 import cn.com.startai.mqsdk.util.view.RadarView;
 import cn.com.startai.mqsdk.util.view.RandomTextView;
 import cn.com.startai.mqttsdk.StartAI;
@@ -191,17 +189,6 @@ public class LanDeviceFindActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onBindResult(int result, String errorCode, String errorMsg, String id, C_0x8002.Resp.ContentBean.BebindingBean bebinding) {
-        super.onBindResult(result, errorCode, errorMsg, id, bebinding);
-
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "绑定成功" + "id = " + bebinding + " bebinding = " + bebinding);
-            finish();
-        } else {
-            TAndL.TL(getApplicationContext(), "绑定失败 " + errorMsg);
-        }
-    }
 
     private void initView() {
         radarView = findViewById(R.id.radar);

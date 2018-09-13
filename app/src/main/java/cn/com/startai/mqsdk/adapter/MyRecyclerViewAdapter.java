@@ -6,17 +6,14 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import cn.com.startai.mqsdk.MyApp;
 import cn.com.startai.mqsdk.R;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
-import cn.com.startai.mqttsdk.utils.SAppType;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
     private List<C_0x8005.Resp.ContentBean> list;
@@ -75,23 +72,13 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         String apptype = contentBean.getApptype();
 
         int imageRes = 0;
-        if (MyApp.apptype.equals(contentBean.getApptype())) {
-            if (contentBean.getConnstatus() == 1) {
-                imageRes = R.drawable.ic_phone_android_black_48dp;
+        if (contentBean.getConnstatus() == 1) {
+            imageRes = R.drawable.ic_personal_video_black_48dp;
 
-            } else {
-
-                imageRes = R.drawable.ic_phone_android_gray_48dp;
-            }
         } else {
-            if (contentBean.getConnstatus() == 1) {
-                imageRes = R.drawable.ic_personal_video_black_48dp;
 
-            } else {
+            imageRes = R.drawable.ic_personal_video_gray_48dp;
 
-                imageRes = R.drawable.ic_personal_video_gray_48dp;
-
-            }
         }
 
 

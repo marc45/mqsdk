@@ -51,7 +51,7 @@ public class C_0x8016 {
      *
      * @param miof
      */
-    public static void m_0x8016_resp( String miof) {
+    public static void m_0x8016_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
@@ -62,6 +62,11 @@ public class C_0x8016 {
         if (resp.getResult() == 1) {
             SLog.e(TAG, "查询最新版本成功");
         } else {
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setAppid(errcontent.getAppid());
+            content.setOs(errcontent.getOs());
+            content.setPackageName(errcontent.getPackageName());
             SLog.e(TAG, "查询最新版本失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetLatestVersionResult(resp);
@@ -178,7 +183,7 @@ public class C_0x8016 {
              * forcedUpdate : 1
              * fileName : 文件名
              */
-
+            private String appid;
             private String os;
             private String versionName;
             private int versionCode;
@@ -195,6 +200,7 @@ public class C_0x8016 {
                 return "ContentBean{" +
                         "errcode='" + errcode + '\'' +
                         ", errmsg='" + errmsg + '\'' +
+                        ", appid='" + appid + '\'' +
                         ", os='" + os + '\'' +
                         ", versionName='" + versionName + '\'' +
                         ", versionCode=" + versionCode +
@@ -206,6 +212,15 @@ public class C_0x8016 {
                         ", fileName='" + fileName + '\'' +
                         ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public String getAppid() {
+
+                return appid;
+            }
+
+            public void setAppid(String appid) {
+                this.appid = appid;
             }
 
             public Req.ContentBean getErrcontent() {

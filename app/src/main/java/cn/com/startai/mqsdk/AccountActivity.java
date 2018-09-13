@@ -78,6 +78,7 @@ public class AccountActivity extends BaseActivity {
         C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
         if (currUser != null) {
             StartAI.getInstance().getBaseBusiManager().getUserInfo(currUser.getUserid(), onCallListener);
+
         }
 
     }
@@ -164,22 +165,12 @@ public class AccountActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void onGetLatestVersionResult(int result, String errorCode, String errorMsg, C_0x8016.Resp.ContentBean contentBean) {
-        super.onGetLatestVersionResult(result, errorCode, errorMsg, contentBean);
-
-        TAndL.TL(getApplicationContext(), "检查结果 " + result + " errorMsg = " + errorMsg + " contentBean = " + contentBean);
-        if (contentBean != null) {
-            toUpdate(contentBean);
-        }
-
-    }
 
     private void toUpdate(final C_0x8016.Resp.ContentBean contentBean) {
 
-        if (!getApplicationInfo().packageName.equals(contentBean.getPackageName())) {
-            return;
-        }
+//        if (!getApplicationInfo().packageName.equals(contentBean.getPackageName())) {
+//            return;
+//        }
 
         int versionCode = contentBean.getVersionCode();
         int currCode = AppUtils.getAppInfo().getVersionCode();
@@ -195,7 +186,7 @@ public class AccountActivity extends BaseActivity {
 
                             new AlertDialog.Builder(AccountActivity.this)
                                     .setTitle("下载文件")
-                                    .setSingleChoiceItems(new String[]{"浏览下载", "应用内下载", "应用市场下载"}, -1, new DialogInterface.OnClickListener() {
+                                    .setSingleChoiceItems(new String[]{"浏览器下载", "应用内下载", "应用市场下载"}, -1, new DialogInterface.OnClickListener() {
 
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -282,7 +273,7 @@ public class AccountActivity extends BaseActivity {
     @Override
     public void onGetUserInfoResult(C_0x8024.Resp resp) {
         super.onGetUserInfoResult(resp);
-        if (resp.getResult() == 1) {
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
             userInfo = resp.getContent();
             if (TextUtils.isEmpty(userInfo.getNickName())) {
                 tvNickName.setText("昵称未设置");
@@ -295,27 +286,6 @@ public class AccountActivity extends BaseActivity {
             }
         }
         TAndL.TL(getApplicationContext(), "查询用户信息结果" + resp);
-
-    }
-
-    @Override
-    public void onGetUserInfoResult(int result, String errorCode, String errorMsg, C_0x8024.Resp.ContentBean contentBean) {
-        super.onGetUserInfoResult(result, errorCode, errorMsg, contentBean);
-        if (result == 1) {
-            userInfo = contentBean;
-            if (TextUtils.isEmpty(userInfo.getNickName())) {
-                tvNickName.setText("昵称未设置");
-            } else {
-                tvNickName.setText(userInfo.getNickName());
-            }
-            int isHavePwd = userInfo.getIsHavePwd();
-            if (isHavePwd != 1) {
-                tvUpdatePwd.setText("设置登录密码");
-            }
-        }
-
-        TAndL.TL(getApplicationContext(), "查询用户信息结果" + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
-
 
     }
 

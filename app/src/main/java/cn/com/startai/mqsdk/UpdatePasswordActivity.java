@@ -1,7 +1,5 @@
 package cn.com.startai.mqsdk;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -11,10 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8025_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
-import cn.com.startai.mqttsdk.listener.IOnCallListener;
 
 public class UpdatePasswordActivity extends BaseActivity {
 
@@ -81,17 +77,6 @@ public class UpdatePasswordActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onUpdateUserPwdResult(int result, String errorCode, String errorMsg, C_0x8025.Resp.ContentBean contentBean) {
-        super.onUpdateUserPwdResult(result, errorCode, errorMsg, contentBean);
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "密码修改成功 " + contentBean);
-            finish();
-        } else {
-            TAndL.TL(getApplicationContext(), "密码修改失败 " + errorMsg);
-        }
-
-    }
 
 
     @Override

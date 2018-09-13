@@ -12,15 +12,11 @@ import android.widget.EditText;
 
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqsdk.util.TimeCount;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8018_Resp;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8021_Resp;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
-import cn.com.startai.mqttsdk.control.SDBmanager;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
-import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 
 /**
  * 验证码快速登录
@@ -90,7 +86,8 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
 
         } else if (i == R.id.bt_login2_getIdentify) {
             timeCount.start();
-            StartAI.getInstance().getBaseBusiManager().getIdentifyCode(mobile, 1, onCallListener);
+
+            StartAI.getInstance().getBaseBusiManager().getIdentifyCode(mobile, Type.GetIdentifyCode.LOGIN, onCallListener);
 
         }
     }
@@ -135,24 +132,14 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
         TAndL.TL(getApplicationContext(), "获取验证码结果 " + resp);
     }
 
-    @Override
-    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg) {
-        super.onGetIdentifyCodeResult(result, errorCode, errorMsg);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg);
-    }
 
-    @Override
-    public void onGetIdentifyCodeResult(int result, String errorCode, String errorMsg, C_0x8021.Resp.ContentBean contentBean) {
-        super.onGetIdentifyCodeResult(result, errorCode, errorMsg, contentBean);
-        TAndL.TL(getApplicationContext(), "获取验证码结果 " + result + " errorMsg" + errorMsg + " contentBean = " + contentBean);
 
-    }
 
 
     @Override
     public void onLoginResult( C_0x8018.Resp resp) {
 
-        if (resp.getResult() == 1) {
+        if (resp.getResult() == resp.RESULT_SUCCESS) {
             TAndL.TL(getApplicationContext(), "登录成功 " + resp);
             //TODO:开发者需要在此保存登录信息
             startActivity(new Intent(Login2Activity.this, HomeActivity.class));
@@ -163,21 +150,6 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
 
     }
 
-    @Override
-    public void onLoginResult(int result, String errorCode, String errorMsg, C_0x8018.Resp.ContentBean loginInfo) {
-        super.onLoginResult(result, errorCode, errorMsg, loginInfo);
-
-        if (result == 1) {
-            TAndL.TL(getApplicationContext(), "登录成功 " + loginInfo);
-            //TODO:开发者需要在此保存登录信息
-            startActivity(new Intent(Login2Activity.this, HomeActivity.class));
-            finish();
-        } else if (result == 0) {
-            TAndL.TL(getApplicationContext(), "登录失败 " + errorMsg);
-        }
-
-
-    }
 
 
 }

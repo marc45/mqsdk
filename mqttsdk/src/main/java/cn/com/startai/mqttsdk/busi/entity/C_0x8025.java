@@ -57,6 +57,13 @@ public class C_0x8025 implements Serializable {
         if (resp.getResult() == 1) {
             SLog.e(TAG, "修改密码成功");
         } else {
+
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setNewPwd(errcontent.getNewPwd());
+            content.setOldPwd(errcontent.getOldPwd());
+            content.setUserid(errcontent.getUserid());
+
             SLog.e(TAG, "修改密码失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserPwdResult(resp);

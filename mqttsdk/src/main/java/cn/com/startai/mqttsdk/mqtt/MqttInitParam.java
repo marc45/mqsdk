@@ -23,4 +23,14 @@ public class MqttInitParam {
         this.appid = appid;
         this.m_ver = m_ver;
     }
+
+    public MqttInitParam(String appid) {
+        this.appid = appid;
+    }
+
+    public MqttInitParam(String domain, String apptype, String appid) {
+        this.domain = domain;
+        this.apptype = apptype;
+        this.appid = appid;
+    }
 }

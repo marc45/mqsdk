@@ -1,5 +1,7 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -46,6 +48,8 @@ public class C_0x8018 {
      */
     public static void m_0x8018_req(String uName, String pwd, String identifyCode, IOnCallListener listener) {
 
+        uName = uName == null ? "" : uName;
+
         boolean isChangeUser = false; //更换账号调用登录接口
 
         //当前登录的用户
@@ -55,20 +59,24 @@ public class C_0x8018 {
             SLog.d(TAG, "当前未登录用户，需要登录");
         } else {
 
-            if (currUserFromDb.getUName().equals(uName)) {
+            String dbUname = currUserFromDb.getUName();//第三方登录时没有uname
+
+
+            if (uName.equals(dbUname)) {
 
                 //已经登录
                 long expire_in = currUserFromDb.getExpire_in();
+
                 long time = currUserFromDb.getTime();
 
                 long diff = (System.currentTimeMillis() - time) / 1000 - expire_in;
-                if (diff > 0) {
+                if (expire_in>0&&diff > 0) {
                     SLog.d(TAG, "账号登录状态已过期，需要重新登录");
 
                 } else {
                     SLog.d(TAG, "账号登录状态未过期，直接回调登录成功");
                     Resp.ContentBean contentBean = new Resp.ContentBean();
-                    contentBean.setuName(currUserFromDb.getUName());
+                    contentBean.setuName(dbUname);
                     contentBean.setToken(currUserFromDb.getToken());
                     contentBean.setType(currUserFromDb.getType());
                     contentBean.setExpire_in(currUserFromDb.getExpire_in());
@@ -190,6 +198,11 @@ public class C_0x8018 {
             StartaiMqttPersistent.getInstance().subFriendReportTopic();
 
         } else {
+
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setType(errcontent.getType());
+            content.setUname(errcontent.getUname());
 
             SLog.e(TAG, "登录失败");
         }

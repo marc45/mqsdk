@@ -59,6 +59,23 @@ public class C_0x8020 {
             SLog.e(TAG, "用户信息更新成功");
         } else {
 
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setAddress(errcontent.getAddress());
+            content.setBirthday(errcontent.getBirthday());
+            content.setCity(errcontent.getCity());
+            content.setCountry(errcontent.getCountry());
+            content.setFirstName(errcontent.getFirstName());
+            content.setLastName(errcontent.getLastName());
+            content.setHeadPic(errcontent.getHeadPic());
+            content.setTown(errcontent.getTown());
+            content.setSex(errcontent.getSex());
+            content.setUserName(errcontent.getUserName());
+            content.setUserid(errcontent.getUserid());
+            content.setProvince(errcontent.getProvince());
+            content.setNickName(errcontent.getNickName());
+            content.setAddress(errcontent.getAddress());
+
 
             SLog.e(TAG, "用户信息更新失败");
 

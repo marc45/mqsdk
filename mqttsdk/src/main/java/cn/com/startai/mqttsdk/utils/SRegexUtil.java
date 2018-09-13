@@ -1,131 +1,215 @@
 package cn.com.startai.mqttsdk.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 数据校验
+ * <pre>
+ *     author: Blankj
+ *     blog  : http://blankj.com
+ *     time  : 2016/08/02
+ *     desc  : utils about regex
+ * </pre>
  */
-public class SRegexUtil {
-    /**
-     * 正则表达式：验证用户名
-     */
-    public static final String REGEX_USERNAME = "^[a-zA-Z]\\w{5,20}$";
+public final class SRegexUtil {
+
+    private SRegexUtil() {
+        throw new UnsupportedOperationException("u can't instantiate me...");
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // If u want more please visit http://toutiao.com/i6231678548520731137
+    ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * 正则表达式：验证密码
-     */
-    public static final String REGEX_PASSWORD = "^\\w{6,16}$";
-
-    /**
-     * 正则表达式：验证手机号
-     */
-    public static final String REGEX_MOBILE = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$";
-
-
-    /**
-     * 正则表达式：验证邮箱
-     */
-    public static final String REGEX_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-
-    /**
-     * 正则表达式：验证汉字
-     */
-    public static final String REGEX_CHINESE = "^[\u4e00-\u9fa5],{0,}$";
-
-    /**
-     * 正则表达式：验证身份证
-     */
-    public static final String REGEX_ID_CARD = "(^\\d{18}$)|(^\\d{15}$)";
-
-    /**
-     * 正则表达式：验证URL
-     */
-    public static final String REGEX_URL = "http(s)?://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?";
-
-    /**
-     * 正则表达式：验证IP地址
-     */
-    public static final String REGEX_IP_ADDR = "(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)";
-
-    /**
-     * 校验用户名
+     * Return whether input matches regex of simple mobile.
      *
-     * @param username
-     * @return 校验通过返回true，否则返回false
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
      */
-    public static boolean isUsername(String username) {
-        return Pattern.matches(REGEX_USERNAME, username);
+    public static boolean isMobileSimple(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_MOBILE_SIMPLE, input);
     }
 
     /**
-     * 校验密码
+     * Return whether input matches regex of exact mobile.
      *
-     * @param password
-     * @return 校验通过返回true，否则返回false
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
      */
-    public static boolean isPassword(String password) {
-        return Pattern.matches(REGEX_PASSWORD, password);
+    public static boolean isMobileExact(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_MOBILE_EXACT, input);
     }
 
     /**
-     * 校验手机号
+     * Return whether input matches regex of telephone number.
      *
-     * @param mobile
-     * @return 校验通过返回true，否则返回false
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
      */
-    public static boolean isMobile(String mobile) {
-        return Pattern.matches(REGEX_MOBILE, mobile);
-    }
-
-
-    /**
-     * 校验邮箱
-     *
-     * @param email
-     * @return 校验通过返回true，否则返回false
-     */
-    public static boolean isEmail(String email) {
-        return Pattern.matches(REGEX_EMAIL, email);
+    public static boolean isTel(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_TEL, input);
     }
 
     /**
-     * 校验汉字
+     * Return whether input matches regex of id card number which length is 15.
      *
-     * @param chinese
-     * @return 校验通过返回true，否则返回false
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
      */
-    public static boolean isChinese(String chinese) {
-        return Pattern.matches(REGEX_CHINESE, chinese);
+    public static boolean isIDCard15(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_ID_CARD15, input);
     }
 
     /**
-     * 校验身份证
+     * Return whether input matches regex of id card number which length is 18.
      *
-     * @param idCard
-     * @return 校验通过返回true，否则返回false
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
      */
-    public static boolean isIDCard(String idCard) {
-        return Pattern.matches(REGEX_ID_CARD, idCard);
-    }
-
-
-    /**
-     * 校验URL
-     *
-     * @param url
-     * @return 校验通过返回true，否则返回false
-     */
-    public static boolean isUrl(String url) {
-        return Pattern.matches(REGEX_URL, url);
+    public static boolean isIDCard18(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_ID_CARD18, input);
     }
 
     /**
-     * 校验IP地址
+     * Return whether input matches regex of email.
      *
-     * @param ipAddr
-     * @return
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
      */
-    public static boolean isIPAddr(String ipAddr) {
-        return Pattern.matches(REGEX_IP_ADDR, ipAddr);
+    public static boolean isEmail(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_EMAIL, input);
+    }
+
+    /**
+     * Return whether input matches regex of url.
+     *
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isURL(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_URL, input);
+    }
+
+    /**
+     * Return whether input matches regex of Chinese character.
+     *
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isZh(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_ZH, input);
+    }
+
+    /**
+     * Return whether input matches regex of username.
+     * <p>scope for "a-z", "A-Z", "0-9", "_", "Chinese character"</p>
+     * <p>can't end with "_"</p>
+     * <p>length is between 6 to 20</p>.
+     *
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isUsername(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_USERNAME, input);
+    }
+
+    /**
+     * Return whether input matches regex of date which pattern is "yyyy-MM-dd".
+     *
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isDate(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_DATE, input);
+    }
+
+    /**
+     * Return whether input matches regex of ip address.
+     *
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isIP(final CharSequence input) {
+        return isMatch(RegexConstants.REGEX_IP, input);
+    }
+
+    /**
+     * Return whether input matches the regex.
+     *
+     * @param regex The regex.
+     * @param input The input.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isMatch(final String regex, final CharSequence input) {
+        return input != null && input.length() > 0 && Pattern.matches(regex, input);
+    }
+
+    /**
+     * Return the list of input matches the regex.
+     *
+     * @param regex The regex.
+     * @param input The input.
+     * @return the list of input matches the regex
+     */
+    public static List<String> getMatches(final String regex, final CharSequence input) {
+        if (input == null) return null;
+        List<String> matches = new ArrayList<>();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            matches.add(matcher.group());
+        }
+        return matches;
+    }
+
+    /**
+     * Splits input around matches of the regex.
+     *
+     * @param input The input.
+     * @param regex The regex.
+     * @return the array of strings computed by splitting input around matches of regex
+     */
+    public static String[] getSplits(final String input, final String regex) {
+        if (input == null) return null;
+        return input.split(regex);
+    }
+
+    /**
+     * Replace the first subsequence of the input sequence that matches the
+     * regex with the given replacement string.
+     *
+     * @param input       The input.
+     * @param regex       The regex.
+     * @param replacement The replacement string.
+     * @return the string constructed by replacing the first matching
+     * subsequence by the replacement string, substituting captured
+     * subsequences as needed
+     */
+    public static String getReplaceFirst(final String input,
+                                         final String regex,
+                                         final String replacement) {
+        if (input == null) return null;
+        return Pattern.compile(regex).matcher(input).replaceFirst(replacement);
+    }
+
+    /**
+     * Replace every subsequence of the input sequence that matches the
+     * pattern with the given replacement string.
+     *
+     * @param input       The input.
+     * @param regex       The regex.
+     * @param replacement The replacement string.
+     * @return the string constructed by replacing each matching subsequence
+     * by the replacement string, substituting captured subsequences
+     * as needed
+     */
+    public static String getReplaceAll(final String input,
+                                       final String regex,
+                                       final String replacement) {
+        if (input == null) return null;
+        return Pattern.compile(regex).matcher(input).replaceAll(replacement);
     }
 }

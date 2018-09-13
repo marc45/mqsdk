@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -14,30 +12,22 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.tencent.mm.plugin.exdevice.jni.C2JavaExDevice;
-import com.tencent.mm.plugin.exdevice.jni.Java2CExDevice;
 
 import java.net.InetAddress;
-import java.util.List;
 
 import cn.com.startai.esptouchsender.IEsptouchResult;
 import cn.com.startai.esptouchsender.customer.EsptouchAsyncTask;
 import cn.com.startai.esptouchsender.customer.MyEsptouchListener;
-import cn.com.startai.esptouchsender.util.ByteUtil;
-import cn.com.startai.esptouchsender.util.EspNetUtil;
 import cn.com.startai.mqsdk.R;
 import cn.com.startai.mqsdk.util.AirkissHelper;
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.airkiss.NetworkUtils;
 
 /**
  * esptouch 配网

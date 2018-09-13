@@ -1,15 +1,10 @@
 package cn.com.startai.mqsdk.busi;
-
-import android.util.EventLog;
-
 import org.greenrobot.eventbus.EventBus;
 
 import cn.com.startai.mqsdk.util.eventbus.E_0x8101_Resp;
 import cn.com.startai.mqsdk.util.eventbus.EventBean;
-import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.busi.entity.BaseContentBean;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;

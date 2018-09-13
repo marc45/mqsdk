@@ -1,9 +1,6 @@
 package cn.com.startai.mqsdk.busi;
 
 import cn.com.startai.mqttsdk.StartAI;
-import cn.com.startai.mqttsdk.base.BaseMessage;
-import cn.com.startai.mqttsdk.base.StartaiMessage;
-import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 

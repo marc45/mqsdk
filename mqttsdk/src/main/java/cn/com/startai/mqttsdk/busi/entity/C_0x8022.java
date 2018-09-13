@@ -57,6 +57,11 @@ public class C_0x8022 {
 
             SLog.e(TAG, "检验验证码成功");
         } else {
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setType(errcontent.getType());
+            content.setMobile(errcontent.getMobile());
+            content.setIdentifyCode(errcontent.getIdentifyCode());
 
             SLog.e(TAG, "检验验证码失败");
         }

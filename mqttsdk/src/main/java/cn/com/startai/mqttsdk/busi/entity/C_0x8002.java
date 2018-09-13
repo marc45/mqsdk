@@ -54,6 +54,8 @@ public class C_0x8002 {
      * @param miof
      */
     public static void m_0x8002_resp(String miof) {
+
+
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
         String id = "";
         if (userBean != null) {

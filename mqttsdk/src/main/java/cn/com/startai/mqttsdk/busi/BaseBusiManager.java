@@ -17,6 +17,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
@@ -69,7 +70,6 @@ public class BaseBusiManager implements IMiofBusi {
      *
      * @param bebindingid 对端 的用户id或sn
      */
-    @Deprecated
     @Override
     public void bind(String bebindingid, IOnCallListener listener) {
 
@@ -96,7 +96,6 @@ public class BaseBusiManager implements IMiofBusi {
      * @param bebindingid 对端的用户id 或 sn
      * @param listener
      */
-    @Deprecated
     @Override
     public void unBind(String bebindingid, IOnCallListener listener) {
         unBind("", bebindingid, listener);
@@ -126,7 +125,6 @@ public class BaseBusiManager implements IMiofBusi {
      *             7.查询所有
      * @return
      */
-    @Deprecated
     @Override
     public void getBindList(int type, IOnCallListener listener) {
         getBindList("", type, listener);
@@ -250,7 +248,6 @@ public class BaseBusiManager implements IMiofBusi {
     /**
      * 获取用户信息
      */
-    @Deprecated
     @Override
     public void getUserInfo(IOnCallListener listener) {
         getUserInfo("", listener);
@@ -350,6 +347,18 @@ public class BaseBusiManager implements IMiofBusi {
     @Override
     public void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener) {
         C_0x8026.m_0x8026_req(mobile, pwd, listener);
+    }
+
+    /**
+     * 第三方账号登录
+     *
+     * @param type     类型 1 微信登录 2 支付宝登录
+     * @param code
+     * @param listener
+     */
+    @Override
+    public void loginWithThirdAccount(int type, String code, IOnCallListener listener) {
+        C_0x8027.req(type, code, listener);
     }
 
 

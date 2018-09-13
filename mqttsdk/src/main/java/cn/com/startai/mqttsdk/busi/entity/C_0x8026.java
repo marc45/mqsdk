@@ -55,6 +55,11 @@ public class C_0x8026 implements Serializable {
         if (resp.getResult() == 1) {
             SLog.e(TAG, "手机重置登录密码 成功");
         } else {
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setMobile(errcontent.getMobile());
+            content.setPwd(errcontent.getPwd());
+
             SLog.e(TAG, "手机重置登录密码 失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onResetMobileLoginPwdResult(resp);

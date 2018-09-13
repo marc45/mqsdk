@@ -33,11 +33,11 @@ public class SLog {
     private static Handler mHandler;
 
     //    private Context context = StartAI.init().getContext();
-    public boolean isDebug() {
+    public static boolean isDebug() {
         return isDebug;
     }
 
-    public void setDebug(boolean debug) {
+    public static void setDebug(boolean debug) {
         isDebug = debug;
     }
 
@@ -97,7 +97,6 @@ public class SLog {
             file(tag, logMsg);
         }
     }
-
 
 
     public static synchronized void file(final String tags, final String contents) {

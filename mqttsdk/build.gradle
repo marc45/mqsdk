@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 316
-        versionName "3.1.6"
+        versionCode 3116
+        versionName "3.1.16"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -79,9 +79,6 @@ task makeAAR(type: Copy) {
 }
 makeAAR.dependsOn(build)
 
-
-
-
 //添加
 apply plugin: 'com.novoda.bintray-release'
 publish {
@@ -92,9 +89,9 @@ publish {
     //项目名称
     artifactId = 'mqsdk'
     //版本号
-    publishVersion = '3.1.6'
+    publishVersion = '3.1.16'
     //描述，不重要
-    desc = 'startai sdk 3.1.6'
+    desc = 'startai sdk 3.1.16'
     //网站，不重要
     website = 'https://www.startai.com.cn'
 

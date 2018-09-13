@@ -57,6 +57,10 @@ public class C_0x8024 implements Serializable {
         if (resp.getResult() == 1) {
             SLog.e(TAG, "查询用户信息成功");
         } else {
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setUserid(errcontent.getUserid());
+
             SLog.e(TAG, "查询用户信息失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetUserInfoResult(resp);

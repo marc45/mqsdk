@@ -8,12 +8,9 @@ import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
@@ -76,7 +73,11 @@ public class C_0x8005 implements Serializable {
      */
     public static void m_0x8005_resp(int result, String miof) {
 
-
+        Response response = SJsonUtils.fromJson(miof, Response.class);
+        if (response == null) {
+            SLog.e(TAG, "返回数据格式错误");
+            return;
+        }
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
 
         String id = "";
@@ -95,8 +96,9 @@ public class C_0x8005 implements Serializable {
                 SLog.e(TAG, "返回数据格式错误");
                 return;
             }
+            response.setResp(resp.getContent());
             SLog.d(TAG, "查询成功");
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListResult(result, null, id, resp.getContent());
+            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListResult(response);
 
             //手机端订阅终端相关主题
             if (userBean != null) {
@@ -128,8 +130,14 @@ public class C_0x8005 implements Serializable {
                 SLog.e(TAG, "返回数据格式错误");
                 return;
             }
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListResult(result, respErr, id, null);
+            response.setErrcode(response.getErrcode());
+            response.setErrmsg(response.getErrmsg());
+            response.setErrContent(response.getErrContent());
+            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListResult(response);
         }
+
+
+
     }
 
     public static class Req {
@@ -176,6 +184,82 @@ public class C_0x8005 implements Serializable {
 
 
     }
+
+    public static class Response extends BaseMessage implements Serializable {
+
+        private ArrayList<Resp.ContentBean> resp = new ArrayList<>();
+        private String errcode;
+        private String errmsg;
+        private Req.ContentBean errContent = new Req.ContentBean();
+
+
+        public Response() {
+        }
+
+
+        public Response(ArrayList<Resp.ContentBean> resp, String errcode, String errmsg, Req.ContentBean errContent) {
+            this.resp = resp;
+            this.errcode = errcode;
+            this.errmsg = errmsg;
+            this.errContent = errContent;
+        }
+
+        @Override
+        public String toString() {
+            return "Response{" +
+                    "msgcw='" + msgcw + '\'' +
+                    ", msgtype='" + msgtype + '\'' +
+                    ", fromid='" + fromid + '\'' +
+                    ", toid='" + toid + '\'' +
+                    ", domain='" + domain + '\'' +
+                    ", appid='" + appid + '\'' +
+                    ", ts=" + ts +
+                    ", msgid='" + msgid + '\'' +
+                    ", m_ver='" + m_ver + '\'' +
+                    ", result=" + result +
+                    ", resp=" + resp +
+                    ", errcode='" + errcode + '\'' +
+                    ", errmsg='" + errmsg + '\'' +
+                    ", errContent=" + errContent +
+                    '}';
+        }
+
+
+        public String getErrcode() {
+            return errcode;
+        }
+
+        public void setErrcode(String errcode) {
+            this.errcode = errcode;
+        }
+
+        public String getErrmsg() {
+            return errmsg;
+        }
+
+        public void setErrmsg(String errmsg) {
+            this.errmsg = errmsg;
+        }
+
+        public Req.ContentBean getErrContent() {
+            return errContent;
+        }
+
+        public void setErrContent(Req.ContentBean errContent) {
+            this.errContent = errContent;
+        }
+
+        public ArrayList<Resp.ContentBean> getResp() {
+            return resp;
+        }
+
+        public void setResp(ArrayList<Resp.ContentBean> resp) {
+            this.resp = resp;
+        }
+
+
+    }
+
 
     public static class Resp extends BaseMessage implements Serializable {
 

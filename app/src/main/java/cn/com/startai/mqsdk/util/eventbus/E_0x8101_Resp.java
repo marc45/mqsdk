@@ -1,7 +1,6 @@
 package cn.com.startai.mqsdk.util.eventbus;
 
 import cn.com.startai.mqsdk.busi.C_0x8101;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 
 /**
  * Created by Robin on 2018/7/10.

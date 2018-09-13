@@ -23,6 +23,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
@@ -126,7 +127,12 @@ public class BaseBusiHandler {
                 break;
 
             case "0x8026"://手机重置密码
+
                 C_0x8026.m_0x8026_resp(msg);
+                break;
+            case "0x8027":
+
+                C_0x8027.m_0x8027_resp(msg);
                 break;
 
             case "0x8200"://消息透传

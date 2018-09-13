@@ -1,22 +1,15 @@
 package cn.com.startai.mqsdk;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.Serializable;
-
 import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.eventbus.E_0x8020_Resp;
-import cn.com.startai.mqttsdk.StartAI;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
 
 public class UserInfoActivity extends BaseActivity {
 

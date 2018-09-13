@@ -60,6 +60,12 @@ public class C_0x8017 {
             SLog.e(TAG, "用户注册成功");
         } else {
 
+            Resp.ContentBean content = resp.getContent();
+            Req.ContentBean errcontent = content.getErrcontent();
+            content.setType(errcontent.getType());
+            content.setUname(errcontent.getUname());
+            content.setPwd(errcontent.getPwd());
+
             SLog.e(TAG, "用户注册失败");
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onRegisterResult(resp);

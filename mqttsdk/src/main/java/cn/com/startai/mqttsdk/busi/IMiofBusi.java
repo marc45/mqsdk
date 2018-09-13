@@ -3,6 +3,7 @@ package cn.com.startai.mqttsdk.busi;
 
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
@@ -252,5 +253,12 @@ public interface IMiofBusi {
     void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener);
 
 
+    /**
+     * 第三方账号登录
+     *
+     * @param type     类型 1 微信登录 2 支付宝登录
+     * @param listener
+     */
+    void loginWithThirdAccount(int type, String code, IOnCallListener listener);
 }
 

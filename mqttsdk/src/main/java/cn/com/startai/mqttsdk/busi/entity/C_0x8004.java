@@ -70,11 +70,12 @@ public class C_0x8004 {
         if (result == 1) {
             SLog.e(TAG, "解绑成功");
         } else {
+
             SLog.e(TAG, "解绑失败 " + resp.getContent().getErrmsg());
         }
 
         String friendId = "";
-        if (resp.getContent().getBeunbindingid().equals(id)) {
+        if (id.equals(resp.getContent().getBeunbindingid())) {
             friendId = resp.getContent().getUnbindingid();
         } else {
             friendId = resp.getContent().getBeunbindingid();
@@ -86,6 +87,7 @@ public class C_0x8004 {
             TopicBean topicBean = new TopicBean(TopicConsts.getSubFriendTopic(friendId), "remove", "", userBean.getUserid());
             SDBmanager.getInstance().addOrUpdateTopic(topicBean);
             StartaiMqttPersistent.getInstance().subFriendReportTopic();
+
         }
 
     }

@@ -7,9 +7,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.Log;
-import android.util.TimeUtils;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.AppUtils;
@@ -37,6 +35,7 @@ public class TAndL {
     public static final String TAG = "TAndL";
     private static Handler hd;
     private static PrintWriter pwTemp;
+    private static Toast toast;
     private int title;
 
     public static void L(String text) {
@@ -47,7 +46,14 @@ public class TAndL {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                if (toast == null) {
+
+                    toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+                } else {
+
+                    toast.setText(text);
+                }
+                toast.show();
 
             }
         });

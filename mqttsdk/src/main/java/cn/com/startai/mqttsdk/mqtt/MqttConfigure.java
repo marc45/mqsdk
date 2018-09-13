@@ -28,7 +28,7 @@ public class MqttConfigure {
     public static String apptype;
     public static String appid;
     public static String clientid;
-    public static String m_ver;
+    public static String m_ver = "Json_1.3.9_9.2.6";
     public static ArrayList<String> mqttHosts = new ArrayList<>();
     public static boolean isCheckRootCrt = true;
     public static final String DEFAULT_ROOTCRT = "startai/startai.bks";
@@ -39,7 +39,7 @@ public class MqttConfigure {
     public static int connectTimeOut = 10;//mqtt连接超时时长
     public static int keepAliveInterval = 60;//mqtt的心跳时长，单位秒
     public static int messageSendRetryTimes = 3; //消息发送失败重试次数默认为3
-    public static int changeHostTimeDelay = 1000;//触发节点切换算法的最低时延 ，设置为0即关闭节点自动切换功能
+    public static int changeHostTimeDelay = 500;//触发节点切换算法的最低时延 ，设置为0即关闭节点自动切换功能
     public static Will will;
 
 
