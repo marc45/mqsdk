@@ -1,22 +1,33 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        mqsdk {
+            keyAlias 'mqsdk'
+            keyPassword 'startai'
+            storeFile file('D:/key/startai-key')
+            storePassword 'startai'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "cn.com.startai.mqsdk"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 103
-        versionName "1.0.3"
+        versionCode 10003
+        versionName "1.0.003"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.mqsdk
+        }
+        debug {
+            signingConfig signingConfigs.mqsdk
         }
     }
-
     lintOptions {
         abortOnError false
     }
@@ -37,7 +48,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
     //startai airkiss sdk
     implementation 'cn.com.startai:airkisssdk:1.0.3'
     //startai esptouch sdk
@@ -58,6 +68,7 @@ dependencies {
     implementation 'com.blankj:utilcode:1.19.3'
     //zxing 基础包
     implementation 'com.google.zxing:core:3.3.0'
-
+    //微信 sdk
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     implementation project(':mqttsdk')
 }

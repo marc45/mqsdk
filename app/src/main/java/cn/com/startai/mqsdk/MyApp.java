@@ -5,6 +5,8 @@ import android.content.Context;
 
 import com.blankj.utilcode.util.Utils;
 import com.facebook.stetho.Stetho;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -13,6 +15,7 @@ import cn.com.startai.mqsdk.util.eventbus.E_Conn_Break;
 import cn.com.startai.mqsdk.util.eventbus.E_Conn_Failed;
 import cn.com.startai.mqsdk.util.eventbus.E_Conn_Success;
 import cn.com.startai.mqsdk.util.eventbus.EventBean;
+import cn.com.startai.mqsdk.wxapi.Consts;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.event.ICommonStateListener;
@@ -42,12 +45,22 @@ public class MyApp extends Application {
         return MyApp.context;
 
     }
+    private static IWXAPI wxAPI;
 
+    public static IWXAPI getWxAPI() {
+        return wxAPI;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
+
+
+        //通过WXAPIFactory工厂获取IWXApI的示例
+        wxAPI = WXAPIFactory.createWXAPI(this, Consts.APP_ID, true);
+        //将应用的appid注册到微信
+        wxAPI.registerApp(Consts.APP_ID);
 
         Stetho.initializeWithDefaults(this);
 

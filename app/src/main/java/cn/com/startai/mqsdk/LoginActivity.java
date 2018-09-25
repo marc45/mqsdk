@@ -1,9 +1,11 @@
 package cn.com.startai.mqsdk;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -18,6 +20,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.blankj.utilcode.util.AppUtils;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
 
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqsdk.util.permission.PermissionHelper;
@@ -50,8 +55,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         Toolbar toolbar = (Toolbar) findViewById(R.id.include);
         toolbar.setTitle("用户登录");
         setSupportActionBar(toolbar);
-
-
 
 
         initView();
@@ -99,8 +102,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.getItem(0).setTitle("快捷登录");
+        getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
     }
 
@@ -112,8 +114,50 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             startActivity(new Intent(LoginActivity.this, Login2Activity.class));
 
             return true;
+        } else if (id == R.id.action_3_login) {
+
+            new AlertDialog.Builder(LoginActivity.this)
+                    .setTitle("第三方登录")
+                    .setSingleChoiceItems(new String[]{"微信登录", "支付宝登录", "QQ登录", "推特登录"}, -1, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            switch (which) {
+                                case 0:
+
+                                    boolean appInstalled = AppUtils.isAppInstalled("com.tencent.mm");
+                                    if (!appInstalled) {
+                                        TAndL.TL(getApplicationContext(), "手机未安装微信");
+                                        return;
+                                    }
+
+                                    wxLogin();
+
+                                    break;
+
+                                default:
+
+                                    TAndL.TL(getApplicationContext(), "暂不支持...");
+
+                                    break;
+                            }
+                        }
+                    })
+                    .show();
+
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //微信登录
+    public void wxLogin() {
+        SendAuth.Req req = new SendAuth.Req();
+        req.scope = "snsapi_userinfo";
+        req.state = "diandi_wx_login";
+        //向微信发送请求
+        MyApp.getWxAPI().sendReq(req);
     }
 
 
@@ -214,23 +258,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    public void onLoginResult( C_0x8018.Resp resp) {
+    public void onLoginResult(C_0x8018.Resp resp) {
 
         if (resp.getResult() == resp.RESULT_SUCCESS) {
             TAndL.TL(getApplicationContext(), "登录成功 " + resp);
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             finish();
-        } else  {
+        } else {
             TAndL.TL(getApplicationContext(), "登录失败 " + resp);
         }
 
 
-
-
     }
-
-
-
 
 
 }

@@ -17,6 +17,43 @@ public class LanDevice {
     private int devConnStatus;//设备的连接状态 1已连接 0 未连接
     private int devActivateStatus;//设备的激活状态 1已经激活 0未激活
     private String cpuId;
+    private int bindNeedPwd; //0 局域网绑定不需要密码 1 局域网绑定需要密码
+    private int isAdmin;//自己的身份 0 普通用户 1 管理员
+    private int bindType; // 自己的绑定状态 0未绑定 1局域网绑定 2广域网绑定
+    private int isHaveAdmin;// 是否有管理员 0 无管理员 1 有管理员
+
+    public int getIsHaveAdmin() {
+        return isHaveAdmin;
+    }
+
+    public void setIsHaveAdmin(int isHaveAdmin) {
+        this.isHaveAdmin = isHaveAdmin;
+    }
+
+    public int getBindNeedPwd() {
+        return bindNeedPwd;
+    }
+
+    public void setBindNeedPwd(int bindNeedPwd) {
+        this.bindNeedPwd = bindNeedPwd;
+    }
+
+    public int getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(int isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public int getBindType() {
+        return bindType;
+    }
+
+    public void setBindType(int bindType) {
+        this.bindType = bindType;
+    }
+
 
     public String getCpuId() {
         return cpuId;
@@ -37,6 +74,11 @@ public class LanDevice {
                 ", sn='" + sn + '\'' +
                 ", devConnStatus=" + devConnStatus +
                 ", devActivateStatus=" + devActivateStatus +
+                ", cpuId='" + cpuId + '\'' +
+                ", bindNeedPwd=" + bindNeedPwd +
+                ", isAdmin=" + isAdmin +
+                ", bindType=" + bindType +
+                ", isHaveAdmin=" + isHaveAdmin +
                 '}';
     }
 

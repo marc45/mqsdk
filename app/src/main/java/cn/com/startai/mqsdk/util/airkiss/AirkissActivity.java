@@ -214,7 +214,7 @@ public class AirkissActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Java2CExDevice.stopAirKiss();
+                StartaiAirkissManager.getInstance().stopAirKiss();
                 AirkissHelper.getInstance().stop();
 
                 appendLog("\n停止配置");

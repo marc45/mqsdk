@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="cn.com.startai.smartadcontrolledh5.activity.MainActivity">
+    <item
+        android:id="@+id/action_3_login"
+        android:orderInCategory="100"
+        android:title="第三方登录"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="快捷登录"
+        app:showAsAction="always" />
+</menu>

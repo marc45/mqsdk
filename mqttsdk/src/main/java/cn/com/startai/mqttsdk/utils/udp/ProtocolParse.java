@@ -67,7 +67,37 @@ public class ProtocolParse {
             byte CRC8 = bytes[59];
             byte tail = bytes[60];
 
+            String bindStatusStr = Integer.toBinaryString(bindStatus);
+            while(bindStatusStr.length()<8){
+                bindStatusStr = "0" + bindStatusStr;
+            }
+
+            int isHaveAdmin = 0;
+            int bindNeedPwd = 0;
+            int isAdmin = 0;
+            int bindType = 0;
+            for (int i = 0; i < bindStatusStr.length(); i++) {
+
+                isHaveAdmin = bindStatusStr.charAt(0);
+                bindNeedPwd = bindStatusStr.charAt(1);
+                isAdmin = bindStatusStr.charAt(2);
+
+                if(bindStatusStr.charAt(3)==0&&bindStatusStr.charAt(4)==0){
+                    bindType = 0;
+                }else if(bindStatusStr.charAt(3)==0&&bindStatusStr.charAt(4)==1){
+                    bindType = 2;
+                }else if(bindStatusStr.charAt(3)==1&&bindStatusStr.charAt(4)==0){
+                    bindType = 1;
+                }
+
+            }
+
+
+
             String s = Integer.toBinaryString(remoteStatus);
+            if (s.length() == 1) {
+                s = "0" + s;
+            }
             int isActivate = 0;
             int isConnected = 0;
             for (int i = 0; i < s.length(); i++) {
@@ -83,6 +113,10 @@ public class ProtocolParse {
             resp.setRssi(rssi);
             resp.setDevConnStatus(isConnected);
             resp.setDevActivateStatus(isActivate);
+            resp.setBindType(bindType);
+            resp.setBindNeedPwd(bindNeedPwd);
+            resp.setIsAdmin(isAdmin);
+            resp.setIsHaveAdmin(isHaveAdmin);
             return resp;
         } else if (cmd == 6) {
 

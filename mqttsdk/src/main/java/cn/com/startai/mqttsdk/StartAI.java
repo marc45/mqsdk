@@ -75,30 +75,16 @@ public class StartAI implements IPersisitentNet {
         return getPersisitnet().getConnectState();
     }
 
-//    @Override
-//    public void subscribeAsync(String topic, IOnSubscribeListener listener) {
-//        getPersisitnet().subscribeAsync(topic, listener);
-//    }
 
     @Override
     public void subscribe(String topic, IOnSubscribeListener listener) {
         getPersisitnet().subscribe(topic, listener);
     }
 
-//    @Override
-//    public void unSubscribeAsync(String topic, IOnSubscribeListener listener) {
-//        getPersisitnet().unSubscribeAsync(topic, listener);
-//    }
-
     @Override
     public void unSubscribe(String topic, IOnSubscribeListener listener) {
         getPersisitnet().unSubscribe(topic, listener);
     }
-
-//    @Override
-//    public void sendAsync(MqttPublishRequest reqStartaiMsg, IOnCallListener listener) {
-//        getPersisitnet().sendAsync(reqStartaiMsg, listener);
-//    }
 
     @Override
     public void send(MqttPublishRequest reqStartaiMsg, IOnCallListener listener) {

@@ -51,6 +51,13 @@
         <activity android:name=".UpdateNickNameActivity" />
         <activity android:name=".UpdatePasswordActivity" />
         <activity android:name=".LanDeviceFindActivity"></activity>
+
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 
 </manifest>
