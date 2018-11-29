@@ -1,6 +1,10 @@
 package cn.com.startai.mqttsdk.busi;
 
 
+import android.os.UserManager;
+import android.text.TextUtils;
+import android.view.View;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,10 +28,13 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
 import cn.com.startai.mqttsdk.busi.entity.MiofTag;
+import cn.com.startai.mqttsdk.control.SDBmanager;
+import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
@@ -41,20 +48,39 @@ public class BaseBusiHandler {
 
     public void handMessage(String topic, String msg) {
 
+        String appid = "";
         String msgtype = "";
         String msgcw = "";
         int result = 0;
+
+
         try {
 
             JSONObject jsonObject = new JSONObject(msg);
-            msgtype = jsonObject.getString(MiofTag.TAG_MSGTYPE);
-            msgcw = jsonObject.getString(MiofTag.TAG_MSGCW);
-            result = jsonObject.getInt(MiofTag.TAG_RESULT);
+            if (msg.contains("\"" + MiofTag.TAG_APPID + "\"")) {
+                appid = jsonObject.getString(MiofTag.TAG_APPID);
+            }
+            if (msg.contains("\"" + MiofTag.TAG_MSGTYPE + "\"")) {
+                msgtype = jsonObject.getString(MiofTag.TAG_MSGTYPE);
+            }
+            if (msg.contains("\"" + MiofTag.TAG_MSGCW + "\"")) {
+                msgcw = jsonObject.getString(MiofTag.TAG_MSGCW);
+            }
+            if (msg.contains("\"" + MiofTag.TAG_RESULT + "\"")) {
+                result = jsonObject.getInt(MiofTag.TAG_RESULT);
+            }
+
+            if (!checkMsg(appid, msgcw)) {
+                return;
+            }
+
 
         } catch (JSONException e) {
             e.printStackTrace();
             SLog.e(TAG, "JSON format is not correct");
+            return;
         }
+
 
         switch (msgtype) {
 
@@ -130,14 +156,17 @@ public class BaseBusiHandler {
 
                 C_0x8026.m_0x8026_resp(msg);
                 break;
-            case "0x8027":
+            case "0x8027"://第三方登录
 
                 C_0x8027.m_0x8027_resp(msg);
                 break;
 
+            case C_0x8028.MSGTYPE: //第三方支付 统一下单
+                C_0x8028.m_0x8028_resp(msg);
+                break;
             case "0x8200"://消息透传
 
-                C_0x8200.m_0x8200_resp(msg);
+                C_0x8200.m_0x8200_resp(topic, msg);
                 break;
 
             case "0x9998"://终端上线
@@ -150,6 +179,7 @@ public class BaseBusiHandler {
                 C_0x9999.m_0x9999_resp(msg);
                 break;
 
+
             default:
 
                 break;
@@ -159,6 +189,27 @@ public class BaseBusiHandler {
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onMessageArrived(topic, msg);
 
 
+    }
+
+    //接收到不属于自己的消息 需要排除
+    private boolean checkMsg(String appid, String msgcw) throws JSONException {
+
+        //排除无用消息
+        if (SPController.getAppid().equals(appid)) {
+            //正常消息 正常处理
+
+        } else {
+            //不是自己的appid
+            if (msgcw.equals("0x08") || msgcw.equals("0x09")) {//从云端下来的消息 不处理
+                SLog.e(TAG, "receiver other appid msg " + msgcw);
+                return false;
+            } else {
+                //从对端 过来的消息 都认为是正常消息
+
+            }
+
+        }
+        return true;
     }
 
 

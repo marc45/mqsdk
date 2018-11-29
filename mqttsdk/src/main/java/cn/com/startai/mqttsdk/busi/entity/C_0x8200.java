@@ -1,11 +1,15 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+import android.transition.Slide;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
@@ -45,12 +49,22 @@ public class C_0x8200 {
     /**
      * 处理消息透传返回
      */
-    public static void m_0x8200_resp(String miof) {
+    public static void m_0x8200_resp(String topic, String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
             return;
+        }
+
+        if (TextUtils.isEmpty(resp.getFromid()) && topic.contains("-A")) {
+            String[] aar = topic.split("/");
+            String sn = aar[aar.length - 1].replace("-A", "");
+            resp.setFromid(sn);
+            C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
+            if (currUser != null) {
+                resp.setToid(currUser.getUserid());
+            }
         }
 
         SLog.e(TAG, "透传消息");

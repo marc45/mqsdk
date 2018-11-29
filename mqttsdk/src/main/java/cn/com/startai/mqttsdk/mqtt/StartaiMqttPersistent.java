@@ -32,8 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import javax.net.ssl.SNIHostName;
-
 import cn.com.startai.mqttsdk.IPersisitentNet;
 import cn.com.startai.mqttsdk.PersistentConnectState;
 import cn.com.startai.mqttsdk.StartAI;
@@ -60,7 +58,6 @@ import cn.com.startai.mqttsdk.listener.StartaiTimerPingSender;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
-import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
@@ -350,7 +347,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
 
             message.setM_ver(MqttConfigure.m_ver);
-            message.setTs(System.currentTimeMillis());
+            message.setTs(System.currentTimeMillis() / 1000);
 
             msgSend = SJsonUtils.toJson(message);
 
@@ -492,8 +489,14 @@ public class StartaiMqttPersistent implements IPersisitentNet {
         if (context != null && wifiReceiver != null) {
             context.unregisterReceiver(wifiReceiver);
         }
-
         disConnect(true);
+
+        mConnectHandler.removeCallbacksAndMessages(null);
+        mainHandler.removeCallbacksAndMessages(null);
+        mMessageSendHandler.removeCallbacksAndMessages(null);
+        mBusiHandler.removeCallbacksAndMessages(null);
+
+
     }
 
     /**
@@ -590,7 +593,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                                     StartAI.getInstance().getPersisitnet().getEventDispatcher().onHostChange(host);
                                 }
                                 //发送设备上线消息
-                                C_0x9998.m_0x9998_req(null);
+//                                C_0x9998.m_0x9998_req(null);
 
                                 //判断token是否失败
                                 checkIsAvaliToken();
@@ -655,12 +658,12 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                         SLog.e(TAG, "连接失败,准备重试 " + returnCount);
                         reconnect();
 
-                    } catch (Exception e) {
+                    } /*catch (Exception e) {
                         e.printStackTrace();
                         StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectFailed(StartaiError.ERROR_CONN_UNKNOW, e.getMessage());
 
 
-                    }
+                    }*/
                 }
 
 
@@ -786,7 +789,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             if (userBean != null) {
                 id = userBean.getUserid();
             } else {
-                id = DeviceInfoManager.getInstance().getSn(context);
+                id = MqttConfigure.getSn(context);
             }
             ArrayList<TopicBean> allTopics = SDBmanager.getInstance().getAllTopic(id);
 
@@ -989,20 +992,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                         String msg = new String(mqttMessage.getPayload(), Charset.forName("utf-8"));
                         SLog.d(TAG, "messageArrived topic = " + topic + "\nqos = " + mqttMessage.getQos() + "\nretain = " + mqttMessage.isRetained() + "\n msg = " + msg);
 
-                        if (topic.length() > 64) {
 
-                            C_0x8018.Resp.ContentBean currUser = StartAI.getInstance().getCommonBusiManager().getCurrUser();
-                            if (currUser != null) {
-                                String[] split = topic.split("/");
-
-                                if (split.length > 1 && currUser.getUserid().equals(split[split.length - 2])) {
-                                    if (split[split.length - 1].length() > 30 && !split[split.length - 1].equals(MqttConfigure.getSn(context))) {
-                                        SLog.d(TAG, "不属于自己的消息，不处理");
-                                    }
-                                }
-
-                            }
-                        }
                         getBusiHandler().handMessage(topic, msg);
 
                     } catch (Exception e) {

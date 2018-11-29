@@ -17,9 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.tencent.mm.opensdk.modelpay.PayReq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +37,13 @@ import cn.com.startai.mqsdk.util.permission.DialogHelper;
 import cn.com.startai.mqsdk.util.zxing.ScanActivity;
 import cn.com.startai.mqttsdk.PersistentConnectState;
 import cn.com.startai.mqttsdk.StartAI;
+import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8004;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 
 public class HomeActivity extends BaseActivity {
@@ -49,13 +54,9 @@ public class HomeActivity extends BaseActivity {
     ArrayList<C_0x8005.Resp.ContentBean> list = new ArrayList<>();
 
     private MyRecyclerViewAdapter mAdapter;
-    private long t;
     private TextView tvConnect;
 
     private String TAG = "AudioTrackTest";
-    private final long WAIT_MSEC = 200;
-    private final int OFFSET_DEFAULT = 0;
-    private final int OFFSET_NEGATIVE = -10;
 
 
     @Override
@@ -467,6 +468,7 @@ public class HomeActivity extends BaseActivity {
         } else if (id == R.id.menu_refresh) {
 
 
+
             StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
 
 
@@ -475,6 +477,37 @@ public class HomeActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    public void onThirdPaymentUnifiedOrderResult(C_0x8028.Resp resp) {
+        super.onThirdPaymentUnifiedOrderResult(resp);
+
+
+        if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+            TAndL.TL(getApplicationContext(), "统一下单 成功 正在调起支付");
+
+            C_0x8028.Resp.ContentBean content = resp.getContent();
+
+
+            PayReq req = new PayReq();
+            //req.appId = "wxf8b4f85f3a794e77";  // 测试用appId
+            req.appId = content.getWX_Appid();
+            req.partnerId = content.getWX_Partnerid();
+            req.prepayId = content.getWX_Prepayid();
+            req.nonceStr = content.getWX_Noncestr();
+            req.timeStamp = content.getWX_Timestamp();
+            req.packageValue = content.getWX_Package_();
+            req.sign = "B6DB96533CB688A6EF2300C5091CDFBF";
+//            req.sign = content.getWX_Sign();
+            req.extData = "app data"; // optional
+            // 在支付之前，如果应用没有注册到微信，应该先调用IWXMsg.registerApp将应用注册到微信
+            MyApp.getWxAPI().sendReq(req);
+
+        } else {
+            TAndL.TL(getApplicationContext(), "统一下单 失败 ");
+        }
+
+    }
 
     @Override
     protected void onResume() {

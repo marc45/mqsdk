@@ -94,7 +94,7 @@ public class MqttPublishRequestCreator {
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
-        mqttPublishRequest.retain = true;
+        mqttPublishRequest.retain = false;
         mqttPublishRequest.topic = TopicConsts.getWillTopic();
 
         return mqttPublishRequest;
@@ -122,7 +122,7 @@ public class MqttPublishRequestCreator {
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
-        mqttPublishRequest.retain = true;
+        mqttPublishRequest.retain = false;
         mqttPublishRequest.topic = TopicConsts.getWillTopic();
 
         return mqttPublishRequest;

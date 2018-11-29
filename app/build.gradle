@@ -14,8 +14,8 @@ android {
         applicationId "cn.com.startai.mqsdk"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 10003
-        versionName "1.0.003"
+        versionCode 10005
+        versionName "1.0.005"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -51,7 +51,7 @@ dependencies {
     //startai airkiss sdk
     implementation 'cn.com.startai:airkisssdk:1.0.3'
     //startai esptouch sdk
-    compile 'cn.com.startai:esptouchsdk:1.0.3'
+    implementation 'cn.com.startai:esptouchsdk:1.0.3'
     //chrom inspect 调试工具
     implementation 'com.facebook.stetho:stetho:1.4.2'
     //json解析

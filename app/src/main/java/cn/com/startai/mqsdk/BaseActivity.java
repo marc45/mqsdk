@@ -38,6 +38,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.event.AOnStartaiMessageArriveListener;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
@@ -119,7 +120,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 注册结果回调
          *
@@ -133,7 +133,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 添加好友回调
          *
@@ -145,7 +144,6 @@ public class BaseActivity extends AppCompatActivity {
             super.onBindResult(resp, id, bebinding);
             BaseActivity.this.onBindResult(resp, id, bebinding);
         }
-
 
 
         /**
@@ -173,9 +171,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
-
-
         /**
          * 获取绑定关系列表回调
          */
@@ -198,7 +193,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 获取验证码结果
          *
@@ -209,8 +203,6 @@ public class BaseActivity extends AppCompatActivity {
             super.onGetIdentifyCodeResult(resp);
             BaseActivity.this.onGetIdentifyCodeResult(resp);
         }
-
-
 
 
         /**
@@ -225,11 +217,10 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         @Override
         public void onPassthroughResult(C_0x8200.Resp resp, String dataString, byte[] dataByteArray) {
             super.onPassthroughResult(resp, dataString, dataByteArray);
-            BaseActivity.this.onPassthroughResult(resp,dataString, dataByteArray);
+            BaseActivity.this.onPassthroughResult(resp, dataString, dataByteArray);
         }
 
         /**
@@ -270,7 +261,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 更新用户信息结果
          *
@@ -281,7 +271,6 @@ public class BaseActivity extends AppCompatActivity {
             super.onUpdateUserInfoResult(resp);
             BaseActivity.this.onUpdateUserInfoResult(resp);
         }
-
 
 
         /**
@@ -309,7 +298,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 查询最新软件版本结果
          *
@@ -320,7 +308,6 @@ public class BaseActivity extends AppCompatActivity {
             super.onGetLatestVersionResult(resp);
             BaseActivity.this.onGetLatestVersionResult(resp);
         }
-
 
 
         /**
@@ -335,7 +322,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 发送邮件结果返回
          *
@@ -346,7 +332,6 @@ public class BaseActivity extends AppCompatActivity {
             super.onSendEmailResult(resp);
             BaseActivity.this.onSendEmailResult(resp);
         }
-
 
 
         /**
@@ -361,7 +346,6 @@ public class BaseActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * 重置手机登录密码结果
          *
@@ -373,7 +357,21 @@ public class BaseActivity extends AppCompatActivity {
             BaseActivity.this.onResetMobileLoginPwdResult(resp);
         }
 
+        /**
+         * 第三方支付 统一下单结果
+         *
+         * @param resp
+         */
+        @Override
+        public void onThirdPaymentUnifiedOrderResult(C_0x8028.Resp resp) {
+            super.onThirdPaymentUnifiedOrderResult(resp);
+            BaseActivity.this.onThirdPaymentUnifiedOrderResult(resp);
+        }
     };
+
+    public void onThirdPaymentUnifiedOrderResult(C_0x8028.Resp resp) {
+
+    }
 
     public void onPassthroughResult(C_0x8200.Resp resp, String dataString, byte[] dataByteArray) {
 
@@ -441,8 +439,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
-
     /**
      * 注册结果回调
      *
@@ -450,7 +446,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void onRegisterResult(C_0x8017.Resp resp) {
     }
-
 
 
     /**
@@ -473,7 +468,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 登录 回调
      *
@@ -481,7 +475,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void onLoginResult(C_0x8018.Resp resp) {
     }
-
 
 
     /**
@@ -509,7 +502,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 获取验证码结果
      *
@@ -517,9 +509,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void onGetIdentifyCodeResult(C_0x8021.Resp resp) {
     }
-
-
-
 
 
     /**
@@ -581,7 +570,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 更新用户信息结果
      *
@@ -589,7 +577,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void onUpdateUserInfoResult(C_0x8020.Resp resp) {
     }
-
 
 
     /**
@@ -611,7 +598,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 查询最新软件版本结果
      *
@@ -619,7 +605,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void onGetLatestVersionResult(C_0x8016.Resp resp) {
     }
-
 
 
     /**
@@ -631,7 +616,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 发送邮件结果返回
      *
@@ -641,7 +625,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 修改备注名结果
      *
@@ -649,7 +632,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void onUpdateRemarkResult(C_0x8015.Resp resp) {
     }
-
 
 
     /**

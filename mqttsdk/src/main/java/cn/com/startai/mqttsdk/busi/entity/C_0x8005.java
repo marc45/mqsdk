@@ -80,13 +80,13 @@ public class C_0x8005 implements Serializable {
         }
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
 
-        String id = "";
-        if (userBean != null) {
-            id = userBean.getUserid();
-        } else {
-            id = MqttConfigure.getSn(StartAI.getContext());
-
-        }
+//        String id = "";
+//        if (userBean != null) {
+//            id = userBean.getUserid();
+//        } else {
+//            id = MqttConfigure.getSn(StartAI.getContext());
+//
+//        }
 
 
         if (result == 1) {
@@ -105,7 +105,6 @@ public class C_0x8005 implements Serializable {
 
                 //重置数据库，将 type 先设为 "remove"
                 SDBmanager.getInstance().resetTopic(resp.getToid());
-                TopicBean topicBean = null;
                 if (resp.getContent().size() > 0) {
 
                     for (Resp.ContentBean contentBean : resp.getContent()) {
@@ -114,8 +113,11 @@ public class C_0x8005 implements Serializable {
                             continue;
                         }
 
-                        topicBean = new TopicBean(TopicConsts.getSubFriendTopic(contentBean.id), "set", "", resp.getToid());
-                        SDBmanager.getInstance().addOrUpdateTopic(topicBean);
+                        TopicBean topicBeanWill = new TopicBean(TopicConsts.getSubFriendWillTopic(contentBean.id), "set", "", resp.getToid());
+                        SDBmanager.getInstance().addOrUpdateTopic(topicBeanWill);
+
+                        TopicBean topicBeanReport = new TopicBean(TopicConsts.getSubFriendReportTopic(contentBean.id), "set", "", resp.getToid());
+                        SDBmanager.getInstance().addOrUpdateTopic(topicBeanReport);
                     }
                     //订阅对应主题
                     StartaiMqttPersistent.getInstance().subFriendReportTopic();

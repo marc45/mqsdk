@@ -22,6 +22,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.HostChangeListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
@@ -758,6 +759,35 @@ public class PersistentEventDispatcher {
 
             }
         }
+    }
+
+    public void onThirdPaymentUnifiedOrderResult(final C_0x8028.Resp resp) {
+
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onThirdPaymentUnifiedOrderResult(resp);
+
+
+                            }
+                        });
+                    } else {
+                        list.onThirdPaymentUnifiedOrderResult(resp);
+
+                    }
+                }
+
+
+            }
+        }
+
     }
 
 

@@ -34,7 +34,7 @@ public class TopicBean {
     public static final String F_ID = "id";
 
     @Column(name = "time")
-    private long time; //用户id或sn
+    private long time; //更新时间
     public static final String F_TIME = "time";
 
 
@@ -49,7 +49,7 @@ public class TopicBean {
         this.time = time;
     }
 
-    public TopicBean(  String topic, String type, String currType, String id) {
+    public TopicBean(String topic, String type, String currType, String id) {
         this.topic = topic;
         this.type = type;
         this.currType = currType;

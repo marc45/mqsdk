@@ -18,6 +18,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 
 public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriveListener {
@@ -427,6 +428,15 @@ public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriv
      * @param resp 成功内容
      */
     public void onResetMobileLoginPwdResult(C_0x8026.Resp resp) {
+
+    }
+
+    /**
+     * 第三方支付 统一下单结果
+     *
+     * @param resp
+     */
+    public void onThirdPaymentUnifiedOrderResult(C_0x8028.Resp resp) {
 
     }
 

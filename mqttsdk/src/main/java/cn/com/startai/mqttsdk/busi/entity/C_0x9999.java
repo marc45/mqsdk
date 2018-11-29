@@ -4,10 +4,6 @@ import android.text.TextUtils;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
-import cn.com.startai.mqttsdk.control.SDBmanager;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
@@ -46,6 +42,9 @@ public class C_0x9999 {
         }
 
         String sn = resp.getContent().getSn();
+        if (TextUtils.isEmpty(sn)) {
+            sn = resp.getContent().getClientid();
+        }
         SLog.e(TAG, "设备离线 " + sn);
 
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
@@ -112,11 +111,18 @@ public class C_0x9999 {
             private String sn;
             private String reason;
 
+            private String clientid;
+            private String username;
+            private int ts;
+
             @Override
             public String toString() {
                 return "ContentBean{" +
                         "sn='" + sn + '\'' +
                         ", reason='" + reason + '\'' +
+                        ", clientid='" + clientid + '\'' +
+                        ", username='" + username + '\'' +
+                        ", ts=" + ts +
                         '}';
             }
 
@@ -134,6 +140,30 @@ public class C_0x9999 {
 
             public void setReason(String reason) {
                 this.reason = reason;
+            }
+
+            public String getClientid() {
+                return clientid;
+            }
+
+            public void setClientid(String clientid) {
+                this.clientid = clientid;
+            }
+
+            public String getUsername() {
+                return username;
+            }
+
+            public void setUsername(String username) {
+                this.username = username;
+            }
+
+            public int getTs() {
+                return ts;
+            }
+
+            public void setTs(int ts) {
+                this.ts = ts;
             }
         }
 

@@ -12,7 +12,10 @@ import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+import cn.com.startai.mqsdk.MyApp;
+import cn.com.startai.mqsdk.util.TAndL;
+import cn.com.startai.mqttsdk.utils.SLog;
 
 
 public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
@@ -26,19 +29,20 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.pay_result);
 
-        api = WXAPIFactory.createWXAPI(this, Consts.APP_ID);
-        api.handleIntent(getIntent(), this);
+        MyApp.getWxAPI().handleIntent(getIntent(), this);
+
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        api.handleIntent(intent, this);
+        MyApp.getWxAPI().handleIntent(intent, this);
     }
 
     @Override
     public void onReq(BaseReq req) {
+        TAndL.L(req.checkArgs() + "");
     }
 
     @Override

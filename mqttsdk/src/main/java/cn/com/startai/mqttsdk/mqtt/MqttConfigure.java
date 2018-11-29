@@ -6,8 +6,6 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
-import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
-import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
@@ -59,20 +57,33 @@ public class MqttConfigure {
         return mqttHosts;
     }
 
+    public static boolean isSn_16 = true;
+
     /**
      * @param context
      * @return
      */
     public static String getSn(Context context) {
+        if (TextUtils.isEmpty(appid)) {
+            SLog.e(TAG, "appid is empty");
+            return null;
+        }
         long t = System.currentTimeMillis();
         if (TextUtils.isEmpty(sn)) {
-            sn = DeviceInfoManager.getInstance().getSn(context);
+            if (isSn_16) {
+                sn = DeviceInfoManager.getInstance().getSn_16(context);
+            } else {
+                sn = DeviceInfoManager.getInstance().getSn(context);
+            }
         }
+
+
         SLog.d(TAG, "getSn use time = " + (System.currentTimeMillis() - t));
-        return sn;
+        return DeviceInfoManager.getInstance().getSn_16(sn + appid);
     }
 
-    public static Will getWill(Context context) {
+
+    public static Will getWill() {
         if (will == null) {
             MqttPublishRequest x9999_req_msg = MqttPublishRequestCreator.create_0x9999_req_msg();
             String willMsg = SJsonUtils.toJson(x9999_req_msg.message);
@@ -80,5 +91,4 @@ public class MqttConfigure {
         }
         return will;
     }
-
 }

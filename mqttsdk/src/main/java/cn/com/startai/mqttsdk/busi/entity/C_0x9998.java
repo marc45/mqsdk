@@ -1,15 +1,12 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
 import android.text.TextUtils;
+import android.widget.TextView;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
-import cn.com.startai.mqttsdk.control.SDBmanager;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -56,12 +53,18 @@ public class C_0x9998 {
         }
 
         String sn = resp.getContent().getSn();
+        if (TextUtils.isEmpty(sn)) {
+            String clientid = resp.getContent().getClientid();
+            SLog.e(TAG, "设备上线 sn = " + sn + " userid = " + clientid);
+            sn = clientid;
+        }
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
         String userid = "";
         if (userBean != null) {
             userid = userBean.getUserid();
         }
         SLog.e(TAG, "设备上线 " + sn);
+
 
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onDeviceConnectStatusChanged(userid, 1, sn);
     }
@@ -121,11 +124,25 @@ public class C_0x9998 {
             private String sn;
             private String ipaddress;
 
+            private int protocol;
+            private String clientid;
+            private boolean clean_sess;
+            private int connack;
+            private String username;
+            private int ts;
+
+
             @Override
             public String toString() {
                 return "ContentBean{" +
                         "sn='" + sn + '\'' +
                         ", ipaddress='" + ipaddress + '\'' +
+                        ", protocol=" + protocol +
+                        ", clientid='" + clientid + '\'' +
+                        ", clean_sess=" + clean_sess +
+                        ", connack=" + connack +
+                        ", username='" + username + '\'' +
+                        ", ts=" + ts +
                         '}';
             }
 
@@ -145,6 +162,53 @@ public class C_0x9998 {
                 this.ipaddress = ipaddress;
             }
 
+            public int getProtocol() {
+                return protocol;
+            }
+
+            public void setProtocol(int protocol) {
+                this.protocol = protocol;
+            }
+
+            public String getClientid() {
+                return clientid;
+            }
+
+            public void setClientid(String clientid) {
+                this.clientid = clientid;
+            }
+
+            public boolean isClean_sess() {
+                return clean_sess;
+            }
+
+            public void setClean_sess(boolean clean_sess) {
+                this.clean_sess = clean_sess;
+            }
+
+            public int getConnack() {
+                return connack;
+            }
+
+            public void setConnack(int connack) {
+                this.connack = connack;
+            }
+
+            public String getUsername() {
+                return username;
+            }
+
+            public void setUsername(String username) {
+                this.username = username;
+            }
+
+            public int getTs() {
+                return ts;
+            }
+
+            public void setTs(int ts) {
+                this.ts = ts;
+            }
         }
 
     }

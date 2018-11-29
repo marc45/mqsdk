@@ -66,7 +66,7 @@ public class StartAI implements IPersisitentNet {
         return BaseBusiManager.getInstance();
     }
 
-    public CommonBusiManager getCommonBusiManager(){
+    public CommonBusiManager getCommonBusiManager() {
         return CommonBusiManager.getInstance();
     }
 
@@ -94,9 +94,11 @@ public class StartAI implements IPersisitentNet {
     @Override
     public void unInit() {
 
+        getPersisitnet().unInit();
+
     }
 
-    public   StartaiMqttPersistent getPersisitnet() {
+    public StartaiMqttPersistent getPersisitnet() {
         return StartaiMqttPersistent.getInstance();
     }
 

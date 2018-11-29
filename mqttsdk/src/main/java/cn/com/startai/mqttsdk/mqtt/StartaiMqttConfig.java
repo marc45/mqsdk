@@ -33,14 +33,16 @@ public class StartaiMqttConfig {
         options.setPassword(MqttConfigure.mqpassword.toCharArray());
         options.setKeepAliveInterval(MqttConfigure.keepAliveInterval);
         options.setConnectionTimeout(MqttConfigure.connectTimeOut);
+        options.setMaxInflight(50);
+
         //mqsdk已经处理自动重连
 //        options.setAutomaticReconnect(MqttConfigure.isAutoReconnection);
 
 
-        Will will = MqttConfigure.getWill(context);
-        if (will != null) {
-            options.setWill(will.getTopic(), will.getPlayload(), will.getQos(), will.getRetains());
-        }
+//        Will will = MqttConfigure.getWill();
+//        if (will != null) {
+//            options.setWill(will.getTopic(), will.getPlayload(), will.getQos(), will.getRetains());
+//        }
 
         boolean checkCrt = MqttConfigure.isCheckRootCrt;
         if (checkCrt) {

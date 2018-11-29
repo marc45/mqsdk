@@ -374,4 +374,24 @@ public class SDBmanager {
         return all;
     }
 
+    /**
+     * 是否有包含sn的主题
+     *
+     * @param sn
+     * @return
+     */
+    public boolean hasTopicBySn(String userid,String sn) {
+
+
+        try {
+            long like = db.selector(TopicBean.class).where(TopicBean.F_TOPIC, "like", "%" + sn + "%").and(TopicBean.F_ID, "=", userid).count();
+            if (like > 0) {
+                return true;
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

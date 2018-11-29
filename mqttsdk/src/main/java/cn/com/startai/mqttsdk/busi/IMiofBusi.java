@@ -4,6 +4,7 @@ package cn.com.startai.mqttsdk.busi;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
@@ -259,6 +260,21 @@ public interface IMiofBusi {
      * @param type     类型 1 微信登录 2 支付宝登录
      * @param listener
      */
+    @Deprecated
     void loginWithThirdAccount(int type, String code, IOnCallListener listener);
+
+    /**
+     * 第三方账号登录
+     *
+     * @param contentBean 第三方登录参数
+     * @param listener
+     */
+    void loginWithThirdAccount(C_0x8027.Req.ContentBean contentBean, IOnCallListener listener);
+
+
+    /**
+     * 第三方支付 统一下单
+     */
+    void thirdPaymentUnifiedOrder(C_0x8028.Req.ContentBean contentBean, IOnCallListener listener);
 }
 

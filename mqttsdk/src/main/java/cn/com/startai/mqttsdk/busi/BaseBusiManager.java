@@ -18,6 +18,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
@@ -359,6 +360,29 @@ public class BaseBusiManager implements IMiofBusi {
     @Override
     public void loginWithThirdAccount(int type, String code, IOnCallListener listener) {
         C_0x8027.req(type, code, listener);
+    }
+
+    /**
+     * 第三方账号登录
+     *
+     * @param contentBean 第三方登录参数
+     * @param listener
+     */
+    @Override
+    public void loginWithThirdAccount(C_0x8027.Req.ContentBean contentBean, IOnCallListener listener) {
+        C_0x8027.req(contentBean, listener);
+    }
+
+
+    /**
+     * 第三方支付 统一下单
+     *
+     * @param contentBean
+     * @param listener
+     */
+    @Override
+    public void thirdPaymentUnifiedOrder(C_0x8028.Req.ContentBean contentBean, IOnCallListener listener) {
+        C_0x8028.req(contentBean, listener);
     }
 
 

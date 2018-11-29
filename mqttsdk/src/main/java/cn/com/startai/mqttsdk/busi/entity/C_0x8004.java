@@ -4,12 +4,9 @@ import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
@@ -67,25 +64,40 @@ public class C_0x8004 {
             id = MqttConfigure.getSn(StartAI.getContext());
         }
 
+
+        String friendId = "";
+
+
         if (result == 1) {
             SLog.e(TAG, "解绑成功");
+
+            if (id.equals(resp.getContent().getBeunbindingid())) {
+                friendId = resp.getContent().getUnbindingid();
+            } else {
+                friendId = resp.getContent().getBeunbindingid();
+            }
+
         } else {
 
             SLog.e(TAG, "解绑失败 " + resp.getContent().getErrmsg());
-        }
 
-        String friendId = "";
-        if (id.equals(resp.getContent().getBeunbindingid())) {
-            friendId = resp.getContent().getUnbindingid();
-        } else {
-            friendId = resp.getContent().getBeunbindingid();
+            if (id.equals(resp.getContent().getBeunbindingid())) {
+                friendId = resp.getContent().getErrcontent().getUnbindingid();
+            } else {
+                friendId = resp.getContent().getErrcontent().getBeunbindingid();
+            }
+
         }
 
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onUnBindResult(resp, id, friendId);
 
         if (userBean != null) {
-            TopicBean topicBean = new TopicBean(TopicConsts.getSubFriendTopic(friendId), "remove", "", userBean.getUserid());
-            SDBmanager.getInstance().addOrUpdateTopic(topicBean);
+            TopicBean topicBeanWill = new TopicBean(TopicConsts.getSubFriendWillTopic(friendId), "remove", "", userBean.getUserid());
+            SDBmanager.getInstance().addOrUpdateTopic(topicBeanWill);
+
+            TopicBean topicBeanReport = new TopicBean(TopicConsts.getSubFriendReportTopic(friendId), "remove", "", userBean.getUserid());
+            SDBmanager.getInstance().addOrUpdateTopic(topicBeanReport);
+
             StartaiMqttPersistent.getInstance().subFriendReportTopic();
 
         }

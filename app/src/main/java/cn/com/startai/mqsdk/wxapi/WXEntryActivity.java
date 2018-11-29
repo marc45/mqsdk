@@ -14,6 +14,7 @@ import cn.com.startai.mqsdk.R;
 import cn.com.startai.mqsdk.util.TAndL;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 

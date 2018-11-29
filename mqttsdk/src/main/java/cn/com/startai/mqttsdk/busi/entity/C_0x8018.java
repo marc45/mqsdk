@@ -70,7 +70,7 @@ public class C_0x8018 {
                 long time = currUserFromDb.getTime();
 
                 long diff = (System.currentTimeMillis() - time) / 1000 - expire_in;
-                if (expire_in>0&&diff > 0) {
+                if (expire_in > 0 && diff > 0) {
                     SLog.d(TAG, "账号登录状态已过期，需要重新登录");
 
                 } else {
@@ -149,7 +149,7 @@ public class C_0x8018 {
 
     private static void logoutAndReconnect() {
 
-        //清空clientid
+        //清空上次连接的clientid
         SPController.setClientid("");
 
         SPController.setUserInfo(null);
@@ -157,7 +157,6 @@ public class C_0x8018 {
         //清空用户登录状态
         SDBmanager.getInstance().deleteUserByLoginStatus(1);
 
-        //写入登出标志
 
         //断开连接并重新以随机clientid连接
         StartaiMqttPersistent.getInstance().disconnectAndReconnect();

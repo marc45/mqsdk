@@ -56,6 +56,32 @@ public class C_0x8027 implements Serializable {
 
     }
 
+    /**
+     * 请求 第三方登录
+     *
+     * @param listener
+     */
+    public static void req(Req.ContentBean contentBean, IOnCallListener listener) {
+
+
+        MqttPublishRequest<StartaiMessage<Req.ContentBean>> req_msg = create_req_msg(contentBean);
+        if (req_msg == null) {
+            CallbackManager.callbackMessageSendResult(false, listener, req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
+            return;
+        }
+
+        String uuid = UUID.randomUUID().toString();
+        StartaiMessage<Req.ContentBean> message = req_msg.message;
+
+        contentBean.setType(contentBean.getType());
+        C_0x8018.Req.ContentBean contentBean8018 = new C_0x8018.Req.ContentBean();
+        C_0x8018.maps.put(uuid, contentBean8018);
+        message.setMsgid(uuid);
+
+        StartaiMqttPersistent.getInstance().send(req_msg, listener);
+
+    }
+
     private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(@NonNull int type, String code) {
 
         if (TextUtils.isEmpty(code)) {
@@ -68,6 +94,26 @@ public class C_0x8027 implements Serializable {
                 .setMsgtype(MSGTYPE)
                 .setMsgcw(MSGCW)
                 .setContent(new Req.ContentBean(type, code)).create();
+
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+    }
+
+    private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean contentBean) {
+
+        if (contentBean == null) {
+            SLog.e(TAG, "contentBean  can not be null");
+            return null;
+        }
+
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype(MSGTYPE)
+                .setMsgcw(MSGCW)
+                .setContent(contentBean).create();
 
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
@@ -118,23 +164,37 @@ public class C_0x8027 implements Serializable {
 
 
             /**
-             * type : 2
-             * code : cidigjapfijgijcoodoodap
+             * code :
+             * type : 1
+             * userinfo : {"openid":"OPENID","nickname":"NICKNAME","email":"email","sex":1,"province":"PROVINCE","city":"CITY","country":"COUNTRY","headimgurl":"http://url","username":"username","firstName":"firstName","lastName":"lastName","address":"address","unionid":"unionid"}
              */
 
-            private int type;
             private String code;
+            private int type;
+            private UserinfoBean userinfo;
+
+            public ContentBean() {
+            }
+
+            public ContentBean(int type, String code) {
+                this.code = code;
+                this.type = type;
+            }
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "type=" + type +
-                        ", code='" + code + '\'' +
+                        "code='" + code + '\'' +
+                        ", type=" + type +
+                        ", userinfo=" + userinfo +
                         '}';
             }
 
-            public ContentBean(int type, String code) {
-                this.type = type;
+            public String getCode() {
+                return code;
+            }
+
+            public void setCode(String code) {
                 this.code = code;
             }
 
@@ -146,12 +206,167 @@ public class C_0x8027 implements Serializable {
                 this.type = type;
             }
 
-            public String getCode() {
-                return code;
+            public UserinfoBean getUserinfo() {
+                return userinfo;
             }
 
-            public void setCode(String code) {
-                this.code = code;
+            public void setUserinfo(UserinfoBean userinfo) {
+                this.userinfo = userinfo;
+            }
+
+            public static class UserinfoBean {
+                /**
+                 * openid : OPENID
+                 * nickname : NICKNAME
+                 * email : email
+                 * sex : 1
+                 * province : PROVINCE
+                 * city : CITY
+                 * country : COUNTRY
+                 * headimgurl : http://url
+                 * username : username
+                 * firstName : firstName
+                 * lastName : lastName
+                 * address : address
+                 * unionid : unionid
+                 */
+
+                private String openid;
+                private String nickname;
+                private String email;
+                private int sex;
+                private String province;
+                private String city;
+                private String country;
+                private String headimgurl;
+                private String username;
+                private String firstName;
+                private String lastName;
+                private String address;
+                private String unionid;
+
+                @Override
+                public String toString() {
+                    return "UserinfoBean{" +
+                            "openid='" + openid + '\'' +
+                            ", nickname='" + nickname + '\'' +
+                            ", email='" + email + '\'' +
+                            ", sex=" + sex +
+                            ", province='" + province + '\'' +
+                            ", city='" + city + '\'' +
+                            ", country='" + country + '\'' +
+                            ", headimgurl='" + headimgurl + '\'' +
+                            ", username='" + username + '\'' +
+                            ", firstName='" + firstName + '\'' +
+                            ", lastName='" + lastName + '\'' +
+                            ", address='" + address + '\'' +
+                            ", unionid='" + unionid + '\'' +
+                            '}';
+                }
+
+                public String getOpenid() {
+                    return openid;
+                }
+
+                public void setOpenid(String openid) {
+                    this.openid = openid;
+                }
+
+                public String getNickname() {
+                    return nickname;
+                }
+
+                public void setNickname(String nickname) {
+                    this.nickname = nickname;
+                }
+
+                public String getEmail() {
+                    return email;
+                }
+
+                public void setEmail(String email) {
+                    this.email = email;
+                }
+
+                public int getSex() {
+                    return sex;
+                }
+
+                public void setSex(int sex) {
+                    this.sex = sex;
+                }
+
+                public String getProvince() {
+                    return province;
+                }
+
+                public void setProvince(String province) {
+                    this.province = province;
+                }
+
+                public String getCity() {
+                    return city;
+                }
+
+                public void setCity(String city) {
+                    this.city = city;
+                }
+
+                public String getCountry() {
+                    return country;
+                }
+
+                public void setCountry(String country) {
+                    this.country = country;
+                }
+
+                public String getHeadimgurl() {
+                    return headimgurl;
+                }
+
+                public void setHeadimgurl(String headimgurl) {
+                    this.headimgurl = headimgurl;
+                }
+
+                public String getUsername() {
+                    return username;
+                }
+
+                public void setUsername(String username) {
+                    this.username = username;
+                }
+
+                public String getFirstName() {
+                    return firstName;
+                }
+
+                public void setFirstName(String firstName) {
+                    this.firstName = firstName;
+                }
+
+                public String getLastName() {
+                    return lastName;
+                }
+
+                public void setLastName(String lastName) {
+                    this.lastName = lastName;
+                }
+
+                public String getAddress() {
+                    return address;
+                }
+
+                public void setAddress(String address) {
+                    this.address = address;
+                }
+
+                public String getUnionid() {
+                    return unionid;
+                }
+
+                public void setUnionid(String unionid) {
+                    this.unionid = unionid;
+                }
             }
         }
 

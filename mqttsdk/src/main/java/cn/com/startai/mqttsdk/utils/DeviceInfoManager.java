@@ -220,12 +220,30 @@ public class DeviceInfoManager {
 
     }
 
-    public String getSn(String serial, String mac) {
-        return getSn(serial + mac);
+
+    public String getSn_16(String serial, String mac) {
+        return getSn_16(serial + mac);
     }
 
-    public String getSn(String content) {
-        return SMD5.generateMD5(content);
+    public String getSn(String str) {
+        return SMD5.generateMD5(str);
+    }
+
+    public String getSn_16(String str) {
+        String sn = SMD5.generateMD5(str);
+        if (sn.length() == 32) {
+            sn = sn.substring(8, 24);
+        }
+        return sn;
+    }
+
+    public String getSn_16(Context context) {
+
+        String sn = getSn(context);
+        if (sn.length() == 32) {
+            sn = sn.substring(8, 24);
+        }
+        return sn;
     }
 
     /**

@@ -93,4 +93,13 @@ public class Type {
         public static final int ALL = 7;
     }
 
+    public static final class ThirdPayment {
+        public static final int TYPE_DEPOSIT = 1; //押金
+        public static final int TYPE_BALANCE = 2; //余额
+        public static final int TYPE_ORDER = 3; //订单
+
+        public static final int PLATFOME_WECHAT = 1;
+        public static final int PLATFOME_ALIPAY = 2;
+
+    }
 }

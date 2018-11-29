@@ -5,12 +5,9 @@ import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
-import cn.com.startai.mqttsdk.control.entity.UserBean;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
@@ -86,8 +83,11 @@ public class C_0x8002 {
 
             if (userBean != null) {
 
-                TopicBean topicBean = new TopicBean(TopicConsts.getSubFriendTopic(bebinding.getId()), "set", "", id);
-                SDBmanager.getInstance().addOrUpdateTopic(topicBean);
+                TopicBean topicBeanWill = new TopicBean(TopicConsts.getSubFriendWillTopic(bebinding.getId()), "set", "", id);
+                SDBmanager.getInstance().addOrUpdateTopic(topicBeanWill);
+
+                TopicBean topicBeanReport = new TopicBean(TopicConsts.getSubFriendReportTopic(bebinding.getId()), "set", "", id);
+                SDBmanager.getInstance().addOrUpdateTopic(topicBeanReport);
 
                 StartaiMqttPersistent.getInstance().subFriendReportTopic();
 

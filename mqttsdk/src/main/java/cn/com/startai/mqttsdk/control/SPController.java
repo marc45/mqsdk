@@ -3,13 +3,10 @@ package cn.com.startai.mqttsdk.control;
 
 import android.text.TextUtils;
 
-import java.util.ArrayList;
-
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.control.entity.AreaLocation;
-import cn.com.startai.mqttsdk.control.entity.TopicBean;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
