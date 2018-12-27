@@ -841,34 +841,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
 【示例代码】
 
-		String uuid = UUID.randomUUID().toString().replace("-", "");
-        LanDeviceFinder.getInstance().find(uuid, "", 30 * 1000, new LanDeviceFinder.IDeviceFindListener() {
-            @Override
-            public void onDeviceFind(final LanDevice devices) {
-
-				String sn = devices.getSn();
-               	//TODO:处理发现的设备，可以此进行设备绑定操作
-				
-            }
-
-            @Override
-            public void onTimeout() {
-                TAndL.TL(getApplicationContext(), "超时");
-               
-            }
-
-            @Override
-            public void onException(Exception e) {
-                TAndL.TL(getApplicationContext(), "异常 = " + e.getMessage());
-                
-            }
-
-            @Override
-            public void onStop() {
-                
-            }
-        });
-    }
+	 
 #####4.1.2.扫码添加
 
 对于不在同一局域网的设备，可以通过扫码的方式获取得设备的sn再进行设备绑定，二维码扫描相关代码需要开发者自行编写。
@@ -1025,8 +998,232 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 	        "errmsg": "被绑定id无效"
 	    }
     }  
-### 部分请求参数实体结构 
+
+
+####6.其他接口
+
+
+######绑定第三方账号
+
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求 接口调用前需要调用 微信的第三方登录SDK 授权api 拿到 code 
+	C_0x8037.Req.ContentBean req = new C_0x8037.Req.ContentBean();
+	req.setCode(resp.code); //code 来自微信授权返回
+	req.setType(C_0x8037.THIRD_WECHAT); //绑定微信账号
+	StartAI.getInstance().getBaseBusiManager().bindThirdAccount(req,onCallListener)
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onBindThirdAccountResult(C_0x8037.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
  
+	}
+
+
+######解绑第三方账号
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求
+	C_0x8036.Req.ContentBean req = new C_0x8036.Req.ContentBean("userId", C_0x8036.THIRD_WECHAT);  //解绑 微信
+	StartAI.getInstance().getBaseBusiManager().unBindThirdAccount(req,onCallListener)
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onUnBindThirdAccountResult(C_0x8036.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
+ 
+	}
+######更改/添加手机号
+
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求 接口调用前需要先 调用 获取验证码，检验验证码
+	C_0x8034.Req.ContentBean req = new C_0x8034.Req.ContentBean("userId", mobile); //mobile 需要绑定的手机号
+	StartAI.getInstance().getBaseBusiManager().bindMobileNum(req,onCallListener)
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onBindMobileNumResult(C_0x8034.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
+ 
+	}
+######获取APP支付宝 登录/授权 加密信息
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求  
+	StartAI.getInstance().getBaseBusiManager().getAlipayAuthInfo(C_0x8033.AUTH_TYPE_LOGIN,onCallListener)
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onGetAlipayAuthInfoResult(C_0x8033.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
+ 
+	}
+######查询支付支付结果
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求  
+	StartAI.getInstance().getBaseBusiManager().getRealOrderPayStatus("oerderNum",onCallListener)
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onGetRealOrderPayStatusResult(C_0x8031.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
+ 
+	}
+######请求下单（生成预付单）
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求  
+	C_0x8028.Req.ContentBean req = new C_0x8028.Req.ContentBean(Type.ThirdPayment.TYPE_ORDER, Type.ThirdPayment.PLATFOME_WECHAT, currentOrder.getNo(), "INCHARGER-订单支付", "CNY", currentOrder.getNeed_pay_fee() + "");
+	StartAI.getInstance().getBaseBusiManager().thirdPaymentUnifiedOrder(req,onCallListener)
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onThirdPaymentUnifiedOrderResult(C_0x8028.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
+ 
+	}
+ 
+
+
+### 部分请求参数实体结构 
+
+>C_0x8028.Req.ContentBean 请求下单 请求数据 
+
+成员 | 类型 | 描述 |必须 | 备注
+:|
+platform | int | 支付平台 | 1 | C_0x8028.PLATFOME_WECHAT(1)微信支付<br>   C_0x8028.PLATFOME_ALIPAY(2)支付宝支付<br>  
+type | int |交易类型 | 1 |  C_0x8028.TYPE_DEPOSIT(1)押金充值<br> C_0x8028.TYPE_BALANCE(2)余额充值<br> C_0x8028.TYPE_ORDER(3)订单支付<br>
+goods_description | String | 商品描述 | 1 | 显示在微信支付单 如 “充电宝-押金充值”
+fee_type | String | 货币类型 | 1 | "CNY"
+total_fee | int | 总金额 | 1 | 单位： 分
+order_num | String | 订单号 | 1 | 
+ 
+
+>C_0x8031.Resp.ContentBean 查询支付结果 返回数据
+
+成员 | 类型 | 描述 |  备注
+:|
+platform | int | 支付平台 |   C_0x8031.PLATFORM_WECHAT(1)微信 <br>C_0x8031.PLATFORM_ALIPAY(2)支付宝 <br> C_0x8031.PLATFORM_SMALL_APP(3) 微信小程序 
+userid | String | 用户id |  
+openid | String | 用户在商户appid下的唯一id |  
+is_subscribe | String | 是否订阅 |  
+bank_type | String | 付款银行 | 
+total_fee | String | 交易金额 | 单位：分  
+out_trade_no | String | 商户订单号 | 
+transaction_id | String | 微信/支付宝支付订单号 | 
+trade_type | String | 交易类型 |  "APP"
+time_end | String | 支付完成时间 | 2018-11-11 22:22:22
+trade_state | String | 交易状态 |  核心字段<br> C_0x8031.TRADE_STATE_SUCCESS(SUCCESS)支付成功<br> C_0x8031.TRADE_STATE_REFUND（REFUND）转入退款<br> C_0x8031.TRADE_STATE_NOTPAY(NOTPAY)未支付<br> C_0x8031.TRADE_STATE_CLOSED(CLOSED)已关闭<br> C_0x8031.TRADE_STATE_REVOKED(REVOKED)已撤销（刷卡支付）<br> C_0x8031.TRADE_STATE_USERPAYING(USERPAYING)用户支付中<br> C_0x8031.TRADE_STATE_PAYERROR(PAYERROR)支付失败(其他原因，如银行返回失败)<br> C_0x8031.TRADE_STATE_ERROR(ERROR)错误 
+coupon_fee | String | 代金券金额 | 单位：分
+cash_fee | String | 现金支付金额 | 单位：分 
+coupon_count | String | 代金券数量 | 单位：分 
+trade_state_desc | String | 交易状态描述 | "支付成功"
+ 
+   
 >C_0x8002.Resp.ContentBean.BebindingBean 添加设备|好友成功返回结果
 
 成员 | 类型 | 描述 | 备注
@@ -1096,7 +1293,9 @@ sex | String | 性别 |  0 |  男/女
 firstName | String | 名 | 0 |  
 lastName | String | 姓 |  0 |  
 注：在请求时，如果不想修改此字段请将无需填写,服务器会自动保存上次的数据。
+
  
+
 >MqttPublishRequest < RequestType > 消息发送请求实体
 
 成员 | 类型 | 描述 | 备注
@@ -1147,8 +1346,17 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 5006 | 发送失败，未登录
 5007 | 发送失败，未激活
 5008 | 发送失败，参数非法
-5009 | 发送失败，不存在此好友
+5009 | 发送失败，不存在此好友 
 5010 | 发送失败，主题包含乱码
+5011 | 发送失败，mqtt未连接
+5012 | 发送失败，当前网络不可用
+5013 | 发送失败，当前网络类型不是wifi
+5014 | 发送失败，与设备不在同一局域网
+5015 | 发送失败，发送类型不对
+5016 | 发送失败，只支持局域网通信
+5017 | 发送失败，未正确初始化sdk
+5109 | 发送失败，设备未在广域网绑定
+5110 | 发送失败，设备未在局域网绑定
 6001 | 连接断开，账号在别处登录 
 6002 | 连接断开，mqtt断开连接
 6003 | 连接断开，超时
@@ -1196,6 +1404,8 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x800203 | 	加好友失败,被绑定id无效
 0x800204 | 	加好友失败,绑定id无效
 0x800205 | 	加好友失败,无需重复添加
+0x800206 |  加好友失败,数据保存失败
+0x800207 |	加好友失败,不允许跨域绑定
 0x800301 |	注销设备失败,content格式有误
 0x800302 |	注销设备失败,参数丢失
 0x800303 |	注销设备失败id无效
@@ -1203,6 +1413,7 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x800401 | 	解除好友关系失败,content格式有误
 0x800402 | 	解除好友关系失败,参数丢失
 0x800403 | 	解除好友关系失败,数据库删除失败1
+0x800404 |  解除好友关系失败,不允许移除
 0x800501 | 	查询好友列表失败,content格式有误
 0x800502 | 	查询好友列表失败,参数丢失
 0x800503 |	查询好友列表失败,类型不支持
@@ -1218,9 +1429,10 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x801703 |	用户注册失败,密码格式有误
 0x801704 |	用户注册失败,手机号码或邮箱格式有误
 0x801705 |	用户注册失败,手机号已经注册
-0x801706 |	注册类型不支持
+0x801706 |	用户注册失败,注册类型不支持
 0x801707 |	用户注册失败,数据保存失败
 0x801708 |	用户注册失败,邮件发送失败
+0x801709 |  用户注册失败,Appid无效
 0x801801 |	用户登录失败,content格式有误
 0x801802 |	用户登录失败,参数丢失
 0x801803 |	用户登录失败,登录类型不支持
@@ -1230,20 +1442,32 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x801807 |	用户登录失败,验证码错误或过期
 0x801808 |	用户登录失败,数据保存失败
 0x801809 |	用户登录失败,该用户已长期未登陆
+0x801810 |  用户登录失败,未设置密码,请使用手机+验证码登录
+0x801811 |  用户登录失败,appid无效
 0x801901 | 	更新设备信息失败,content格式有误
 0x801902 | 	更新设备信息失败,参数丢失
+0x802001 |	更新用户信息失败,Content格式有误
+0x802002 |	更新用户信息失败,参数丢失
+0x802003 |	更新用户信息失败,userid无效
+0x802004 |	更新用户信息失败,用户名不能更改
+0x802005 |	更新用户信息失败,用户名已存在
+0x802006 |	更新用户信息失败,数据保存失败
 0x802101 | 	获取手机验证码失败,content格式有误
 0x802102 |  获取手机验证码失败,参数丢失
 0x802103 | 	获取手机验证码失败,手机号格式不正确
 0x802104 | 	获取手机验证码失败,类型不支持
 0x802105 | 	获取手机验证码失败,无需重复注册
 0x802106 | 	获取手机验证码失败,验证码发送失败
+0x802107 |	获取手机验证码失败,数据保存失败
+0x802108 |	获取手机验证码失败,appid无效
+0x802109 |	获取手机验证码失败,未设置过密码,不可更改密码
 0x802201 | 	校验验证码失败,content格式有误
 0x802202 | 	校验验证码失败,参数丢失
 0x802203 | 	校验验证码失败,手机号格式不正确
 0x802204 | 	校验验证码失败,类型不支持
 0x802205 | 	校验验证码失败,验证码错误
 0x802206 | 	校验验证码失败,验证码过期
+0x802207 |	校验验证码失败,appid无效
 0x802301 |	发送邮件失败,content格式有误
 0x802302 |	发送邮件失败,参数丢失
 0x802303 |	发送邮件失败,该邮箱尚未注册
@@ -1260,8 +1484,105 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x802503 |	更改密码失败,用户id不合法
 0x802504 |	更改密码失败,旧密码不合法
 0x802505 |	更改密码失败,数据保存失败
+0x802506 |	更改密码失败,密码格式错误
+0x802601 |	重置密码失败,content格式有误
+0x802602 |	重置密码失败,参数丢失
+0x802603 |	重置密码失败,手机号码无效
+0x802604 |	重置密码失败,尚未设置密码
+0x802605 |	重置密码失败,数据保存失败
+0x802606 |	重置密码失败,验证信息已过期
+0x802607 |	重置密码失败,appid无效
+0x802608 |	重置密码失败,密码格式有误
+0x802701 |	第三方登录失败,content格式有误
+0x802702 |	第三方登录失败,参数丢失
+0x802703 |	第三方登录失败,登录类型不支持
+0x802704 |	第三方登录失败,尚未设置第三方登录参数
+0x802705 |	第三方登录失败,appid无效
+0x802706 |	第三方登录失败,数据保存失败
+0x802707 |	第三方登录失败,获取微信token失败
+0x802708 |	第三方登录失败,获取用户信息失败
+0x802801 |	支付失败,content格式有误
+0x802802 |	支付失败,格式不支持
+0x802803 |	支付失败.参数丢失
+0x802804 |	支付失败.金额格式不正确
+0x802805 |	没有设置第三方支付参数
+0x802806 |	与第三方支付平台通讯失败
+0x802807 |	平台数据保存失败
+0x802808 |	支付失败,appid 无效
+0x803101 |	查询支付结果失败,content格式有误
+0x803102 |	查询支付结果失败,参数丢失
+0x803103 |	查询支付结果失败,appid无效
+0x803104 |	查询支付结果失败,订单无效
+0x803105 |	查询支付结果失败,与支付平台通讯失败
+0x803106 |	查询支付结果失败,平台保存数据失败
+0x803201 |	查询平台id失败,content有误
+0x803202 |	查询平台id失败,参数丢失
+0x803301 |	参数丢失
+0x803302 |	Appid无效
+0x803401 |	添加/更换绑定手机失败,content格式有误
+0x803402 |	参数丢失
+0x803403 |	手机格式有误
+0x803404 |	不需重复绑定
+0x803405 |	该手机已被其他用户绑定
+0x803406 |	验证信息已过期
+0x803407 |	数据保存失败
+0x803408 |	appid不合法
+0X803501 |	获取天气信息失败,content格式有误
+0X803502 |	参数丢失
+0x803503 |	请求天气接口失败
+0x803504 |	该城市/地区没有你所请求的数据
+0x803505 |	未知或错误城市/地区
+0x803506 |	超过当天访问次数
+0x803507 |	超过每分钟的访问次数, 
+0X803601 |	解绑第三方账号失败,content格式有误
+0x803602 |	参数丢失
+0x803603 |	解绑type无效
+0x803604 |	userid无效
+0x803605 |	至少保留一个账号
+0x803606 |	没有绑定该类型的账号
+0x803607 |	数据库操作失败
+0x803701 |	绑定第三方账号失败,contet格式有误
+0x803702 |	参数丢失
+0x803703 |	绑定账号类型不支持
+0x803704 |	没有设置绑定第三方账号参数
+0x803705 |	获取微信token失败
+0x803706 |	获取微信用户信息失败
+0x803707 |	获取支付宝用户信息失败
+0x803708 |	appid不合法
+0x803709 |	userid不合法
+0x803710 |	不用重复添加
+0x803711 |	该账号已被其他用户绑定
+
+
 ###更新日志
+
+- 2018-12-27 v3.1.31
+		
+		1，添加绑定，解绑第三方账号接口及回调处理。
+		2，添加更改/绑定手机号接口及回调处理。
+		3，添加获取支付宝授权信息接口及回调处理。
+		4，添加请求下单接口及回调处理。
+		5，添加真实查询支付结果及回调处理。
+		6，添加设置消息返回是否分发到同一个用户的其他手机。
+		7，补全异常码。
+
+- 2018-11-27 v3.1.27
+
+		1，取消发送上线事件，取消遗嘱设定。
+		2，调整sn生成规则,添加appid，以确保每个app所生成的sn唯一。
+		3，修复同一瞬间发送大量消息时提示“正在进行过多的发布”的bug。
+
+- 2018-11-22 v3.1.25
+
+		1，添加mqtt对设备的订阅 Q/clienti/{sn}-A。
+		2，调整sn长度为16位。
 	
+- 2018-11-09 v3.1.21
+		
+		1，修复在同一台手机上两个app分别初始化两个mqsdk，两个app之前的接收消息会互相干扰的bug。
+		2，添加|完善部分异常码。
+		
+
 - 2018-09-05 v3.1.15
  
 		1，修复当在子线程中初始化sdk时，needUISafety()设置成true，业务处理结果仍会回调到子线程的bug。 
