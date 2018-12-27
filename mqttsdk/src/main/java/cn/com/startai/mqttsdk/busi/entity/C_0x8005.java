@@ -20,7 +20,7 @@ import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
-/**
+/**查询绑定关系
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
@@ -29,7 +29,9 @@ public class C_0x8005 implements Serializable {
 
     private static String TAG = C_0x8005.class.getSimpleName();
 
-
+    public static String MSG_DESC = "查询绑定关系 ";
+    public static String MSGTYPE = "0x8005";
+    public static String MSGCW = "0x07";
 //    private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
 

@@ -23,10 +23,14 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.HostChangeListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
-import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
 
 public class PersistentEventDispatcher {
@@ -892,37 +896,89 @@ public class PersistentEventDispatcher {
     }
 
 
-//    /**
-//     * 回调查询绑定关系
-//     *
-//     * @param bindList
-//     */
-//    public void onGetBindListResult(final int result, final C_0x8005.RespErr respErr, final String id, final ArrayList<C_0x8005.Resp.ContentBean> bindList) {
-//        if (messageArriveListenerList != null) {
-//            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
-//
-//                if (listener instanceof AOnStartaiMessageArriveListener) {
-//                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
-//
-//                    if (listener.needUISafety()) {
-//                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                list.onGetBindListResult(result, respErr, id, bindList);
-//                                list.onGetBindListResult(result, respErr == null ? "" : respErr.getContent().getErrcode(), respErr == null ? "" : respErr.getContent().getErrmsg(), id, bindList);
-//
-//                            }
-//                        });
-//                    } else {
-//                        list.onGetBindListResult(result, respErr, id, bindList);
-//                        list.onGetBindListResult(result, respErr == null ? "" : respErr.getContent().getErrcode(), respErr == null ? "" : respErr.getContent().getErrmsg(), id, bindList);
-//                    }
-//                }
-//
-//
-//            }
-//        }
-//    }
+    /**
+     * 查询订单支付状态
+     */
+    public void onGetRealOrderPayStatusResult(final C_0x8031.Resp response) {
+
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onGetRealOrderPayStatus(response);
+                            }
+                        });
+                    } else {
+                        list.onGetRealOrderPayStatus(response);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    /**
+     * 查询支付宝认证信息
+     */
+    public void onGetAlipayAuthInfoResult(final C_0x8033.Resp response) {
+
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onGetAlipayAuthInfoResult(response);
+                            }
+                        });
+                    } else {
+                        list.onGetAlipayAuthInfoResult(response);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    /**
+     * 绑定手机号 结果
+     */
+    public void onBindMobileNumResult(final C_0x8034.Resp response) {
+
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onBindMobileNumResult(response);
+                            }
+                        });
+                    } else {
+                        list.onBindMobileNumResult(response);
+                    }
+                }
+
+
+            }
+        }
+    }
 
     /**
      * 回调查询绑定关系
@@ -946,6 +1002,65 @@ public class PersistentEventDispatcher {
                     } else {
                         list.onGetBindListResult(response);
                         list.onGetBindListResult(response.getResult(), response.getErrcode(), response.getErrmsg(), response.getToid(), response.getResp());
+                    }
+                }
+
+
+            }
+        }
+    }
+
+
+    /**
+     * 解绑第三方账号返回
+     *
+     * @param resp
+     */
+    public void onUnBindThirdAccountResult(final C_0x8036.Resp resp) {
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onUnBindThirdAccountResult(resp);
+                            }
+                        });
+                    } else {
+                        list.onUnBindThirdAccountResult(resp);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    /**
+     * 绑定第三方账号返回
+     *
+     * @param resp
+     */
+    public void onBindThirdAccountResult(final C_0x8037.Resp resp) {
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onBindThirdAccountResult(resp);
+                            }
+                        });
+                    } else {
+                        list.onBindThirdAccountResult(resp);
                     }
                 }
 

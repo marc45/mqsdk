@@ -16,7 +16,7 @@ import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
-/**
+/**删除好友或设备
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
@@ -24,7 +24,9 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8004 {
 
     private static String TAG = C_0x8004.class.getSimpleName();
-
+    public static String MSG_DESC = "删除好友或设备 ";
+    public static String MSGTYPE = "0x8004";
+    public static String MSGCW = "0x07";
     /**
      * 删除好友或设备
      *

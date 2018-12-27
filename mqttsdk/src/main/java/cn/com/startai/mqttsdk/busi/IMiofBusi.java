@@ -5,6 +5,10 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
@@ -276,5 +280,40 @@ public interface IMiofBusi {
      * 第三方支付 统一下单
      */
     void thirdPaymentUnifiedOrder(C_0x8028.Req.ContentBean contentBean, IOnCallListener listener);
+
+    /**
+     * 查询真实订单支付结果
+     */
+    void getRealOrderPayStatus(String orderNum, IOnCallListener listener);
+
+    /**
+     * 查询支付宝认证信息
+     *
+     * @param listener
+     */
+    void getAlipayAuthInfo(String authType, IOnCallListener listener);
+
+    /**
+     * 关联手机号
+     *
+     * @param listener
+     */
+    void bindMobileNum(C_0x8034.Req.ContentBean req, IOnCallListener listener);
+
+
+    /**
+     * 解绑第三方账号
+     *
+     * @param req
+     * @param listener
+     */
+    void unBindThirdAccount(C_0x8036.Req.ContentBean req, IOnCallListener listener);
+    /**
+     * 绑定第三方账号
+     *
+     * @param req
+     * @param listener
+     */
+    void bindThirdAccount(C_0x8037.Req.ContentBean req, IOnCallListener listener);
 }
 

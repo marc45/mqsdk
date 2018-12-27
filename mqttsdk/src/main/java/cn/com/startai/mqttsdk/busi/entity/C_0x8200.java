@@ -25,7 +25,7 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8200 {
 
     private static final String TAG = C_0x8200.class.getSimpleName();
-
+    public static String MSGTYPE = "0x8200";
 
     /**
      * 消息透传

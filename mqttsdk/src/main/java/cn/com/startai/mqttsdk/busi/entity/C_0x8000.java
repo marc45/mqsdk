@@ -17,6 +17,7 @@ import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.STimerUtil;
 
 /**
+ * 获取可用ip组
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
@@ -24,7 +25,9 @@ import cn.com.startai.mqttsdk.utils.STimerUtil;
 public class C_0x8000 {
 
     private static String TAG = C_0x8000.class.getSimpleName();
-
+    public static String MSG_DESC = "获取可用ip组 ";
+    public static String MSGTYPE = "0x8000";
+    public static String MSGCW = "0x07";
 
     /**
      * 获取可用ip组
@@ -38,6 +41,7 @@ public class C_0x8000 {
             CallbackManager.callbackMessageSendResult(false, listener, x8000_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
         }
+
         StartaiMqttPersistent.getInstance().send(x8000_req_msg, listener);
 
     }

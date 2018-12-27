@@ -23,7 +23,9 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8026 implements Serializable {
 
     private static final String TAG = C_0x8026.class.getSimpleName();
-
+    public static String MSGTYPE = "0x8026";
+    public static String MSGCW = "0x07";
+    public static String MSG_DESC = "手机重置密码 ";
     /**
      * 手机重置登录密码
      *

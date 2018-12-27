@@ -21,10 +21,11 @@ import cn.com.startai.mqttsdk.utils.SLog;
  */
 
 public class C_0x8016 {
-    public static final String MSGTYPE = "0x8016";
 
     private static final String TAG = C_0x8016.class.getSimpleName();
-
+    public static String MSG_DESC = "查询最新版本 ";
+    public static String MSGTYPE = "0x8016";
+    public static String MSGCW = "0x07";
 
     /**
      * 查询最新版本

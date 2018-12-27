@@ -9,18 +9,27 @@ public class Type {
 
     public static class GetIdentifyCode {
         //1表示用户登录  2表示忘记密码 3表示用户注册
+//        4第三方音响快捷登录
+//5绑定/更改手机号
+
         public static final int LOGIN = 1;
         public static final int FORGET_PWD = 2;
         public static final int REGISTER = 3;
-
+        public static final int MUSIC_BOX_LOGIN = 4;
+        public static final int BIND_MOBILE_NUM = 5;
     }
 
     public static class CheckIdentifyCode {
 
         //1表示用户登录  2表示忘记密码 3表示用户注册
+//        4第三方音响快捷登录
+//5绑定/更改手机号
+
         public static final int LOGIN = 1;
         public static final int FORGET_PWD = 2;
         public static final int REGISTER = 3;
+        public static final int MUSIC_BOX_LOGIN = 4;
+        public static final int BIND_MOBILE_NUM = 5;
 
     }
 

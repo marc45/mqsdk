@@ -38,6 +38,9 @@ public class StartAI implements IPersisitentNet {
     private static Context context;
 
     public boolean isInit() {
+        if (context == null) {
+            return false;
+        }
         return getPersisitnet().isInit();
     }
 

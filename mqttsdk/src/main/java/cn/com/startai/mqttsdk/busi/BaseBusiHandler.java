@@ -29,6 +29,11 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
@@ -83,6 +88,15 @@ public class BaseBusiHandler {
 
 
         switch (msgtype) {
+            case "0x9998"://终端上线
+
+                C_0x9998.m_0x9998_resp(msg);
+                break;
+
+            case "0x9999"://终端下线
+
+                C_0x9999.m_0x9999_resp(msg);
+                break;
 
             case "0x8000"://获取区域节点信息
                 C_0x8000.m_0x8000_resp(msg);
@@ -169,14 +183,29 @@ public class BaseBusiHandler {
                 C_0x8200.m_0x8200_resp(topic, msg);
                 break;
 
-            case "0x9998"://终端上线
-
-                C_0x9998.m_0x9998_resp(msg);
+            case "0x8031": //查询订单支付状态
+                C_0x8031.m_resp(msg);
                 break;
 
-            case "0x9999"://终端下线
 
-                C_0x9999.m_0x9999_resp(msg);
+            case "0x8033": //查询 支付宝密钥
+                C_0x8033.m_resp(msg);
+
+                break;
+
+            case "0x8034": //查询 支付宝密钥
+                C_0x8034.m_resp(msg);
+
+                break;
+
+            case "0x8036": //解绑 第三方账号
+                C_0x8036.m_resp(msg);
+
+                break;
+
+            case "0x8037": //绑定 第三方账号
+                C_0x8037.m_resp(msg);
+
                 break;
 
 

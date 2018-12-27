@@ -9,11 +9,13 @@ import java.io.Serializable;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
@@ -31,6 +33,14 @@ public class C_0x8028 implements Serializable {
     private static final String TAG = C_0x8028.class.getSimpleName();
     public static final String MSGTYPE = "0x8028";
     public static String MSGCW = "0x07";
+
+    public static String MSG_DESC = "统一下单 ";
+    public static final int TYPE_DEPOSIT = 1; //押金
+    public static final int TYPE_BALANCE = 2; //余额
+    public static final int TYPE_ORDER = 3; //订单
+
+    public static final int PLATFOME_WECHAT = 1;
+    public static final int PLATFOME_ALIPAY = 2;
 
     /**
      * 请求 统一下单
@@ -66,6 +76,10 @@ public class C_0x8028 implements Serializable {
                 .setMsgcw(MSGCW)
                 .setContent(request).create();
 
+
+        if(!DistributeParam.THIRDPAYMENTUNIFIEDORDER_DISTRIBUTE){
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -108,8 +122,8 @@ public class C_0x8028 implements Serializable {
             Resp.ContentBean content = resp.getContent();
             Req.ContentBean errcontent = content.getErrcontent();
             content.setFee_type(errcontent.getFee_type());
-            content.setGoods_discription(errcontent.getGoods_description());
-            content.setOrderId(errcontent.getOrder_num());
+            content.setGoods_description(errcontent.getGoods_description());
+            content.setOrder_num(errcontent.getOrder_num());
             content.setType(errcontent.getType());
             content.setTotal_fee(errcontent.getTotal_fee());
             content.setPlatform(errcontent.getPlatform());
@@ -212,6 +226,7 @@ public class C_0x8028 implements Serializable {
             public void setTotal_fee(String total_fee) {
                 this.total_fee = total_fee;
             }
+
         }
 
 
@@ -252,8 +267,8 @@ public class C_0x8028 implements Serializable {
 
             private int type;
             private int platform;
-            private String orderId;
-            private String goods_discription;
+            private String order_num;
+            private String goods_description;
             private String fee_type;
             private String total_fee;
 
@@ -265,6 +280,21 @@ public class C_0x8028 implements Serializable {
             private String timestamp;
             private String sign;
 
+            public String getOrder_num() {
+                return order_num;
+            }
+
+            public void setOrder_num(String order_num) {
+                this.order_num = order_num;
+            }
+
+            public String getGoods_description() {
+                return goods_description;
+            }
+
+            public void setGoods_description(String goods_description) {
+                this.goods_description = goods_description;
+            }
 
             private Req.ContentBean errcontent = null;
 
@@ -285,21 +315,6 @@ public class C_0x8028 implements Serializable {
                 this.platform = platform;
             }
 
-            public String getOrderId() {
-                return orderId;
-            }
-
-            public void setOrderId(String orderId) {
-                this.orderId = orderId;
-            }
-
-            public String getGoods_discription() {
-                return goods_discription;
-            }
-
-            public void setGoods_discription(String goods_discription) {
-                this.goods_discription = goods_discription;
-            }
 
             public String getFee_type() {
                 return fee_type;
@@ -369,6 +384,10 @@ public class C_0x8028 implements Serializable {
                 return sign;
             }
 
+            public String getZFB_Sign() {
+                return sign;
+            }
+
             public void setWX_Sign(String sign) {
                 this.sign = sign;
             }
@@ -388,8 +407,6 @@ public class C_0x8028 implements Serializable {
                         ", errmsg='" + errmsg + '\'' +
                         ", type=" + type +
                         ", platform=" + platform +
-                        ", order_num='" + orderId + '\'' +
-                        ", goods_description='" + goods_discription + '\'' +
                         ", fee_type='" + fee_type + '\'' +
                         ", total_fee='" + total_fee + '\'' +
                         ", appid='" + appid + '\'' +

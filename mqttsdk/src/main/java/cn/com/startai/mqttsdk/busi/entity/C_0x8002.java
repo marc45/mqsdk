@@ -26,8 +26,9 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8002 {
 
     private static String TAG = C_0x8002.class.getSimpleName();
-
-
+    public static String MSG_DESC = "绑定 ";
+    public static String MSGTYPE = "0x8002";
+    public static String MSGCW = "0x07";
     /**
      * 添加设备或好友
      *

@@ -19,6 +19,11 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
@@ -383,6 +388,59 @@ public class BaseBusiManager implements IMiofBusi {
     @Override
     public void thirdPaymentUnifiedOrder(C_0x8028.Req.ContentBean contentBean, IOnCallListener listener) {
         C_0x8028.req(contentBean, listener);
+    }
+
+    /**
+     * 查询真实订单支付结果
+     *
+     * @param orderNum
+     */
+    @Override
+    public void getRealOrderPayStatus(String orderNum, IOnCallListener listener) {
+        C_0x8031.req(orderNum, listener);
+    }
+
+    /**
+     * 查询支付宝认证信息
+     *
+     * @param listener
+     */
+    @Override
+    public void getAlipayAuthInfo(String authType, IOnCallListener listener) {
+        C_0x8033.req(authType, listener);
+    }
+
+    /**
+     * 关联手机号
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void bindMobileNum(C_0x8034.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8034.req(req, listener);
+    }
+
+    /**
+     * 解绑第三方账号
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void unBindThirdAccount(C_0x8036.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8036.req(req, listener);
+    }
+
+    /**
+     * 绑定第三方账号
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void bindThirdAccount(C_0x8037.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8037.req(req, listener);
     }
 
 

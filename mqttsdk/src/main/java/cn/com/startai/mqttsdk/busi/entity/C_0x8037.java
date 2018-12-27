@@ -1,10 +1,8 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
@@ -13,116 +11,75 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
- * 第三方登录
+ * 绑定第三方账号
  * Created by Robin on 2018/8/22.
  * qq: 419109715 彬影
  */
 
-public class C_0x8027 implements Serializable {
+public class C_0x8037 implements Serializable {
 
-    private static final String TAG = C_0x8027.class.getSimpleName();
-    public static final String MSGTYPE = "0x8027";
+    private static final String TAG = C_0x8037.class.getSimpleName();
+    public static final String MSGTYPE = "0x8037";
     public static String MSGCW = "0x07";
-    public static String MSG_DESC = "第三方登录 ";
+    public static String MSG_DESC = "绑定第三方账号 ";
+
+    public static final int THIRD_WECHAT = 10;
+    public static final int THIRD_ALIPAY = 11;
+    public static final int THIRD_QQ = 12;
+    public static final int THIRD_GOOGLE = 13;
+    public static final int THIRD_TWITTER = 14;
+    public static final int THIRD_AMAZON = 15;
+    public static final int THIRD_FACEBOOK = 16;
+    public static final int THIRD_MI = 17;
+
     /**
-     * 请求 第三方登录
+     * 请求 绑定第三方账号
      *
      * @param listener
      */
-    public static void req(int type, String code, IOnCallListener listener) {
+    public static void req(Req.ContentBean req, IOnCallListener listener) {
 
-        MqttPublishRequest<StartaiMessage<Req.ContentBean>> req_msg = create_req_msg(type, code);
+        MqttPublishRequest<StartaiMessage<Req.ContentBean>> req_msg = create_req_msg(req);
         if (req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
         }
 
-        StartaiMessage<Req.ContentBean> message = req_msg.message;
-
-
-        String uuid = UUID.randomUUID().toString();
-
-        C_0x8018.Req.ContentBean contentBean = new C_0x8018.Req.ContentBean();
-        contentBean.setType(contentBean.getType());
-
-        C_0x8018.maps.put(uuid, contentBean);
-        message.setMsgid(uuid);
-
         StartaiMqttPersistent.getInstance().send(req_msg, listener);
-
     }
 
-    /**
-     * 请求 第三方登录
-     *
-     * @param listener
-     */
-    public static void req(Req.ContentBean contentBean, IOnCallListener listener) {
+    private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean req) {
 
+        String userid = req.getUserid();
+        int type = req.getType();
 
-        MqttPublishRequest<StartaiMessage<Req.ContentBean>> req_msg = create_req_msg(contentBean);
-        if (req_msg == null) {
-            CallbackManager.callbackMessageSendResult(false, listener, req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
-            return;
-        }
-
-        String uuid = UUID.randomUUID().toString();
-        StartaiMessage<Req.ContentBean> message = req_msg.message;
-
-        contentBean.setType(contentBean.getType());
-        C_0x8018.Req.ContentBean contentBean8018 = new C_0x8018.Req.ContentBean();
-        C_0x8018.maps.put(uuid, contentBean8018);
-        message.setMsgid(uuid);
-
-        StartaiMqttPersistent.getInstance().send(req_msg, listener);
-
-    }
-
-    private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(@NonNull int type, String code) {
-
-        if (TextUtils.isEmpty(code)) {
-            SLog.e(TAG, "code  can not be empty");
-            return null;
+        if (TextUtils.isEmpty(userid)) {
+            C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
+            if (currUser != null) {
+                req.setUserid(currUser.getUserid());
+            }
         }
 
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype(MSGTYPE)
                 .setMsgcw(MSGCW)
-                .setContent(new Req.ContentBean(type, code)).create();
+                .setContent(req).create();
 
-        if(!DistributeParam.LOGINWITHTHIRDACCOUNT_DISTRIBUTE){
+
+        if (!DistributeParam.UNBINDTHIRDACCOUNT_DISTRIBUTE) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
 
-
-        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
-        mqttPublishRequest.message = message;
-        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
-        return mqttPublishRequest;
-    }
-
-    private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean contentBean) {
-
-        if (contentBean == null) {
-            SLog.e(TAG, "contentBean  can not be null");
-            return null;
-        }
-
-
-        StartaiMessage message = new StartaiMessage.Builder()
-                .setMsgtype(MSGTYPE)
-                .setMsgcw(MSGCW)
-                .setContent(contentBean).create();
-
-
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
         mqttPublishRequest.topic = TopicConsts.getServiceTopic();
@@ -131,24 +88,32 @@ public class C_0x8027 implements Serializable {
 
 
     /**
-     * 请求 第三方登录 返回结果
+     * 请求 解绑第三方账号 返回结果
      *
      * @param miof
      */
-    public static void m_0x8027_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
-        C_0x8018.m_0x8018_resp(miof);
+        Resp resp = SJsonUtils.fromJson(miof, Resp.class);
+        if (resp == null) {
+            SLog.e(TAG, MSG_DESC + " 返回格式错误");
+            return;
+        }
+        if (resp.getResult() == 1) {
+            SLog.e(TAG, MSG_DESC + " 成功");
 
-//        if (result == 1 && resp != null) {
-//            SLog.d(TAG, "第三方登录成功");
-//            StartAI.getInstance().getPersisitnet().getEventDispatcher().onloginWithThirdAccountResult(result, "", "", resp.getContent());
-//        } else if (result == 0 && errorMiofMsg != null) {
-//            SLog.d(TAG, "第三方登录失败");
-//            StartAI.getInstance().getPersisitnet().getEventDispatcher().onloginWithThirdAccountResult(result, errorMiofMsg.getContent().getErrcode(), errorMiofMsg.getContent().getErrmsg(), resp.getContent());
-//        } else {
-//            SLog.e(TAG, "返回数据格式错误");
-//        }
+        } else {
+            C_0x8037.Resp.ContentBean content = resp.getContent();
+            C_0x8037.Req.ContentBean errcontent = content.getErrcontent();
+            content.setCode(errcontent.getCode());
+            content.setUserid(errcontent.getUserid());
+            content.setType(errcontent.getType());
+            content.setUserinfo(errcontent.getUserinfo());
+            SLog.e(TAG, MSG_DESC + " 失败");
+        }
+
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindThirdAccountResult(resp);
 
     }
 
@@ -171,11 +136,13 @@ public class C_0x8027 implements Serializable {
 
 
             /**
+             * userid :
              * code :
              * type : 1
              * userinfo : {"openid":"OPENID","nickname":"NICKNAME","email":"email","sex":1,"province":"PROVINCE","city":"CITY","country":"COUNTRY","headimgurl":"http://url","username":"username","firstName":"firstName","lastName":"lastName","address":"address","unionid":"unionid"}
              */
 
+            private String userid;
             private String code;
             private int type;
             private UserinfoBean userinfo;
@@ -183,18 +150,29 @@ public class C_0x8027 implements Serializable {
             public ContentBean() {
             }
 
-            public ContentBean(int type, String code) {
+            public ContentBean(String userid, String code, int type, UserinfoBean userinfo) {
+                this.userid = userid;
                 this.code = code;
                 this.type = type;
+                this.userinfo = userinfo;
             }
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "code='" + code + '\'' +
+                        "userid='" + userid + '\'' +
+                        ", code='" + code + '\'' +
                         ", type=" + type +
                         ", userinfo=" + userinfo +
                         '}';
+            }
+
+            public String getUserid() {
+                return userid;
+            }
+
+            public void setUserid(String userid) {
+                this.userid = userid;
             }
 
             public String getCode() {
@@ -251,6 +229,25 @@ public class C_0x8027 implements Serializable {
                 private String lastName;
                 private String address;
                 private String unionid;
+
+                public UserinfoBean() {
+                }
+
+                public UserinfoBean(String openid, String nickname, String email, int sex, String province, String city, String country, String headimgurl, String username, String firstName, String lastName, String address, String unionid) {
+                    this.openid = openid;
+                    this.nickname = nickname;
+                    this.email = email;
+                    this.sex = sex;
+                    this.province = province;
+                    this.city = city;
+                    this.country = country;
+                    this.headimgurl = headimgurl;
+                    this.username = username;
+                    this.firstName = firstName;
+                    this.lastName = lastName;
+                    this.address = address;
+                    this.unionid = unionid;
+                }
 
                 @Override
                 public String toString() {
@@ -413,28 +410,42 @@ public class C_0x8027 implements Serializable {
         public static class ContentBean extends BaseContentBean {
 
 
+            private Req.ContentBean errcontent = null;
+
+
             /**
              * userid :
-             * token :
-             * expire_in : 7200
+             * code :
+             * type : 1
+             * userinfo : {"openid":"OPENID","nickname":"NICKNAME","email":"email","sex":1,"province":"PROVINCE","city":"CITY","country":"COUNTRY","headimgurl":"http://url","username":"username","firstName":"firstName","lastName":"lastName","address":"address","unionid":"unionid"}
              */
 
             private String userid;
-            private String token;
-            private int expire_in;
+            private String code;
             private int type;
-            private Req.ContentBean errcontent;
+            private Req.ContentBean.UserinfoBean userinfo;
+
+            public ContentBean() {
+            }
+
+            public ContentBean(Req.ContentBean errcontent, String userid, String code, int type, Req.ContentBean.UserinfoBean userinfo) {
+                this.errcontent = errcontent;
+                this.userid = userid;
+                this.code = code;
+                this.type = type;
+                this.userinfo = userinfo;
+            }
 
             @Override
             public String toString() {
                 return "ContentBean{" +
                         "errcode='" + errcode + '\'' +
                         ", errmsg='" + errmsg + '\'' +
-                        ", userid='" + userid + '\'' +
-                        ", token='" + token + '\'' +
-                        ", expire_in=" + expire_in +
-                        ", type=" + type +
                         ", errcontent=" + errcontent +
+                        ", userid='" + userid + '\'' +
+                        ", code='" + code + '\'' +
+                        ", type=" + type +
+                        ", userinfo=" + userinfo +
                         '}';
             }
 
@@ -446,14 +457,21 @@ public class C_0x8027 implements Serializable {
                 this.errcontent = errcontent;
             }
 
-            public ContentBean() {
+
+            public String getUserid() {
+                return userid;
             }
 
-            public ContentBean(String userid, String token, int expire_in, int type) {
+            public void setUserid(String userid) {
                 this.userid = userid;
-                this.token = token;
-                this.expire_in = expire_in;
-                this.type = type;
+            }
+
+            public String getCode() {
+                return code;
+            }
+
+            public void setCode(String code) {
+                this.code = code;
             }
 
             public int getType() {
@@ -464,28 +482,12 @@ public class C_0x8027 implements Serializable {
                 this.type = type;
             }
 
-            public String getUserid() {
-                return userid;
+            public Req.ContentBean.UserinfoBean getUserinfo() {
+                return userinfo;
             }
 
-            public void setUserid(String userid) {
-                this.userid = userid;
-            }
-
-            public String getToken() {
-                return token;
-            }
-
-            public void setToken(String token) {
-                this.token = token;
-            }
-
-            public int getExpire_in() {
-                return expire_in;
-            }
-
-            public void setExpire_in(int expire_in) {
-                this.expire_in = expire_in;
+            public void setUserinfo(Req.ContentBean.UserinfoBean userinfo) {
+                this.userinfo = userinfo;
             }
         }
     }

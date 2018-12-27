@@ -856,7 +856,6 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
     private void registerNetReceiver() {
 
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);

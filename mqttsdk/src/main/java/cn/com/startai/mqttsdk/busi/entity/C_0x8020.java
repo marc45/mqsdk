@@ -22,7 +22,9 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8020 {
 
     private static final String TAG = C_0x8020.class.getSimpleName();
-
+    public static String MSG_DESC = "更新用户信息 ";
+    public static String MSGTYPE = "0x8020";
+    public static String MSGCW = "0x07";
     /**
      * 请求更新用户信息
      *

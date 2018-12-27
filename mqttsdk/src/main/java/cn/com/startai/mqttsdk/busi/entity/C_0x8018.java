@@ -37,7 +37,9 @@ public class C_0x8018 {
 
     public static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
-
+    public static String MSG_DESC = "登录 ";
+    public static String MSGTYPE = "0x8018";
+    public static String MSGCW = "0x07";
     /**
      * 登录
      *

@@ -19,6 +19,11 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 
 public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriveListener {
@@ -440,4 +445,48 @@ public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriv
 
     }
 
+    /**
+     * 查询真实订单支付结果
+     *
+     * @param resp
+     */
+    public void onGetRealOrderPayStatus(C_0x8031.Resp resp) {
+
+    }
+
+    /**
+     * 查询支付宝认证信息
+     *
+     * @param resp
+     */
+    public void onGetAlipayAuthInfoResult(C_0x8033.Resp resp) {
+
+    }
+
+    /**
+     * 绑定手机号返回
+     *
+     * @param resp
+     */
+    public void onBindMobileNumResult(C_0x8034.Resp resp) {
+
+    }
+
+    /**
+     * 解绑第三方账号返回
+     *
+     * @param resp
+     */
+    public void onUnBindThirdAccountResult(C_0x8036.Resp resp) {
+
+    }
+
+    /**
+     * 绑定第三方账号返回
+     *
+     * @param resp
+     */
+    public void onBindThirdAccountResult(C_0x8037.Resp resp) {
+
+    }
 }

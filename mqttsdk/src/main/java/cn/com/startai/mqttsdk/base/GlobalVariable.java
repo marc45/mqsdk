@@ -12,4 +12,6 @@ public class GlobalVariable {
     public static C_0x8000.Resp.ContentBean areaNodeBean;
 
 
+
+
 }

@@ -2,6 +2,7 @@ package cn.com.startai.mqttsdk.base;
 
 
 import android.text.TextUtils;
+import android.view.KeyEvent;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
@@ -152,6 +153,10 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x07")
                 .setContent(new C_0x8015.Req.ContentBean(userid, fid, remark)).create();
 
+        if (!DistributeParam.UPDATEREMARK_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
         mqttPublishRequest.topic = TopicConsts.getServiceTopic();
@@ -171,6 +176,12 @@ public class MqttPublishRequestCreator {
                 .setMsgtype(C_0x8016.MSGTYPE)
                 .setMsgcw("0x07")
                 .setContent(new C_0x8016.Req.ContentBean(os, packageName)).create();
+
+
+        if (!DistributeParam.GETLATESTVERSION_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -207,6 +218,12 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x07")
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()))
                 .setContent(new C_0x8017.Req.ContentBean(uName, pwd, type)).create();
+
+
+        if (!DistributeParam.REGISTER_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -279,6 +296,10 @@ public class MqttPublishRequestCreator {
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()))
                 .setContent(new C_0x8018.Req.ContentBean(uName, pwd, identifyCode, type)).create();
 
+        if (!DistributeParam.LOGIN_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -302,8 +323,13 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x07")
                 .setContent(contentBean).create();
 
+        if (!DistributeParam.UPDATEDEVICEINFO_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
+
 
         mqttPublishRequest.topic = TopicConsts.getServiceTopic();
         return mqttPublishRequest;
@@ -332,6 +358,10 @@ public class MqttPublishRequestCreator {
                 .setMsgtype("0x8020")
                 .setMsgcw("0x07")
                 .setContent(contentBean).create();
+
+        if (!DistributeParam.UPDATEUSERINFO_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -370,6 +400,10 @@ public class MqttPublishRequestCreator {
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()))
                 .setContent(new C_0x8021.Req.ContentBean(mobile, type)).create();
 
+        if (!DistributeParam.GETIDENTIFYCODE_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -398,6 +432,10 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x07")
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()))
                 .setContent(new C_0x8022.Req.ContentBean(mobile, identifyCode, type)).create();
+
+        if (!DistributeParam.CHECKIDENTIFYCODE_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -428,6 +466,10 @@ public class MqttPublishRequestCreator {
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()))
                 .setContent(new C_0x8023.Req.ContentBean(email, type)).create();
 
+        if (!DistributeParam.SENDEMAIL_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -445,18 +487,25 @@ public class MqttPublishRequestCreator {
     public static MqttPublishRequest create_0x8024_req_msg(String uid) {
 
         String userid = uid;
+        Integer loginType = null;
+
         if (TextUtils.isEmpty(userid)) {
 
             C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
             if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
                 userid = userBean.getUserid();
+                loginType = userBean.getType();
             }
         }
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype("0x8024")
                 .setMsgcw("0x07")
-                .setContent(new C_0x8024.Req.ContentBean(userid)).create();
+                .setContent(new C_0x8024.Req.ContentBean(userid, loginType)).create();
+
+        if (!DistributeParam.GETUSERINFO_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -496,6 +545,10 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x07")
                 .setContent(new C_0x8025.Req.ContentBean(userid, oldPwd, newPwd)).create();
 
+        if (!DistributeParam.UPDATEUSERPWD_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -529,6 +582,10 @@ public class MqttPublishRequestCreator {
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()) + "/" + MqttConfigure.appid)
                 .setContent(new C_0x8026.Req.ContentBean(mobile, pwd)).create();
 
+        if (!DistributeParam.RESETMOBILELOGINPWD_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -557,6 +614,10 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x01")
                 .setToid(toid)
                 .setContent(data).create();
+
+        if (!DistributeParam.PASSTHROUGH_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -589,6 +650,9 @@ public class MqttPublishRequestCreator {
                 .setMsgcw("0x07")
                 .setContent(new C_0x8002.Req.ContentBean(bindingid, beBindingid)).create();
 
+        if (!DistributeParam.BIND_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -611,7 +675,9 @@ public class MqttPublishRequestCreator {
                 .setMsgtype("0x8003")
                 .setMsgcw("0x07")
                 .setContent(new C_0x8003.Req.ContentBean(sn)).create();
-
+        if (!DistributeParam.UNACTIVITE_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -641,7 +707,9 @@ public class MqttPublishRequestCreator {
                 .setMsgtype("0x8004")
                 .setMsgcw("0x07")
                 .setContent(new C_0x8004.Req.ContentBean(bindingid, beBindingid)).create();
-
+        if (!DistributeParam.UNBIND_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -676,7 +744,9 @@ public class MqttPublishRequestCreator {
                 .setMsgtype("0x8005")
                 .setMsgcw("0x07")
                 .setContent(new C_0x8005.Req.ContentBean(id, type)).create();
-
+        if (!DistributeParam.GETBINDLIST_DISTRIBUTE) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
 
@@ -727,8 +797,11 @@ public class MqttPublishRequestCreator {
                 .setMsgtype("0x8001")
                 .setMsgcw("0x07")
                 .setAppid(MqttConfigure.appid)
+                .setFromid(MqttConfigure.getSn(StartAI.getContext()))
                 .setDomain(MqttConfigure.domain)
                 .setContent(contentBean).create();
+
+
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;

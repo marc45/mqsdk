@@ -1,13 +1,14 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
+import java.util.List;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
-import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -23,8 +24,10 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8024 implements Serializable {
 
+    public static String MSG_DESC = "查询用户信息 ";
     private static final String TAG = C_0x8024.class.getSimpleName();
-
+    public static String MSGTYPE = "0x8024";
+    public static String MSGCW = "0x07";
     /**
      * 请求查询用户信息
      *
@@ -85,12 +88,27 @@ public class C_0x8024 implements Serializable {
 
 
             private String userid = null;
+            private Integer loginType;
+
+            public ContentBean(String userid, Integer loginType) {
+                this.userid = userid;
+                this.loginType = loginType;
+            }
 
             @Override
             public String toString() {
                 return "ContentBean{" +
                         "userid='" + userid + '\'' +
+                        ", loginType=" + loginType +
                         '}';
+            }
+
+            public Integer getLoginType() {
+                return loginType;
+            }
+
+            public void setLoginType(Integer loginType) {
+                this.loginType = loginType;
             }
 
             public ContentBean() {
@@ -177,11 +195,10 @@ public class C_0x8024 implements Serializable {
             private String email = null;
             private String mobile = null;
             private String lastName = null;
-
             private int isHavePwd;
 
-
             private Req.ContentBean errcontent;
+            private List<ThirdInfosBean> thirdInfos;
 
             @Override
             public String toString() {
@@ -204,8 +221,10 @@ public class C_0x8024 implements Serializable {
                         ", lastName='" + lastName + '\'' +
                         ", isHavePwd=" + isHavePwd +
                         ", errcontent=" + errcontent +
+                        ", thirdInfos=" + thirdInfos +
                         '}';
             }
+
 
             public Req.ContentBean getErrcontent() {
                 return errcontent;
@@ -335,7 +354,47 @@ public class C_0x8024 implements Serializable {
                 this.lastName = lastName;
             }
 
+            public List<ThirdInfosBean> getThirdInfos() {
+                return thirdInfos;
+            }
 
+            public void setThirdInfos(List<ThirdInfosBean> thirdInfos) {
+                this.thirdInfos = thirdInfos;
+            }
+
+
+            public static class ThirdInfosBean {
+                /**
+                 * nickName : 微信
+                 * type : 10
+                 */
+                private String nickName;
+                private int type;
+
+                @Override
+                public String toString() {
+                    return "ThirdInfosBean{" +
+                            "nickName='" + nickName + '\'' +
+                            ", type=" + type +
+                            '}';
+                }
+
+                public String getNickName() {
+                    return nickName;
+                }
+
+                public void setNickName(String nickName) {
+                    this.nickName = nickName;
+                }
+
+                public int getType() {
+                    return type;
+                }
+
+                public void setType(int type) {
+                    this.type = type;
+                }
+            }
         }
     }
 

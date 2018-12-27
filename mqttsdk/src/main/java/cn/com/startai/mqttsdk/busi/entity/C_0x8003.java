@@ -21,9 +21,10 @@ import cn.com.startai.mqttsdk.utils.SLog;
  */
 
 public class C_0x8003 {
-
+    public static String MSG_DESC = "注销激活 ";
     private static String TAG = C_0x8003.class.getSimpleName();
-
+    public static String MSGTYPE = "0x8003";
+    public static String MSGCW = "0x07";
 
     /**
      * 注销激活

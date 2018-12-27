@@ -23,7 +23,8 @@ public class C_0x8015 {
     public static final String MSGTYPE = "0x8015";
 
     private static final String TAG = C_0x8015.class.getSimpleName();
-
+    public static String MSG_DESC = "修改备注名 ";
+    public static String MSGCW = "0x07";
 
     /**
      * 修改备注名

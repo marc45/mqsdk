@@ -13,7 +13,7 @@ import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
-/**
+/**终端激活
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
@@ -21,7 +21,9 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8001 {
 
     private static String TAG = C_0x8001.class.getSimpleName();
-
+    public static String MSG_DESC = "终端激活 ";
+    public static final String MSGTYPE = "0x8001";
+    public static String MSGCW = "0x07";
     /**
      * 终端激活
      * 如果 contentbean 为null表示自己激活  否则为第三方硬件激活

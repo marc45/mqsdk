@@ -23,6 +23,9 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8025 implements Serializable {
 
+    public static String MSG_DESC = "修改密码 ";
+    public static String MSGTYPE = "0x8025";
+    public static String MSGCW = "0x07";
     private static final String TAG = C_0x8025.class.getSimpleName();
 
     /**

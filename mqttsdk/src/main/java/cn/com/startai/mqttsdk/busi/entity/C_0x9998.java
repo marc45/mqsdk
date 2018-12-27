@@ -22,7 +22,7 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x9998 {
 
     private static String TAG = C_0x9998.class.getSimpleName();
-
+    public static String MSGTYPE = "0x9998";
     /**
      * 自己上报 自己的连接状态
      *

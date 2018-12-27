@@ -29,7 +29,9 @@ public class C_0x8021 {
     private static final String TAG = C_0x8021.class.getSimpleName();
     private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
-
+    public static String MSGCW = "0x07";
+    public static String MSGTYPE = "0x8021";
+    public static String MSG_DESC = "获取验证码 ";
 
     /**
      * 获取验证码

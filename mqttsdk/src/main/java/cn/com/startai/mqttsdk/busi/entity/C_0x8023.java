@@ -21,7 +21,10 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8023 {
 
+    public static String MSG_DESC = "请求发送邮件 ";
     private static final String TAG = C_0x8023.class.getSimpleName();
+    public static String MSGTYPE = "0x8023";
+    public static String MSGCW = "0x07";
 
     /**
      * 请求发送邮件
