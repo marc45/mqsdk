@@ -10,7 +10,7 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
 ####3.集成准备
 #####3.1.注册StartAI云平台账号
 在使用StartAI云平台服务前，你需要通过dev.startai.com.cn注册一个开发者账号。请完整填写你的注册信息。
-#####3.2.创建app并获取到 appID
+#####3.2.创建app并获取到 APPID
 #####3.3.下载SDK demo程序 
 [demo下载](https://github.com/luobinxin/mqsdk)
  
@@ -36,15 +36,14 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
     //mqtt 基础包
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     //startai mqtt  sdk包
-    implementation 'cn.com.startai:mqsdk:3.1.12'
+    implementation 'cn.com.startai:mqsdk:3.1.41'
     //json解析
     implementation 'com.google.code.gson:gson:2.8.5'
-    //startai airkiss sdk
-    implementation 'cn.com.startai:airkisssdk:1.0.3'
-    //startai esptouch sdk
-    compile 'cn.com.startai:esptouchsdk:1.0.3'
-    //startai udp sdk
-    implementation 'cn.com.startai:udpsdk:1.0.2'
+    //startai airkiss sdk （配网sdk与esptouch二选一）
+    implementation 'cn.com.startai:airkisssdk:1.0.4'
+    //startai esptouch sdk （配网sdk与airkiss二选一）
+    compile 'cn.com.startai:esptouchsdk:1.0.4'
+ 
  
 ######1.2.2.权限      
        
@@ -125,10 +124,9 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
 
 
 
+	 // 注册消息回调	
 	 PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 	 
-	 //注销消息回调
-	 PersistentEventDispatcher.getInstance().unregisterOnPushListener(listener);
-
+	
 	 AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
 
         /**
@@ -167,6 +165,9 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
 
     };
 
+     // 注销消息回调 开发者需要在不使用回调的时候调用如下代码来注销回调
+	 PersistentEventDispatcher.getInstance().unregisterOnPushListener(listener);
+
     
 
 #####1.4.初始化sdk	
@@ -179,7 +180,7 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
         StartAI.getInstance().initialization(getApplicationContext(), initParam);
 
 ####2.用户部分
-StartAI云平台的用户系统包含了用户的注册、登录、重置密码、修改个人信息等功能，StartAI云平台以DOMAIN区分用户系统，不同DOMAIN的用户系统相互独立。更换DOMAIN后，需要重新注册用户。
+StartAI云平台的用户系统包含了用户的注册、登录、重置密码、修改个人信息等功能，StartAI云平台以APPID区分用户系统，不同APPID的用户系统相互独立。更换APPID后，需要重新注册用户。
 #####2.1.用户部分流程图
 ![](https://i.imgur.com/OrcXqMU.png)
 #####2.2.注册部分
@@ -195,7 +196,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("13333333333", Type.GetIdentifyCode.REGISTER, onCallListener);
+	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("13333333333", C_0x8021.TYPE_REGISTER, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -222,7 +223,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode("13333333333", identify, Type.CheckIdentifyCode.REGISTER, onCallListener);
+	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode("13333333333", identify, C_0x8022.TYPE_MOBILE_REGISTER, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -303,7 +304,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 ![](https://i.imgur.com/or5kdGC.png)
 
 #####2.3.登录部分
-用户登录时，用户名可以是注册过的手机号、邮箱。登录账号要先注册好，也可以直接使用手机进行快捷登录，如果更换了Domain，登录账号需要重新注册。
+用户登录时，用户名可以是注册过的手机号、邮箱。登录账号要先注册好，也可以直接使用手机进行快捷登录，如果更换了APPID，登录账号需要重新注册。
 ######2.3.1快捷登录
 
 用户可通过手机获取验证码直接快捷登录。快捷登录需要两步
@@ -317,7 +318,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("11111111@qq.com", Type.GetIdentifyCode.LOGIN, onCallListener);
+	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("11111111@qq.com", C_0x8021.TYPE_FAST_LOGIN, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -497,7 +498,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(Type.Login.THIRD_WECHAT,"WechatCode",onCallListener);
+	StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(C_0x8027.THIRD_WECHAT,"WechatCode",onCallListener);
 
 
 	//实现业务处理回调
@@ -566,7 +567,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("13333333333", Type.GetIdentifyCode.FORGET_PWD, onCallListener);
+	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("13333333333", C_0x8027.TYPE_FORGET_PWD, onCallListener);
 
 
 	//实现业务处理回调
@@ -597,7 +598,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, code, Type.CheckIdentifyCode.FORGET_PWD, onCallListener);
+	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, code, C_0x8022.TYPE_MOBILE_RESET_PWD, onCallListener);
 
 
 	//实现业务处理回调
@@ -659,7 +660,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	StartAI.getInstance().getBaseBusiManager().sendEmail(email, Type.SendEmail.FORGET_PWD, onCallListener);
+	StartAI.getInstance().getBaseBusiManager().sendEmail(email, C_0x8023.TYPE_FORGET_PWD, onCallListener);
 
 
 	//实现业务处理回调
@@ -750,15 +751,12 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
             @Override
             public void onAirKissSuccess() {
                 appendLog("配置成功 用时 " + ((System.currentTimeMillis() - t) / 1000) + " s\n");
-                AirkissHelper.getInstance().stop();
-
             }
 
             @Override
             public void onAirKissFailed(int error) {
                 appendLog("配置失败 errorCode = " + error + "\n");
-                Java2CExDevice.stopAirKiss();
-                AirkissHelper.getInstance().stop();
+                StartaiAirkissManager.getInstance().stopAirKiss();
             }
         });
 
@@ -773,19 +771,8 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 		StartaiAirkissManager.getInstance().startAirKiss(pwd, ssid, aesKey.getBytes(), timeout, processPeroid, datePeroid);
 
 		//停止配置
-		Java2CExDevice.stopAirKiss();
-
-		//下面为配网辅助代码，可按需要添加
-		//开始辅助配网
-		AirkissHelper.getInstance().start(timeout, new AirkissHelper.AirkissHelperListener() {
-			@Override
-			public void onAirkissSuccess(InetAddress inetAddress) {
-				appendLog("配置成功 用时 " + ((System.currentTimeMillis() - t) / 1000) + " s\n");
-			}
-		});
-		
-		//停止辅助配网
-		AirkissHelper.getInstance().stop();
+		StartaiAirkissManager.getInstance().stopAirKiss();
+ 
 
 #####3.3.Esptouch
 【示例代码】
@@ -818,18 +805,6 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
             mTask.cancelEsptouch();
             mTask = null;
         }		
-
-		//下面为配网辅助代码，可按需要添加，如果开户了，需要在停止配网的同时，停止配网辅助
-		//开始辅助配网
-		AirkissHelper.getInstance().start(timeout, new AirkissHelper.AirkissHelperListener() {
-			@Override
-			public void onAirkissSuccess(InetAddress inetAddress) {
-				appendLog("配置成功 用时 " + ((System.currentTimeMillis() - t) / 1000) + " s\n");
-			}
-		});
-		
-		//停止辅助配网
-        AirkissHelper.getInstance().stop();
 
 
 ####4.设备发现与绑定
@@ -1067,6 +1042,8 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
  
 	}
+
+
 ######更改/添加手机号
 
 【示例代码】
@@ -1098,6 +1075,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
  
 	}
+
 ######获取APP支付宝 登录/授权 加密信息
 【示例代码】
 	
@@ -1163,7 +1141,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求  
-	C_0x8028.Req.ContentBean req = new C_0x8028.Req.ContentBean(Type.ThirdPayment.TYPE_ORDER, Type.ThirdPayment.PLATFOME_WECHAT, currentOrder.getNo(), "INCHARGER-订单支付", "CNY", currentOrder.getNeed_pay_fee() + "");
+	C_0x8028.Req.ContentBean req = new C_0x8028.Req.ContentBean(C_0x8028.TYPE_ORDER, C_0x8028.PLATFOME_WECHAT, currentOrder.getNo(), "INCHARGER-订单支付", "CNY", currentOrder.getNeed_pay_fee() + "");
 	StartAI.getInstance().getBaseBusiManager().thirdPaymentUnifiedOrder(req,onCallListener)
 
 
@@ -1187,9 +1165,56 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
  
 	}
  
+ 
+######查询天气信息
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求  
+	C_0x8035.Req.ContentBean req = new C_0x8035.Req.ContentBean("lat","lng");
+	StartAI.getInstance().getBaseBusiManager().getWeatherInfo(req,onCallListener)
 
 
-### 部分请求参数实体结构 
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onGetWeatherInfo(C_0x8035.Resp resp) { 
+	        
+			if (resp.getResult() == BaseMessage.RESULT_SUCCESS) {
+				//成功
+
+			}else{
+				//失败
+                            
+			} 	
+
+	    }
+
+ 
+	}
+ 
+
+
+### 部分请求|返回参数实体结构 
+
+>C_0x8035.Resp.ContentBean 查询天气信息 返回数据 
+
+成员 | 类型 | 描述 | 备注
+:|
+lat | String | 纬度  | "115.9918900000"
+lng | String | 经度  | "36.4626820000" 
+province | String | 省份  | "广东"
+city | String | 城市  | "广州" 
+district | String | 区  | "天河" 
+qlty | String | 空气质量  | "重度污染"
+tmp | String | 当前温度  | "16" 
+weather | String | 天气描述  | "多云"  
+weatherPic | String | 天气图片链接  | "http://www.abc.com/aaa.jpg "
+ 
 
 >C_0x8028.Req.ContentBean 请求下单 请求数据 
 
@@ -1201,6 +1226,7 @@ goods_description | String | 商品描述 | 1 | 显示在微信支付单 如 “
 fee_type | String | 货币类型 | 1 | "CNY"
 total_fee | int | 总金额 | 1 | 单位： 分
 order_num | String | 订单号 | 1 | 
+ 
  
 
 >C_0x8031.Resp.ContentBean 查询支付结果 返回数据
@@ -1274,8 +1300,9 @@ lastName | String | 姓  |
 isHavePwd | int | 是否已经设置过登录密码  |  1为已设置
 mobile | String | 手机号  |   
 email | String | 邮箱号  |   
-注：在请求时，如果不想修改此字段请将无需填写,服务器会自动保存上次的数据。
- 
+thirdInfos | List | 第三方账号信息 |   nickName 
+
+
 >C_0x8020.Req.ContentBean 修改用户信息请求实体
 
 成员 | 类型 | 描述 | 必填 |备注
@@ -1320,12 +1347,14 @@ toid | String | 消息接收方 | 1 |
 fromid | String | 消息发送方  | 1|   
 content | Object | 具体的内容  | 1|   不同的消息类型，content格式不一样
 
+
  
 
 ### 注意事项 
 - needUISafety（） 方法返回true表示此接口的其他方法都将回调到主线程，fase则相反。
 - sdk首次初始化成功后会回调到 onActiviteResult()。只有此接口回调成功才可以正常收发消息。 
 - 开发者可以选择在封装好的业务回调中处理业务，也可以在onCommand(topic,cmd)事件中处理业务。
+- 注册的事件监听建议在不使用的时候取消注册，以免发生内存泄露。
 
  
 ### 异常码
@@ -1444,8 +1473,12 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x801809 |	用户登录失败,该用户已长期未登陆
 0x801810 |  用户登录失败,未设置密码,请使用手机+验证码登录
 0x801811 |  用户登录失败,appid无效
+0x801812 |	用户登录失败,重新发送激活邮件失败
+0x801813 |  用户登录失败,邮箱格式错误
+0x801814 |  用户登录失败,手机格式错误
 0x801901 | 	更新设备信息失败,content格式有误
 0x801902 | 	更新设备信息失败,参数丢失
+0x801903 |	SN不合法
 0x802001 |	更新用户信息失败,Content格式有误
 0x802002 |	更新用户信息失败,参数丢失
 0x802003 |	更新用户信息失败,userid无效
@@ -1476,6 +1509,11 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x802306 |	发送邮件失败,Appid不合法
 0x802307 |	发送邮件失败,请先激活
 0x802308 |	发送邮件失败,类型不支持
+0x802309 |	发送邮件失败,数据保存失败 	
+0x802310 |	邮箱格式不正确	
+0x802311 |	无需重复注册	
+0x802312 |	邮件长度过长	邮件长度限制为50
+0x802313 |	邮箱不合法，尚未注册	
 0x802401 |	获取用户信息失败,content格式有误
 0x802402 |	获取用户信息失败,参数丢失
 0x802403 |	获取用户信息失败,userid不合法
@@ -1493,6 +1531,8 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x802606 |	重置密码失败,验证信息已过期
 0x802607 |	重置密码失败,appid无效
 0x802608 |	重置密码失败,密码格式有误
+0x802609 |	重置密码失败,账号格式有误	即不为手机号格式也不为邮箱格式
+0x802610 |	重置密码失败,该邮箱不合法	
 0x802701 |	第三方登录失败,content格式有误
 0x802702 |	第三方登录失败,参数丢失
 0x802703 |	第三方登录失败,登录类型不支持
@@ -1527,6 +1567,7 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x803406 |	验证信息已过期
 0x803407 |	数据保存失败
 0x803408 |	appid不合法
+0x803409 |	userID不合法
 0X803501 |	获取天气信息失败,content格式有误
 0X803502 |	参数丢失
 0x803503 |	请求天气接口失败
@@ -1552,9 +1593,42 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 0x803709 |	userid不合法
 0x803710 |	不用重复添加
 0x803711 |	该账号已被其他用户绑定
+0x803801 |	分页获取好友列表失败，content格式有误
+0x803802 |	参数丢失
+0x803803 |	Type类型不支持
+0x803804 |	分页参数不合法
+0x803901 |	绑定邮箱失败，content格式有误
+0x803902 |	参数丢失
+0x803903 |	邮箱格式错误
+0x803904 |	不许重复绑定
+0x803905 |	该邮箱已被其他用户绑定
+0x803906 |	验证信息已过期
+0x803907 |	数据保存失败
+0x803908 |	APPID不合法
+0x803909 |	userID不合法
 
 
 ###更新日志
+
+- 2019-02-13 v3.1.41
+
+		1，添加分页查询绑定列表功能。
+		2，添加绑定邮箱号功能。
+		3，实例异常码。
+
+- 2019-01-19 v3.1.39
+
+		1,调整mqtt连接成功回调时机，在激活之后再回调。
+
+- 2019-01-15 v3.1.35
+		1，修复调用 sdk unInit方法，连接未断开的bug。
+		2，降低重连延迟，加快重连速度。
+
+- 2019-01-04 v3.1.33
+		
+		1，添加查询天气接口及回调处理。
+		2，补全异常码。
+		 
 
 - 2018-12-27 v3.1.31
 		
