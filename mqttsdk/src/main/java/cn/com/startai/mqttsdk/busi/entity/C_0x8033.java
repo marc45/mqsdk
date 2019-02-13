@@ -67,9 +67,10 @@ public class C_0x8033 implements Serializable {
                 .setMsgcw(MSGCW)
                 .setContent(new C_0x8033.Req.ContentBean(authType)).create();
 
-        if (!DistributeParam.GETALIPAYAUTHINFO_DISTRIBUTE) {
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
+
 
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
@@ -99,7 +100,7 @@ public class C_0x8033 implements Serializable {
             C_0x8033.Resp.ContentBean content = resp.getContent();
             C_0x8033.Req.ContentBean errcontent = content.getErrcontent();
             content.setAuthTargetId(errcontent.getAuthTargetId());
-            SLog.e(TAG, MSG_DESC + " 失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetAlipayAuthInfoResult(resp);
     }

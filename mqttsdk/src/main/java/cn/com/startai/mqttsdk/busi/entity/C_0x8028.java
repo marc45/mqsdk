@@ -15,6 +15,7 @@ import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -35,6 +36,7 @@ public class C_0x8028 implements Serializable {
     public static String MSGCW = "0x07";
 
     public static String MSG_DESC = "统一下单 ";
+
     public static final int TYPE_DEPOSIT = 1; //押金
     public static final int TYPE_BALANCE = 2; //余额
     public static final int TYPE_ORDER = 3; //订单
@@ -70,6 +72,13 @@ public class C_0x8028 implements Serializable {
             return null;
         }
 
+        if (TextUtils.isEmpty(request.getUserid())) {
+            UserBusi userBusi = new UserBusi();
+            C_0x8018.Resp.ContentBean currUser = userBusi.getCurrUser();
+            if (currUser != null && !TextUtils.isEmpty(currUser.getUserid())) {
+                request.setUserid(currUser.getUserid());
+            }
+        }
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype(MSGTYPE)
@@ -77,7 +86,7 @@ public class C_0x8028 implements Serializable {
                 .setContent(request).create();
 
 
-        if(!DistributeParam.THIRDPAYMENTUNIFIEDORDER_DISTRIBUTE){
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
 
@@ -93,7 +102,7 @@ public class C_0x8028 implements Serializable {
      *
      * @param miof
      */
-    public static void m_0x8028_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
@@ -114,7 +123,12 @@ public class C_0x8028 implements Serializable {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+            }
+            if (TextUtils.isEmpty(resp.getContent().getUserid())) {
+                C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
+                if (currUser != null && !TextUtils.isEmpty(currUser.getUserid())) {
+                    resp.getContent().setUserid(currUser.getUserid());
+                }
             }
 
         } else {
@@ -127,8 +141,9 @@ public class C_0x8028 implements Serializable {
             content.setType(errcontent.getType());
             content.setTotal_fee(errcontent.getTotal_fee());
             content.setPlatform(errcontent.getPlatform());
+            content.setUserid(errcontent.getUserid());
 
-            SLog.e(TAG, "统一下单 失败");
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onThirdPaymentUnifiedOrderResult(resp);
     }
@@ -151,6 +166,7 @@ public class C_0x8028 implements Serializable {
         public static class ContentBean {
 
 
+            private String userid;
             private int type;
             private int platform;
             private String order_num;
@@ -158,7 +174,21 @@ public class C_0x8028 implements Serializable {
             private String fee_type;
             private String total_fee;
 
-            public ContentBean(int type, int platform, String order_num, String goods_description, String fee_type, String total_fee) {
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "userid='" + userid + '\'' +
+                        ", type=" + type +
+                        ", platform=" + platform +
+                        ", order_num='" + order_num + '\'' +
+                        ", goods_description='" + goods_description + '\'' +
+                        ", fee_type='" + fee_type + '\'' +
+                        ", total_fee='" + total_fee + '\'' +
+                        '}';
+            }
+
+            public ContentBean(String userid, int type, int platform, String order_num, String goods_description, String fee_type, String total_fee) {
+                this.userid = userid;
                 this.type = type;
                 this.platform = platform;
                 this.order_num = order_num;
@@ -167,16 +197,21 @@ public class C_0x8028 implements Serializable {
                 this.total_fee = total_fee;
             }
 
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "type=" + type +
-                        ", platform=" + platform +
-                        ", order_num='" + order_num + '\'' +
-                        ", goods_description='" + goods_description + '\'' +
-                        ", fee_type='" + fee_type + '\'' +
-                        ", total_fee='" + total_fee + '\'' +
-                        '}';
+            public String getUserid() {
+                return userid;
+            }
+
+            public void setUserid(String userid) {
+                this.userid = userid;
+            }
+
+            public ContentBean(int type, int platform, String order_num, String goods_description, String fee_type, String total_fee) {
+                this.type = type;
+                this.platform = platform;
+                this.order_num = order_num;
+                this.goods_description = goods_description;
+                this.fee_type = fee_type;
+                this.total_fee = total_fee;
             }
 
             public int getType() {
@@ -265,6 +300,7 @@ public class C_0x8028 implements Serializable {
         public static class ContentBean extends BaseContentBean {
 
 
+            private String userid;
             private int type;
             private int platform;
             private String order_num;
@@ -279,6 +315,93 @@ public class C_0x8028 implements Serializable {
             private String noncestr;
             private String timestamp;
             private String sign;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", userid='" + userid + '\'' +
+                        ", type=" + type +
+                        ", platform=" + platform +
+                        ", order_num='" + order_num + '\'' +
+                        ", goods_description='" + goods_description + '\'' +
+                        ", fee_type='" + fee_type + '\'' +
+                        ", total_fee='" + total_fee + '\'' +
+                        ", appid='" + appid + '\'' +
+                        ", partnerid='" + partnerid + '\'' +
+                        ", prepayid='" + prepayid + '\'' +
+                        ", package_='" + package_ + '\'' +
+                        ", noncestr='" + noncestr + '\'' +
+                        ", timestamp='" + timestamp + '\'' +
+                        ", sign='" + sign + '\'' +
+                        ", errcontent=" + errcontent +
+                        '}';
+            }
+
+            public String getUserid() {
+                return userid;
+            }
+
+            public void setUserid(String userid) {
+                this.userid = userid;
+            }
+
+            public String getAppid() {
+                return appid;
+            }
+
+            public void setAppid(String appid) {
+                this.appid = appid;
+            }
+
+            public String getPartnerid() {
+                return partnerid;
+            }
+
+            public void setPartnerid(String partnerid) {
+                this.partnerid = partnerid;
+            }
+
+            public String getPrepayid() {
+                return prepayid;
+            }
+
+            public void setPrepayid(String prepayid) {
+                this.prepayid = prepayid;
+            }
+
+            public String getPackage_() {
+                return package_;
+            }
+
+            public void setPackage_(String package_) {
+                this.package_ = package_;
+            }
+
+            public String getNoncestr() {
+                return noncestr;
+            }
+
+            public void setNoncestr(String noncestr) {
+                this.noncestr = noncestr;
+            }
+
+            public String getTimestamp() {
+                return timestamp;
+            }
+
+            public void setTimestamp(String timestamp) {
+                this.timestamp = timestamp;
+            }
+
+            public String getSign() {
+                return sign;
+            }
+
+            public void setSign(String sign) {
+                this.sign = sign;
+            }
 
             public String getOrder_num() {
                 return order_num;
@@ -400,25 +523,6 @@ public class C_0x8028 implements Serializable {
                 this.errcontent = errcontent;
             }
 
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "errcode='" + errcode + '\'' +
-                        ", errmsg='" + errmsg + '\'' +
-                        ", type=" + type +
-                        ", platform=" + platform +
-                        ", fee_type='" + fee_type + '\'' +
-                        ", total_fee='" + total_fee + '\'' +
-                        ", appid='" + appid + '\'' +
-                        ", partnerid='" + partnerid + '\'' +
-                        ", prepayid='" + prepayid + '\'' +
-                        ", package_='" + package_ + '\'' +
-                        ", noncestr='" + noncestr + '\'' +
-                        ", timestamp='" + timestamp + '\'' +
-                        ", sign='" + sign + '\'' +
-                        ", errcontent=" + errcontent +
-                        '}';
-            }
         }
     }
 

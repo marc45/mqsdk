@@ -13,7 +13,8 @@ import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
-/**终端激活
+/**
+ * 终端激活
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
@@ -24,6 +25,7 @@ public class C_0x8001 {
     public static String MSG_DESC = "终端激活 ";
     public static final String MSGTYPE = "0x8001";
     public static String MSGCW = "0x07";
+
     /**
      * 终端激活
      * 如果 contentbean 为null表示自己激活  否则为第三方硬件激活
@@ -46,10 +48,9 @@ public class C_0x8001 {
     /**
      * 处理激活返回
      *
-     * @param miof   失败实体
+     * @param miof 失败实体
      */
-    public static void m_0x8001_resp(String miof) {
-
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
@@ -68,6 +69,10 @@ public class C_0x8001 {
                 StartaiMqttPersistent.getInstance().checkGetAreaNode();
 
                 C_0x9998.m_0x9998_req(null);
+
+                StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectSuccess();
+
+
                 SLog.e(TAG, "激活成功");
             } else {
                 //代发的激活包 激活成功
@@ -88,12 +93,13 @@ public class C_0x8001 {
                 SLog.e(TAG, "激活失败");
                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onActiviteResult(resp);
             } else {
-                SLog.e(TAG, "代激活失败");
+                SLog.e(TAG, "代激活失败 " +resp.getContent().getErrmsg()) ;
                 //代发的激活失败
                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onHardwareActivateResult(resp);
             }
 
         }
+
 
     }
 

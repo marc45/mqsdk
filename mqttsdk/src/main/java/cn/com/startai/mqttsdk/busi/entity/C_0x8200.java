@@ -25,7 +25,7 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8200 {
 
     private static final String TAG = C_0x8200.class.getSimpleName();
-    public static String MSGTYPE = "0x8200";
+    public static final String MSGTYPE = "0x8200";
 
     /**
      * 消息透传
@@ -49,7 +49,7 @@ public class C_0x8200 {
     /**
      * 处理消息透传返回
      */
-    public static void m_0x8200_resp(String topic, String miof) {
+    public static void m_resp(String topic, String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {

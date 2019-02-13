@@ -1,12 +1,19 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
@@ -23,7 +30,7 @@ public class C_0x8020 {
 
     private static final String TAG = C_0x8020.class.getSimpleName();
     public static String MSG_DESC = "更新用户信息 ";
-    public static String MSGTYPE = "0x8020";
+    public static final String MSGTYPE = "0x8020";
     public static String MSGCW = "0x07";
     /**
      * 请求更新用户信息
@@ -33,12 +40,46 @@ public class C_0x8020 {
      */
     public static void m_0x8020_req(Req.ContentBean contentBean, IOnCallListener listener) {
 
-        MqttPublishRequest x8020_req_msg = MqttPublishRequestCreator.create_0x8020_req_msg(contentBean);
+        MqttPublishRequest x8020_req_msg = create_0x8020_req_msg(contentBean);
         if (x8020_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8020_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
         }
         StartaiMqttPersistent.getInstance().send(x8020_req_msg, listener);
+
+    }
+    /**
+     * 组更新用户信息数据包
+     */
+    public static MqttPublishRequest create_0x8020_req_msg(C_0x8020.Req.ContentBean contentBean) {
+
+        if (contentBean == null) {
+            SLog.e(TAG, "参数非法 参数为空");
+            return null;
+        }
+        String userid = "";
+        C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
+        if (currUser != null) {
+            userid = currUser.getUserid();
+        }
+        if (TextUtils.isEmpty(contentBean.getUserid())) {
+            contentBean.setUserid(userid);
+        }
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8020")
+                .setMsgcw("0x07")
+                .setContent(contentBean).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
 
     }
 
@@ -48,7 +89,7 @@ public class C_0x8020 {
      *
      * @param miof
      */
-    public static void m_0x8020_resp(String miof) {
+    public static void m_resp(String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {
@@ -79,7 +120,7 @@ public class C_0x8020 {
             content.setAddress(errcontent.getAddress());
 
 
-            SLog.e(TAG, "用户信息更新失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
 
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onUpdateUserInfoResult(resp);

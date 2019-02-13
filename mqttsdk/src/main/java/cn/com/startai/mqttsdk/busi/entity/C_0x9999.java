@@ -17,7 +17,8 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x9999 {
 
     private static String TAG = C_0x9999.class.getSimpleName();
-    public static String MSGTYPE = "0x9999";
+    public static final String MSGTYPE = "0x9999";
+
     /**
      * 自己上报 自己的连接断开事件
      *
@@ -31,7 +32,7 @@ public class C_0x9999 {
     /**
      * 处理对端的 终端连接断开事件
      */
-    public static void m_0x9999_resp(String miof) {
+    public static void m_resp(String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
 

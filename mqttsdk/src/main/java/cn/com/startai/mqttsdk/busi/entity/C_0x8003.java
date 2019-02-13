@@ -2,10 +2,13 @@ package cn.com.startai.mqttsdk.busi.entity;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.SPController;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
@@ -23,7 +26,7 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8003 {
     public static String MSG_DESC = "注销激活 ";
     private static String TAG = C_0x8003.class.getSimpleName();
-    public static String MSGTYPE = "0x8003";
+    public static final String MSGTYPE = "0x8003";
     public static String MSGCW = "0x07";
 
     /**
@@ -31,7 +34,7 @@ public class C_0x8003 {
      */
     public static void m_0x8003_req(IOnCallListener listener) {
 
-        MqttPublishRequest x8003_req_msg = MqttPublishRequestCreator.create_0x8003_req_msg();
+        MqttPublishRequest x8003_req_msg = create_0x8003_req_msg();
         if (x8003_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8003_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -39,13 +42,36 @@ public class C_0x8003 {
         StartaiMqttPersistent.getInstance().send(x8003_req_msg, listener);
 
     }
+    /**
+     * 组添注销激活包
+     *
+     * @return
+     */
+    public static MqttPublishRequest create_0x8003_req_msg() {
+
+
+        String sn = MqttConfigure.getSn(StartAI.getContext());
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8003")
+                .setMsgcw("0x07")
+                .setContent(new C_0x8003.Req.ContentBean(sn)).create();
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+    }
 
     /**
      * 注销激活 消息
      *
      * @param miof
      */
-    public static void m_0x8003_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
@@ -62,7 +88,7 @@ public class C_0x8003 {
                 SPController.clearAllSp();
                 SDBmanager.getInstance().deleteAllDB();
 
-                StartaiMqttPersistent.getInstance().disConnect(true);
+                StartaiMqttPersistent.getInstance().disConnect(false);
                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onUnActiviteResult(resp);
             }
 

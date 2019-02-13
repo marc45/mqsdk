@@ -7,22 +7,26 @@ import java.util.UUID;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.SPController;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.MsgWillSendBean;
 import cn.com.startai.mqttsdk.control.entity.UserBean;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 /**
  * 登录
@@ -38,8 +42,21 @@ public class C_0x8018 {
     public static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
     public static String MSG_DESC = "登录 ";
-    public static String MSGTYPE = "0x8018";
+    public static final String MSGTYPE = "0x8018";
     public static String MSGCW = "0x07";
+
+    /**
+     * 登录
+     *
+     * @param req
+     * @param listener
+     */
+    public static void req(Req.ContentBean req, IOnCallListener listener) {
+        if (req != null) {
+            m_0x8018_req(req.getUname(), req.getPwd(), req.getIdentifyCode(), listener);
+        }
+    }
+
     /**
      * 登录
      *
@@ -103,7 +120,7 @@ public class C_0x8018 {
         }
 
 
-        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8018_req_msg = MqttPublishRequestCreator.create_0x8018_req_msg(uName, pwd, identifyCode);
+        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8018_req_msg = create_0x8018_req_msg(uName, pwd, identifyCode);
 
         if (x8018_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8018_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
@@ -134,6 +151,81 @@ public class C_0x8018 {
         } else {
             StartaiMqttPersistent.getInstance().send(x8018_req_msg, listener);
         }
+    }
+
+    /**
+     * 组登录包
+     *
+     * @param uName
+     * @param pwd
+     * @param identifyCode
+     * @return
+     */
+    public static MqttPublishRequest<StartaiMessage<C_0x8018.Req.ContentBean>> create_0x8018_req_msg(String uName, String pwd, String identifyCode) {
+        if (TextUtils.isEmpty(uName)) {
+
+            SLog.e(TAG, "参数非法 uName为空 ");
+            return null;
+        }
+
+        if (TextUtils.isEmpty(pwd) && TextUtils.isEmpty(identifyCode)) {
+            SLog.e(TAG, "参数非法  密码或密码验证码为空");
+            return null;
+        }
+
+
+        int type = 0;
+        if (SRegexUtil.isEmail(uName)) {
+            type = 1;
+        } else if (SRegexUtil.isMobileSimple(uName)) {
+
+            if (TextUtils.isEmpty(pwd) && !TextUtils.isEmpty(identifyCode)) {
+                type = 3;
+            } else if (!TextUtils.isEmpty(pwd) && TextUtils.isEmpty(identifyCode)) {
+                type = 2;
+            } else if (!TextUtils.isEmpty(pwd) && !TextUtils.isEmpty(identifyCode)) {
+                type = 5;
+            } else {
+                SLog.e(TAG, "参数非法 类型与 uname不匹配 ");
+                return null;
+            }
+
+        } else if (SRegexUtil.isUsername(uName)) {
+            type = 4;
+        } else {
+            SLog.e(TAG, "参数非法 uname 格式不对");
+            return null;
+        }
+
+        if (type == 1 || type == 2 || type == 4 || type == 5) {
+            if (TextUtils.isEmpty(pwd)) {
+                SLog.e(TAG, "参数非法 密码为空 ");
+                return null;
+            }
+        } else if (type == 3) {
+            if (TextUtils.isEmpty(identifyCode)) {
+                SLog.e(TAG, "参数非法 验证码为空");
+                return null;
+            }
+        }
+
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8018")
+                .setMsgcw("0x07")
+                .setFromid(MqttConfigure.getSn(StartAI.getContext()))
+                .setContent(new C_0x8018.Req.ContentBean(uName, pwd, identifyCode, type)).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
     }
 
 
@@ -172,7 +264,7 @@ public class C_0x8018 {
      *
      * @param miof
      */
-    public static void m_0x8018_resp(String miof) {
+    public static void m_resp(String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         SLog.d(TAG, "resp = " + resp);
@@ -205,7 +297,7 @@ public class C_0x8018 {
             content.setType(errcontent.getType());
             content.setUname(errcontent.getUname());
 
-            SLog.e(TAG, "登录失败");
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
 
         //登录失败

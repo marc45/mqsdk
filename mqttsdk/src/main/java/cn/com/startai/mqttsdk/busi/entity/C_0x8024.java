@@ -1,5 +1,7 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -7,9 +9,14 @@ import java.util.List;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
@@ -26,7 +33,7 @@ public class C_0x8024 implements Serializable {
 
     public static String MSG_DESC = "查询用户信息 ";
     private static final String TAG = C_0x8024.class.getSimpleName();
-    public static String MSGTYPE = "0x8024";
+    public static final String MSGTYPE = "0x8024";
     public static String MSGCW = "0x07";
     /**
      * 请求查询用户信息
@@ -35,7 +42,7 @@ public class C_0x8024 implements Serializable {
      */
     public static void m_0x8024_req(String userid, IOnCallListener listener) {
 
-        MqttPublishRequest x8024_req_msg = MqttPublishRequestCreator.create_0x8024_req_msg(userid);
+        MqttPublishRequest x8024_req_msg = create_0x8024_req_msg(userid);
         if (x8024_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8024_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -44,13 +51,47 @@ public class C_0x8024 implements Serializable {
 
     }
 
+    /**
+     * 组查询用户信息数据包
+     *
+     * @return
+     */
+    public static MqttPublishRequest create_0x8024_req_msg(String uid) {
 
+        String userid = uid;
+        Integer loginType = null;
+
+        if (TextUtils.isEmpty(userid)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                userid = userBean.getUserid();
+                loginType = userBean.getType();
+            }
+        }
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8024")
+                .setMsgcw("0x07")
+                .setContent(new C_0x8024.Req.ContentBean(userid, loginType)).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
+    }
     /**
      * 请求查询 用户信息返回结果
      *
      * @param miof
      */
-    public static void m_0x8024_resp(String miof) {
+    public static void m_resp(String miof) {
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {
             SLog.e(TAG, "返回数据格式错误");
@@ -64,7 +105,7 @@ public class C_0x8024 implements Serializable {
             Req.ContentBean errcontent = content.getErrcontent();
             content.setUserid(errcontent.getUserid());
 
-            SLog.e(TAG, "查询用户信息失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetUserInfoResult(resp);
     }

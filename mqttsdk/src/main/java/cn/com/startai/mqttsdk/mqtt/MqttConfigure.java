@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 
+import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
@@ -26,7 +27,7 @@ public class MqttConfigure {
     public static String apptype;
     public static String appid;
     public static String clientid;
-    public static String m_ver = "Json_1.3.9_9.2.6";
+    public static String m_ver = "Json_1.6.0_9.2.19";
     public static ArrayList<String> mqttHosts = new ArrayList<>();
     public static boolean isCheckRootCrt = true;
     public static final String DEFAULT_ROOTCRT = "startai/startai.bks";
@@ -69,17 +70,15 @@ public class MqttConfigure {
             return null;
         }
         long t = System.currentTimeMillis();
+
         if (TextUtils.isEmpty(sn)) {
-            if (isSn_16) {
-                sn = DeviceInfoManager.getInstance().getSn_16(context);
-            } else {
-                sn = DeviceInfoManager.getInstance().getSn(context);
-            }
+
+            sn = StartAI.getInstance().getDeviceInfoManager().getSn(context);
+
         }
 
-
-        SLog.d(TAG, "getSn use time = " + (System.currentTimeMillis() - t));
-        return DeviceInfoManager.getInstance().getSn_16(sn + appid);
+        SLog.d(TAG, "getSn use time = " + (System.currentTimeMillis() - t) + " sn = " + sn);
+        return sn;
     }
 
 

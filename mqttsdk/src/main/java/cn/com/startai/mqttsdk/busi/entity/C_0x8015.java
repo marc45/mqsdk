@@ -1,12 +1,19 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
@@ -35,7 +42,7 @@ public class C_0x8015 {
      */
     public static void m_0x8015_req(String userid, String fid, String remark, IOnCallListener listener) {
 
-        MqttPublishRequest x8015_req_msg = MqttPublishRequestCreator.create_0x8015_req_msg(userid, fid, remark);
+        MqttPublishRequest x8015_req_msg = create_0x8015_req_msg(userid, fid, remark);
         if (x8015_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8015_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -44,14 +51,46 @@ public class C_0x8015 {
 
 
     }
+    /**
+     * 组 修改备注名数据包
+     *
+     * @return
+     */
+    public static MqttPublishRequest create_0x8015_req_msg(String uid, String fid, String remark) {
 
+
+        String userid = uid;
+        if (TextUtils.isEmpty(userid)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null) {
+                userid = userBean.getUserid();
+            }
+        }
+
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype(C_0x8015.MSGTYPE)
+                .setMsgcw("0x07")
+                .setContent(new C_0x8015.Req.ContentBean(userid, fid, remark)).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
+    }
 
     /**
      * 修改备注名
      *
      * @param miof
      */
-    public static void m_0x8015_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);

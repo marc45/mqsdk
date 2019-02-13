@@ -26,8 +26,11 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.HostChangeListener;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
@@ -168,7 +171,6 @@ public class PersistentEventDispatcher {
     }
 
     public void onConnectSuccess() {
-
 
         if (connectStateListenerList != null) {
             for (final IConnectionStateListener listener : connectStateListenerList) {
@@ -1041,6 +1043,35 @@ public class PersistentEventDispatcher {
     }
 
     /**
+     * 查询天气返回
+     *
+     * @param resp
+     */
+    public void onGetWeatherInfoResult(final C_0x8035.Resp resp) {
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onGetWeatherInfoResult(resp);
+                            }
+                        });
+                    } else {
+                        list.onGetWeatherInfoResult(resp);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    /**
      * 绑定第三方账号返回
      *
      * @param resp
@@ -1061,6 +1092,64 @@ public class PersistentEventDispatcher {
                         });
                     } else {
                         list.onBindThirdAccountResult(resp);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    /**
+     * 查询好友列表 分页返回
+     *
+     * @param resp
+     */
+    public void onGetBindListByPageResult(final C_0x8038.Resp resp) {
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onGetBindListByPageResult(resp);
+                            }
+                        });
+                    } else {
+                        list.onGetBindListByPageResult(resp);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    /**
+     * 绑定邮箱账号返回
+     *
+     * @param resp
+     */
+    public void onBindEmailResult(final C_0x8039.Resp resp) {
+        if (messageArriveListenerList != null) {
+            for (final IOnMessageArriveListener listener : messageArriveListenerList) {
+
+                if (listener instanceof AOnStartaiMessageArriveListener) {
+                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+
+                    if (listener.needUISafety()) {
+                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.onBindEmailResult(resp);
+                            }
+                        });
+                    } else {
+                        list.onBindEmailResult(resp);
                     }
                 }
 

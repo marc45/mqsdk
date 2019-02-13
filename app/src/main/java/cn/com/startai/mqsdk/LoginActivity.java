@@ -6,11 +6,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.Menu;
@@ -19,22 +19,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.blankj.utilcode.util.AppUtils;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
-
-import cn.com.startai.mqsdk.util.TAndL;
-import cn.com.startai.mqsdk.util.permission.PermissionHelper;
 import cn.com.startai.mqttsdk.StartAI;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
-import cn.com.startai.mqttsdk.utils.SLog;
+import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
+import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
+import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 
 /**
  * 账号加密码登录
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText etUname;
     private EditText etPwd;
@@ -59,46 +57,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         initView();
         initListener();
-        checkSdPermission();
     }
 
-
-    private void checkSdPermission() {
-
-
-        PermissionHelper.requestStorage(new PermissionHelper.OnPermissionGrantedListener() {
-            @Override
-            public void onPermissionGranted() {
-                SLog.d(TAG, "sdcard.onPermissionGranted()");
-                /**
-                 * 自动登录
-                 */
-                checkLoginStatus();
-            }
-        }, new PermissionHelper.OnPermissionDeniedListener() {
-            @Override
-            public void onPermissionDenied() {
-                SLog.d(TAG, "sdcard.onPermissionDenied()");
-                Toast.makeText(LoginActivity.this, "请给予权限", Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
     }
 
-    private void checkLoginStatus() {
-
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-            //TODO:还需要判断token是否过期
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-            finish();
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -111,53 +77,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         int id = item.getItemId();
         if (id == R.id.action_settings) {
 
-            startActivity(new Intent(LoginActivity.this, Login2Activity.class));
-
             return true;
         } else if (id == R.id.action_3_login) {
-
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setTitle("第三方登录")
-                    .setSingleChoiceItems(new String[]{"微信登录", "支付宝登录", "QQ登录", "推特登录"}, -1, new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            switch (which) {
-                                case 0:
-
-                                    boolean appInstalled = AppUtils.isAppInstalled("com.tencent.mm");
-                                    if (!appInstalled) {
-                                        TAndL.TL(getApplicationContext(), "手机未安装微信");
-                                        return;
-                                    }
-
-                                    wxLogin();
-
-                                    break;
-
-                                default:
-
-                                    TAndL.TL(getApplicationContext(), "暂不支持...");
-
-                                    break;
-                            }
-                        }
-                    })
-                    .show();
 
 
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //微信登录
-    public void wxLogin() {
-        SendAuth.Req req = new SendAuth.Req();
-        req.scope = "snsapi_userinfo";
-        req.state = "diandi_wx_login";
-        //向微信发送请求
-        MyApp.getWxAPI().sendReq(req);
     }
 
 
@@ -166,26 +91,103 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         int i = v.getId();
         if (i == R.id.bt_login2_login) {
-            String uname = etUname.getText().toString();
-            String pwd = etPwd.getText().toString();
 
-            StartAI.getInstance().getBaseBusiManager().login(uname, pwd, "", onCallListener);
+
+//            C_0x8035.Req.ContentBean req = new C_0x8035.Req.ContentBean("36.4626820000", "115.9918900000");
+//            StartAI.getInstance().getBaseBusiManager().getWeatherInfo(req, new IOnCallListener() {
+//                @Override
+//                public void onSuccess(MqttPublishRequest request) {
+//
+//                }
+//
+//                @Override
+//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+//
+//                }
+//
+//                @Override
+//                public boolean needUISafety() {
+//                    return false;
+//                }
+//            });
+
+
+//            C_0x8028.Req.ContentBean request = new C_0x8028.Req.ContentBean(C_0x8028.TYPE_DEPOSIT, C_0x8028.PLATFOME_WECHAT, "aaabbcc", "测试充值", "CNY", "11");
+//
+//            StartAI.getInstance().getBaseBusiManager().thirdPaymentUnifiedOrder(request, new IOnCallListener() {
+//                @Override
+//                public void onSuccess(MqttPublishRequest request) {
+//
+//                }
+//
+//                @Override
+//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+//
+//                }
+//
+//                @Override
+//                public boolean needUISafety() {
+//                    return false;
+//                }
+//            });
+
+
+//            String num = "419109715@qq.com";
+//            StartAI.getInstance().getBaseBusiManager().resetLoginPwd(num, "qq123456", new IOnCallListener() {
+//                @Override
+//                public void onSuccess(MqttPublishRequest request) {
+//
+//                }
+//
+//                @Override
+//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+//
+//                }
+//
+//                @Override
+//                public boolean needUISafety() {
+//                    return false;
+//                }
+//            });
+
+            C_0x8039.Req.ContentBean req = new C_0x8039.Req.ContentBean("", "419109715@qq.com");
+
+            StartAI.getInstance().getBaseBusiManager().bindEmail(req, new IOnCallListener() {
+                @Override
+                public void onSuccess(MqttPublishRequest request) {
+
+                }
+
+                @Override
+                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+
+                }
+
+                @Override
+                public boolean needUISafety() {
+                    return false;
+                }
+            });
 
         } else if (i == R.id.tv_main_new_register) {
-            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+
 
         } else if (i == R.id.tv_main_forget_pwd) {
-            startActivity(new Intent(LoginActivity.this, ForgetActivity.class));
 
         } else if (i == R.id.tv_login_forget_email) {
-            startActivity(new Intent(LoginActivity.this, ForgetEmailActivity.class));
 
         } else if (i == R.id.tv_main_new_register2) {
-            startActivity(new Intent(LoginActivity.this, RegisterEmailActivity.class));
 
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        StartAI.getInstance().unInit();
+
+    }
 
     private void initView() {
 
@@ -254,20 +256,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         tvProtocol.append(spStr2);
         tvProtocol.setMovementMethod(LinkMovementMethod.getInstance());
-
-    }
-
-    @Override
-    public void onLoginResult(C_0x8018.Resp resp) {
-
-        if (resp.getResult() == resp.RESULT_SUCCESS) {
-            TAndL.TL(getApplicationContext(), "登录成功 " + resp);
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-            finish();
-        } else {
-            TAndL.TL(getApplicationContext(), "登录失败 " + resp);
-        }
-
 
     }
 

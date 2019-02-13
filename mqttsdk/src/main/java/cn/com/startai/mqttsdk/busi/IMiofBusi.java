@@ -3,12 +3,16 @@ package cn.com.startai.mqttsdk.busi;
 
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
@@ -257,6 +261,14 @@ public interface IMiofBusi {
     @Deprecated
     void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener);
 
+    /**
+     * 重置密码
+     *
+     * @param mobileOrEmail 手机号 或邮箱号
+     * @param pwd           登录密码
+     * @param listener
+     */
+    void resetLoginPwd(String mobileOrEmail, String pwd, IOnCallListener listener);
 
     /**
      * 第三方账号登录
@@ -308,6 +320,7 @@ public interface IMiofBusi {
      * @param listener
      */
     void unBindThirdAccount(C_0x8036.Req.ContentBean req, IOnCallListener listener);
+
     /**
      * 绑定第三方账号
      *
@@ -315,5 +328,26 @@ public interface IMiofBusi {
      * @param listener
      */
     void bindThirdAccount(C_0x8037.Req.ContentBean req, IOnCallListener listener);
+
+    /**
+     * 查询天气信息
+     *
+     * @param req
+     * @param listener
+     */
+    void getWeatherInfo(C_0x8035.Req.ContentBean req, IOnCallListener listener);
+
+    /**
+     * 绑定邮箱
+     *
+     * @param req
+     * @param listener
+     */
+    void bindEmail(C_0x8039.Req.ContentBean req, IOnCallListener listener);
+
+    /**
+     * 查询 绑定列表 分页
+     */
+    void getBindListByPage(C_0x8038.Req.ContentBean req, IOnCallListener listener);
 }
 

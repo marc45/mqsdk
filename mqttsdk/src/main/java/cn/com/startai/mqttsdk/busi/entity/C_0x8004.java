@@ -1,9 +1,13 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
@@ -25,7 +29,7 @@ public class C_0x8004 {
 
     private static String TAG = C_0x8004.class.getSimpleName();
     public static String MSG_DESC = "删除好友或设备 ";
-    public static String MSGTYPE = "0x8004";
+    public static final String MSGTYPE = "0x8004";
     public static String MSGCW = "0x07";
     /**
      * 删除好友或设备
@@ -34,7 +38,7 @@ public class C_0x8004 {
      */
     public static void m_0x8004_req(String userid, String bebindid, IOnCallListener listener) {
 
-        MqttPublishRequest x8004_req_msg = MqttPublishRequestCreator.create_0x8004_req_msg(userid, bebindid);
+        MqttPublishRequest x8004_req_msg = create_0x8004_req_msg(userid, bebindid);
         if (x8004_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8004_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -42,14 +46,44 @@ public class C_0x8004 {
         StartaiMqttPersistent.getInstance().send(x8004_req_msg, listener);
 
     }
+    /**
+     * 组删除好友包
+     *
+     * @param beBindingid 设备的sn
+     * @return
+     */
+    public static MqttPublishRequest create_0x8004_req_msg(String userid, String beBindingid) {
 
+        String bindingid = userid;
+        if (TextUtils.isEmpty(bindingid)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                bindingid = userBean.getUserid();
+            }
+        }
+
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8004")
+                .setMsgcw("0x07")
+                .setContent(new C_0x8004.Req.ContentBean(bindingid, beBindingid)).create();
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+    }
 
     /**
      * 解绑结果
      *
      * @param miof
      */
-    public static void m_0x8004_resp(String miof) {
+    public static void m_resp(String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {

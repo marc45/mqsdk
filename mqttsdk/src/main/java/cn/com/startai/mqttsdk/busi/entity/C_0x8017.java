@@ -1,17 +1,24 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 /**
  * 注册
@@ -23,8 +30,13 @@ public class C_0x8017 {
 
     private static final String TAG = C_0x8017.class.getSimpleName();
     public static String MSG_DESC = "注册 ";
-    public static String MSGTYPE = "0x8017";
+    public static final String MSGTYPE = "0x8017";
     public static String MSGCW = "0x07";
+
+    public static final int TYPE_EMAIL_PASS = 1;
+    public static final int TYPE_MOBILE_PASS = 2;
+    public static final int TYPE_MOBILE_CODE = 3;
+    public static final int TYPE_EMAIL_CODE = 4;
 
     /**
      * 注册
@@ -35,7 +47,7 @@ public class C_0x8017 {
      */
     public static void m_0x8017_req(String uName, String pwd, IOnCallListener listener) {
 
-        MqttPublishRequest x8017_req_msg = MqttPublishRequestCreator.create_0x8017_req_msg(uName, pwd);
+        MqttPublishRequest x8017_req_msg = create_0x8017_req_msg(uName, pwd);
         if (x8017_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8017_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -44,13 +56,55 @@ public class C_0x8017 {
 
     }
 
+    /**
+     * 组注册包
+     *
+     * @param uName
+     * @param pwd
+     * @return
+     */
+    public static MqttPublishRequest create_0x8017_req_msg(String uName, String pwd) {
+
+        int type = 0;
+        if (SRegexUtil.isEmail(uName)) {
+            type = 1;
+        } else if (SRegexUtil.isMobileSimple(uName)) {
+            type = 2;
+        }
+        if (type == 0) {
+            SLog.e(TAG, "参数非法 类型不对");
+            return null;
+        }
+        if (TextUtils.isEmpty(pwd)) {
+            SLog.e(TAG, "参数非法 密码为空");
+            return null;
+        }
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8017")
+                .setMsgcw("0x07")
+                .setFromid(MqttConfigure.getSn(StartAI.getContext()))
+                .setContent(new C_0x8017.Req.ContentBean(uName, pwd, type)).create();
+
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
+    }
 
     /**
      * 用户注册返回
      *
      * @param miof
      */
-    public static void m_0x8017_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
@@ -68,7 +122,7 @@ public class C_0x8017 {
             content.setUname(errcontent.getUname());
             content.setPwd(errcontent.getPwd());
 
-            SLog.e(TAG, "用户注册失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onRegisterResult(resp);
 

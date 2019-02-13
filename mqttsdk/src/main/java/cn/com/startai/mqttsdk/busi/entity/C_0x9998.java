@@ -22,7 +22,7 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x9998 {
 
     private static String TAG = C_0x9998.class.getSimpleName();
-    public static String MSGTYPE = "0x9998";
+    public static final String MSGTYPE = "0x9998";
     /**
      * 自己上报 自己的连接状态
      *
@@ -43,7 +43,7 @@ public class C_0x9998 {
     /**
      * 处理对端的 终端连接事件
      */
-    public static void m_0x9998_resp(String miof) {
+    public static void m_resp(String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
 

@@ -31,6 +31,40 @@ public class C_0x8027 implements Serializable {
     public static final String MSGTYPE = "0x8027";
     public static String MSGCW = "0x07";
     public static String MSG_DESC = "第三方登录 ";
+
+
+    /*
+ 1表示邮箱加密码
+ 2表示手机号加密码
+ 3表示手机号加验证码
+ 4表示用户名加密码
+ 5双重认证 手机号+验证码+密码
+ 10:微信登录
+ 11:支付宝登录
+ 12:QQ登录
+ 13:谷歌登录
+ 14:推特登录
+ 15:亚马逊登录
+ 16:脸书登录
+ 17:小米
+ */
+    public static final int EMAIL_PWD = 1;
+    public static final int MOBILE_PWD = 2;
+    public static final int MOBILE_CODE = 3;
+    public static final int UNAME_PWD = 4;
+    public static final int MOBILE_CODE_PWD = 5;
+    public static final int THIRD_WECHAT = 10;
+    public static final int THIRD_ALIPAY = 11;
+    public static final int THIRD_QQ = 12;
+    public static final int THIRD_GOOGLE = 13;
+    public static final int THIRD_TWITTER = 14;
+    public static final int THIRD_AMAZON = 15;
+    public static final int THIRD_FACEBOOK = 16;
+    public static final int THIRD_MI = 17;
+
+
+
+
     /**
      * 请求 第三方登录
      *
@@ -98,10 +132,10 @@ public class C_0x8027 implements Serializable {
                 .setMsgcw(MSGCW)
                 .setContent(new Req.ContentBean(type, code)).create();
 
-        if(!DistributeParam.LOGINWITHTHIRDACCOUNT_DISTRIBUTE){
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
-
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -121,7 +155,9 @@ public class C_0x8027 implements Serializable {
                 .setMsgtype(MSGTYPE)
                 .setMsgcw(MSGCW)
                 .setContent(contentBean).create();
-
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -135,10 +171,10 @@ public class C_0x8027 implements Serializable {
      *
      * @param miof
      */
-    public static void m_0x8027_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
-        C_0x8018.m_0x8018_resp(miof);
+        C_0x8018.m_resp(miof);
 
 //        if (result == 1 && resp != null) {
 //            SLog.d(TAG, "第三方登录成功");
@@ -181,6 +217,11 @@ public class C_0x8027 implements Serializable {
             private UserinfoBean userinfo;
 
             public ContentBean() {
+            }
+
+            public ContentBean(int type, UserinfoBean userinfo) {
+                this.type = type;
+                this.userinfo = userinfo;
             }
 
             public ContentBean(int type, String code) {

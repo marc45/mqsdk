@@ -71,9 +71,10 @@ public class C_0x8034 implements Serializable {
                 .setContent(req).create();
 
 
-        if(!DistributeParam.BINDMOBILENUM_DISTRIBUTE){
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
+
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
@@ -103,7 +104,7 @@ public class C_0x8034 implements Serializable {
             content.setMobile(errcontent.getMobile());
             content.setUserid(errcontent.getUserid());
 
-            SLog.e(TAG, MSG_DESC + " 失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindMobileNumResult(resp);
     }

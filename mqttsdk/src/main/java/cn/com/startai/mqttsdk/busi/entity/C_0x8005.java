@@ -1,10 +1,13 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
@@ -20,7 +23,8 @@ import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
-/**查询绑定关系
+/**
+ * 查询绑定关系
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
@@ -30,7 +34,7 @@ public class C_0x8005 implements Serializable {
     private static String TAG = C_0x8005.class.getSimpleName();
 
     public static String MSG_DESC = "查询绑定关系 ";
-    public static String MSGTYPE = "0x8005";
+    public static final String MSGTYPE = "0x8005";
     public static String MSGCW = "0x07";
 //    private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
@@ -49,7 +53,7 @@ public class C_0x8005 implements Serializable {
      */
     public static void m_0x8005_req(String userid, int type, IOnCallListener listener) {
 
-        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8005_req_msg = MqttPublishRequestCreator.create_0x8005_req_msg(userid, type);
+        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8005_req_msg = create_0x8005_req_msg(userid, type);
         if (x8005_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8005_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -66,6 +70,42 @@ public class C_0x8005 implements Serializable {
 
     }
 
+    /**
+     * 组获取好友列表好友包
+     *
+     * @param type 1.查询智能设备列表
+     *             2.查询用户好友列表
+     *             3.查询用户-手机列表
+     *             4.查询所有的好友列表
+     * @return
+     */
+    public static MqttPublishRequest<StartaiMessage<C_0x8005.Req.ContentBean>> create_0x8005_req_msg(String userid, int type) {
+
+
+        String id = userid;
+        if (TextUtils.isEmpty(id)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                id = userBean.getUserid();
+            }
+
+        }
+
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8005")
+                .setMsgcw("0x07")
+                .setContent(new C_0x8005.Req.ContentBean(id, type)).create();
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+    }
 
     /**
      * 查询绑定关系返回
@@ -73,7 +113,7 @@ public class C_0x8005 implements Serializable {
      * @param result
      * @param miof
      */
-    public static void m_0x8005_resp(int result, String miof) {
+    public static void m_resp(String miof) {
 
         Response response = SJsonUtils.fromJson(miof, Response.class);
         if (response == null) {
@@ -82,16 +122,8 @@ public class C_0x8005 implements Serializable {
         }
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
 
-//        String id = "";
-//        if (userBean != null) {
-//            id = userBean.getUserid();
-//        } else {
-//            id = MqttConfigure.getSn(StartAI.getContext());
-//
-//        }
 
-
-        if (result == 1) {
+        if (response.getResult() == 1) {
 
             Resp resp = SJsonUtils.fromJson(miof, Resp.class);
             if (resp == null) {
@@ -128,7 +160,7 @@ public class C_0x8005 implements Serializable {
             }
 
         } else {
-            SLog.e(TAG, "查询失败");
+            SLog.e(TAG, "查询失败 " + response.getErrmsg());
             RespErr respErr = SJsonUtils.fromJson(miof, RespErr.class);
             if (respErr == null) {
                 SLog.e(TAG, "返回数据格式错误");
@@ -139,7 +171,6 @@ public class C_0x8005 implements Serializable {
             response.setErrContent(response.getErrContent());
             StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListResult(response);
         }
-
 
 
     }
@@ -309,6 +340,7 @@ public class C_0x8005 implements Serializable {
             private String id;
             private int type;
             private String alias;
+            private String featureid;
             private String topic;
             private String mac;
 
@@ -321,9 +353,18 @@ public class C_0x8005 implements Serializable {
                         ", id='" + id + '\'' +
                         ", type=" + type +
                         ", alias='" + alias + '\'' +
+                        ", featureid='" + featureid + '\'' +
                         ", topic='" + topic + '\'' +
                         ", mac='" + mac + '\'' +
                         '}';
+            }
+
+            public String getFeatureid() {
+                return featureid;
+            }
+
+            public void setFeatureid(String featureid) {
+                this.featureid = featureid;
             }
 
             public String getMac() {

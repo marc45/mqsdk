@@ -26,43 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login2Activity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".ForgetActivity" />
-        <activity android:name=".ForgetEmailActivity" />
-        <activity android:name=".RegisterEmailActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".util.zxing.ScanActivity" />
-        <activity android:name=".AccountActivity" />
-        <activity android:name=".util.airkiss.AirkissActivity" />
-        <activity android:name=".util.esptouch.EsptouchActivity" />
-        <activity android:name=".DeviceControlActivity" />
-        <activity
-            android:name="com.blankj.utilcode.util.PermissionUtils$PermissionActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:multiprocess="true"
-            android:theme="@style/ActivityTranslucent"
-            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
 
-        <service android:name=".MyService" />
 
-        <activity android:name=".UserInfoActivity" />
-        <activity android:name=".UpdateRemarkActivity" />
-        <activity android:name=".UpdateNickNameActivity" />
-        <activity android:name=".UpdatePasswordActivity" />
-        <activity android:name=".LanDeviceFindActivity"></activity>
 
-        <activity
-            android:name=".wxapi.WXEntryActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
-        <activity
-            android:name=".wxapi.WXPayEntryActivity"
-            android:exported="true"
-            android:launchMode="singleTop"/>
     </application>
 
 </manifest>

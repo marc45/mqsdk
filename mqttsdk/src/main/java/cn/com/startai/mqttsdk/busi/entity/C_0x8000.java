@@ -26,7 +26,7 @@ public class C_0x8000 {
 
     private static String TAG = C_0x8000.class.getSimpleName();
     public static String MSG_DESC = "获取可用ip组 ";
-    public static String MSGTYPE = "0x8000";
+    public static final String MSGTYPE = "0x8000";
     public static String MSGCW = "0x07";
 
     /**
@@ -52,7 +52,7 @@ public class C_0x8000 {
      *
      * @param miof
      */
-    public static void m_0x8000_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);

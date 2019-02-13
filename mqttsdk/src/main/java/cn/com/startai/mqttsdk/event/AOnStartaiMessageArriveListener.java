@@ -22,8 +22,11 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 
 public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriveListener {
@@ -487,6 +490,33 @@ public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriv
      * @param resp
      */
     public void onBindThirdAccountResult(C_0x8037.Resp resp) {
+
+    }
+
+    /**
+     * 查询天气信息返回
+     *
+     * @param resp
+     */
+    public void onGetWeatherInfoResult(C_0x8035.Resp resp) {
+
+    }
+
+    /**
+     * 绑定邮箱返回
+     *
+     * @param resp
+     */
+    public void onBindEmailResult(C_0x8039.Resp resp) {
+
+    }
+
+    /**
+     * 获取绑定列表 分页
+     *
+     * @param resp
+     */
+    public void onGetBindListByPageResult(C_0x8038.Resp resp) {
 
     }
 }

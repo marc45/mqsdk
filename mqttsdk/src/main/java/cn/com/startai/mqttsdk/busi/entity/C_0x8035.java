@@ -1,7 +1,5 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
-import android.text.TextUtils;
-
 import java.io.Serializable;
 
 import cn.com.startai.mqttsdk.StartAI;
@@ -11,7 +9,6 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -20,29 +17,21 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
- * 解绑第三方账号
+ * 查询天气
  * Created by Robin on 2018/8/22.
  * qq: 419109715 彬影
  */
 
-public class C_0x8036 implements Serializable {
+public class C_0x8035 implements Serializable {
 
-    private static final String TAG = C_0x8036.class.getSimpleName();
-    public static final String MSGTYPE = "0x8036";
+    private static final String TAG = C_0x8035.class.getSimpleName();
+    public static final String MSGTYPE = "0x8035";
     public static String MSGCW = "0x07";
-    public static String MSG_DESC = "解绑第三方账号 ";
+    public static String MSG_DESC = "查询天气 ";
 
-    public static final int THIRD_WECHAT = 10;
-    public static final int THIRD_ALIPAY = 11;
-    public static final int THIRD_QQ = 12;
-    public static final int THIRD_GOOGLE = 13;
-    public static final int THIRD_TWITTER = 14;
-    public static final int THIRD_AMAZON = 15;
-    public static final int THIRD_FACEBOOK = 16;
-    public static final int THIRD_MI = 17;
 
     /**
-     * 请求 解绑第三方账号
+     * 请求 查询天气
      *
      * @param listener
      */
@@ -59,16 +48,6 @@ public class C_0x8036 implements Serializable {
 
     private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean req) {
 
-        String userid = req.getUserid();
-        int type = req.getType();
-
-        if (TextUtils.isEmpty(userid)) {
-            C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
-            if (currUser != null) {
-                req.setUserid(currUser.getUserid());
-            }
-        }
-
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype(MSGTYPE)
@@ -79,8 +58,6 @@ public class C_0x8036 implements Serializable {
         if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
-
-
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
         mqttPublishRequest.message = message;
         mqttPublishRequest.topic = TopicConsts.getServiceTopic();
@@ -89,7 +66,7 @@ public class C_0x8036 implements Serializable {
 
 
     /**
-     * 请求 解绑第三方账号 返回结果
+     * 请求 查询天气 返回结果
      *
      * @param miof
      */
@@ -105,14 +82,14 @@ public class C_0x8036 implements Serializable {
             SLog.e(TAG, MSG_DESC + " 成功");
 
         } else {
-            C_0x8036.Resp.ContentBean content = resp.getContent();
-            C_0x8036.Req.ContentBean errcontent = content.getErrcontent();
-            content.setType(errcontent.getType());
-            content.setUserid(errcontent.getUserid());
+            C_0x8035.Resp.ContentBean content = resp.getContent();
+            C_0x8035.Req.ContentBean errcontent = content.getErrcontent();
+            content.setLat(errcontent.getLat());
+            content.setLng(errcontent.getLng());
             SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
 
-        StartAI.getInstance().getPersisitnet().getEventDispatcher().onUnBindThirdAccountResult(resp);
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetWeatherInfoResult(resp);
 
     }
 
@@ -133,44 +110,45 @@ public class C_0x8036 implements Serializable {
 
         public static class ContentBean {
 
+
             /**
-             * userid :
-             * type : 10
+             * lat :
+             * lng :
              */
 
-            private String userid;
-            private int type;
+            private String lat;
+            private String lng;
 
             public ContentBean() {
             }
 
-            public ContentBean(String userid, int type) {
-                this.userid = userid;
-                this.type = type;
+            public ContentBean(String lat, String lng) {
+                this.lat = lat;
+                this.lng = lng;
             }
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "userid='" + userid + '\'' +
-                        ", type=" + type +
+                        "lat='" + lat + '\'' +
+                        ", lng='" + lng + '\'' +
                         '}';
             }
 
-            public String getUserid() {
-                return userid;
+            public String getLat() {
+                return lat;
             }
 
-            public void setUserid(String userid) {
-                this.userid = userid;
+            public void setLat(String lat) {
+                this.lat = lat;
             }
 
-            public int getType() {
-                return type;
+            public String getLng() {
+                return lng;
             }
 
-            public void setType(int type) {
-                this.type = type;
+            public void setLng(String lng) {
+                this.lng = lng;
             }
         }
 
@@ -211,15 +189,55 @@ public class C_0x8036 implements Serializable {
 
 
             private Req.ContentBean errcontent = null;
-
-
             /**
-             * userid :
-             * type : 10
+             * lat :
+             * lng :
+             * province : 广东省
+             * city : 广州市
+             * district : 天河区
+             * qlty : 优
+             * tmp : 14
+             * weather :
+             * weatherPic :
              */
 
-            private String userid;
-            private int type;
+            private String lat;
+            private String lng;
+            private String province;
+            private String city;
+            private String district;
+            private String qlty;
+            private String tmp;
+            private String weather;
+            private String weatherPic;
+            private String pubtime; // 天气发布时间
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", errcontent=" + errcontent +
+                        ", lat='" + lat + '\'' +
+                        ", lng='" + lng + '\'' +
+                        ", province='" + province + '\'' +
+                        ", city='" + city + '\'' +
+                        ", district='" + district + '\'' +
+                        ", qlty='" + qlty + '\'' +
+                        ", tmp='" + tmp + '\'' +
+                        ", weather='" + weather + '\'' +
+                        ", weatherPic='" + weatherPic + '\'' +
+                        ", pubtime='" + pubtime + '\'' +
+                        '}';
+            }
+
+            public String getPubtime() {
+                return pubtime;
+            }
+
+            public void setPubtime(String pubtime) {
+                this.pubtime = pubtime;
+            }
 
             public Req.ContentBean getErrcontent() {
                 return errcontent;
@@ -229,39 +247,76 @@ public class C_0x8036 implements Serializable {
                 this.errcontent = errcontent;
             }
 
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "errcode='" + errcode + '\'' +
-                        ", errmsg='" + errmsg + '\'' +
-                        ", errcontent=" + errcontent +
-                        ", userid='" + userid + '\'' +
-                        ", type=" + type +
-                        '}';
+            public String getLat() {
+                return lat;
             }
 
-            public ContentBean() {
+            public void setLat(String lat) {
+                this.lat = lat;
             }
 
-            public ContentBean(String userid, int type) {
-                this.userid = userid;
-                this.type = type;
+            public String getLng() {
+                return lng;
             }
 
-            public String getUserid() {
-                return userid;
+            public void setLng(String lng) {
+                this.lng = lng;
             }
 
-            public void setUserid(String userid) {
-                this.userid = userid;
+            public String getProvince() {
+                return province;
             }
 
-            public int getType() {
-                return type;
+            public void setProvince(String province) {
+                this.province = province;
             }
 
-            public void setType(int type) {
-                this.type = type;
+            public String getCity() {
+                return city;
+            }
+
+            public void setCity(String city) {
+                this.city = city;
+            }
+
+            public String getDistrict() {
+                return district;
+            }
+
+            public void setDistrict(String district) {
+                this.district = district;
+            }
+
+            public String getQlty() {
+                return qlty;
+            }
+
+            public void setQlty(String qlty) {
+                this.qlty = qlty;
+            }
+
+            public String getTmp() {
+                return tmp;
+            }
+
+            public void setTmp(String tmp) {
+                this.tmp = tmp;
+            }
+
+            public String getWeather() {
+                return weather;
+            }
+
+            public void setWeather(String weather) {
+                this.weather = weather;
+            }
+
+            public String getWeatherPic() {
+                return weatherPic;
+            }
+
+            public void setWeatherPic(String weatherPic) {
+                this.weatherPic = weatherPic;
             }
         }
     }

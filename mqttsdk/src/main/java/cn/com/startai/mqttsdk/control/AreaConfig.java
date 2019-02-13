@@ -46,8 +46,8 @@ public class AreaConfig {
             infoUrl = new URL(url);
 
             URLConnection urlConnection = infoUrl.openConnection();
-            urlConnection.setConnectTimeout(7000);
-            urlConnection.setReadTimeout(7000);
+            urlConnection.setConnectTimeout(4000);
+            urlConnection.setReadTimeout(4000);
             httpConnection = (HttpURLConnection) urlConnection;
             int responseCode = httpConnection.getResponseCode();
             if (responseCode != 200) {

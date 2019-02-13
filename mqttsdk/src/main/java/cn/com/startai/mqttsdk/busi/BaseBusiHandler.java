@@ -1,12 +1,11 @@
 package cn.com.startai.mqttsdk.busi;
 
 
-import android.os.UserManager;
-import android.text.TextUtils;
-import android.view.View;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
@@ -32,15 +31,16 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
 import cn.com.startai.mqttsdk.busi.entity.MiofTag;
-import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.SPController;
-import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
@@ -56,7 +56,6 @@ public class BaseBusiHandler {
         String appid = "";
         String msgtype = "";
         String msgcw = "";
-        int result = 0;
 
 
         try {
@@ -71,9 +70,7 @@ public class BaseBusiHandler {
             if (msg.contains("\"" + MiofTag.TAG_MSGCW + "\"")) {
                 msgcw = jsonObject.getString(MiofTag.TAG_MSGCW);
             }
-            if (msg.contains("\"" + MiofTag.TAG_RESULT + "\"")) {
-                result = jsonObject.getInt(MiofTag.TAG_RESULT);
-            }
+
 
             if (!checkMsg(appid, msgcw)) {
                 return;
@@ -86,137 +83,182 @@ public class BaseBusiHandler {
             return;
         }
 
+        //反射调用
+//        reflexCallMiofMethod(msgtype, msg);
+
 
         switch (msgtype) {
-            case "0x9998"://终端上线
+            case C_0x9998.MSGTYPE://终端上线
 
-                C_0x9998.m_0x9998_resp(msg);
+                C_0x9998.m_resp(msg);
                 break;
 
-            case "0x9999"://终端下线
+            case C_0x9999.MSGTYPE://终端下线
 
-                C_0x9999.m_0x9999_resp(msg);
+                C_0x9999.m_resp(msg);
                 break;
 
-            case "0x8000"://获取区域节点信息
-                C_0x8000.m_0x8000_resp(msg);
+            case C_0x8000.MSGTYPE://获取区域节点信息
+                C_0x8000.m_resp(msg);
                 return;
 
-            case "0x8001"://设备激活
-                C_0x8001.m_0x8001_resp(msg);
+            case C_0x8001.MSGTYPE://设备激活
+                C_0x8001.m_resp(msg);
                 break;
 
-            case "0x8002"://添加好友
-                C_0x8002.m_0x8002_resp(msg);
+            case C_0x8002.MSGTYPE://添加好友
+                C_0x8002.m_resp(msg);
                 break;
 
-            case "0x8003"://注销激活
-                C_0x8003.m_0x8003_resp(msg);
+            case C_0x8003.MSGTYPE://注销激活
+                C_0x8003.m_resp(msg);
                 break;
 
-            case "0x8004"://删除好友
-                C_0x8004.m_0x8004_resp(msg);
+            case C_0x8004.MSGTYPE://删除好友
+                C_0x8004.m_resp(msg);
                 break;
 
-            case "0x8005"://查询好友关系
-                C_0x8005.m_0x8005_resp(result, msg);
+            case C_0x8005.MSGTYPE://查询好友关系
+                C_0x8005.m_resp(msg);
                 break;
 
-            case "0x8015"://修改备注名
-                C_0x8015.m_0x8015_resp(msg);
+            case C_0x8015.MSGTYPE://修改备注名
+                C_0x8015.m_resp(msg);
                 break;
 
-            case "0x8016"://查询最新版本
-                C_0x8016.m_0x8016_resp(msg);
+            case C_0x8016.MSGTYPE://查询最新版本
+                C_0x8016.m_resp(msg);
                 break;
 
-            case "0x8017"://用户注册
-                C_0x8017.m_0x8017_resp(msg);
+            case C_0x8017.MSGTYPE://用户注册
+                C_0x8017.m_resp(msg);
                 break;
 
-            case "0x8018"://登录
-                C_0x8018.m_0x8018_resp(msg);
+            case C_0x8018.MSGTYPE://登录
+                C_0x8018.m_resp(msg);
                 break;
 
-            case "0x8019"://更新设备信息
-                C_0x8019.m_0x8019_resp(msg);
+            case C_0x8019.MSGTYPE://更新设备信息
+                C_0x8019.m_resp(msg);
                 break;
 
-            case "0x8020"://更新用户信息
-                C_0x8020.m_0x8020_resp(msg);
+            case C_0x8020.MSGTYPE://更新用户信息
+                C_0x8020.m_resp(msg);
                 break;
 
-            case "0x8021"://获取验证码
-                C_0x8021.m_0x8021_resp(msg);
+            case C_0x8021.MSGTYPE://获取验证码
+                C_0x8021.m_resp(msg);
                 break;
 
-            case "0x8022"://检验验证码
-                C_0x8022.m_0x8022_resp(msg);
+            case C_0x8022.MSGTYPE://检验验证码
+                C_0x8022.m_resp(msg);
                 break;
 
-            case "0x8023"://请求发送邮件
-                C_0x8023.m_0x8023_resp(msg);
+            case C_0x8023.MSGTYPE://请求发送邮件
+                C_0x8023.m_resp(msg);
                 break;
 
-            case "0x8024"://查询用户信息
-                C_0x8024.m_0x8024_resp(msg);
+            case C_0x8024.MSGTYPE://查询用户信息
+                C_0x8024.m_resp(msg);
                 break;
 
-            case "0x8025"://修改密码
-                C_0x8025.m_0x8025_resp(msg);
+            case C_0x8025.MSGTYPE://修改密码
+                C_0x8025.m_resp(msg);
                 break;
 
-            case "0x8026"://手机重置密码
+            case C_0x8026.MSGTYPE://手机重置密码
 
-                C_0x8026.m_0x8026_resp(msg);
+                C_0x8026.m_resp(msg);
                 break;
-            case "0x8027"://第三方登录
+            case C_0x8027.MSGTYPE://第三方登录
 
-                C_0x8027.m_0x8027_resp(msg);
+                C_0x8027.m_resp(msg);
                 break;
 
             case C_0x8028.MSGTYPE: //第三方支付 统一下单
-                C_0x8028.m_0x8028_resp(msg);
+                C_0x8028.m_resp(msg);
                 break;
-            case "0x8200"://消息透传
-
-                C_0x8200.m_0x8200_resp(topic, msg);
+            case C_0x8200.MSGTYPE://消息透传
+                C_0x8200.m_resp(topic, msg);
                 break;
 
-            case "0x8031": //查询订单支付状态
+            case C_0x8031.MSGTYPE: //查询订单支付状态
                 C_0x8031.m_resp(msg);
                 break;
 
 
-            case "0x8033": //查询 支付宝密钥
+            case C_0x8033.MSGTYPE: //查询 支付宝密钥
                 C_0x8033.m_resp(msg);
 
                 break;
 
-            case "0x8034": //查询 支付宝密钥
+            case C_0x8034.MSGTYPE: //查询 支付宝密钥
                 C_0x8034.m_resp(msg);
 
                 break;
-
-            case "0x8036": //解绑 第三方账号
+            case C_0x8035.MSGTYPE://查询天气
+                C_0x8035.m_resp(msg);
+                break;
+            case C_0x8036.MSGTYPE: //解绑 第三方账号
                 C_0x8036.m_resp(msg);
 
                 break;
 
-            case "0x8037": //绑定 第三方账号
+            case C_0x8037.MSGTYPE: //绑定 第三方账号
                 C_0x8037.m_resp(msg);
 
                 break;
+            case C_0x8038.MSGTYPE: //分页获取好友列表
+                C_0x8038.m_resp(msg);
 
+                break;
+            case C_0x8039.MSGTYPE: //绑定邮箱
+                C_0x8039.m_resp(msg);
+
+                break;
 
             default:
 
                 break;
         }
 
-        //数据回调到应用层
+        //原始数据数据回调到应用层
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onMessageArrived(topic, msg);
 
+    }
+
+    /**
+     * 反射调用 miof 处理方法
+     *
+     * @param msgType
+     * @param msg
+     */
+    private void reflexCallMiofMethod(String msgType, String msg) {
+
+        long t = System.currentTimeMillis();
+
+        String className = "cn.com.startai.mqttsdk.busi.entity.C_" + msgType;
+
+        try {
+            Class<?> aClass = Class.forName(className);
+            Method m_resp = aClass.getMethod("m_resp", new Class[]{String.class});
+
+            m_resp.invoke(null, msg);
+
+            SLog.d(TAG, "invoke call use time = " + (System.currentTimeMillis() - t));
+
+            return;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        SLog.d(TAG, "sdk 不支持的 msgtype ");
 
     }
 
@@ -239,27 +281,5 @@ public class BaseBusiHandler {
 
         }
         return true;
-    }
-
-
-    /**
-     * 是否需要判断 result
-     * <p>
-     * 如果是云端 收到终端主动给终端发的消息或云端给终端主动发的消息，是不需要判断result的，如果是收到返回的消息则需要判断result
-     *
-     * @param msgcw
-     * @return
-     */
-    private boolean isNeedCheckResult(String msgcw) {
-
-        if ("0x01".equals(msgcw)
-                || "0x03".equals(msgcw)
-                || "0x05".equals(msgcw)
-                || "0x09".equals(msgcw)) {
-            return false;
-        }
-        return true;
-
-
     }
 }

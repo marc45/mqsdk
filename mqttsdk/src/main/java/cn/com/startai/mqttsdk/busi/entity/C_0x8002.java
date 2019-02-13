@@ -1,7 +1,10 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
@@ -27,8 +30,9 @@ public class C_0x8002 {
 
     private static String TAG = C_0x8002.class.getSimpleName();
     public static String MSG_DESC = "绑定 ";
-    public static String MSGTYPE = "0x8002";
+    public static final String MSGTYPE = "0x8002";
     public static String MSGCW = "0x07";
+
     /**
      * 添加设备或好友
      *
@@ -36,7 +40,7 @@ public class C_0x8002 {
      */
     public static void m_0x8002_req(String userid, String bebindid, IOnCallListener listener) {
 
-        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8002_req_msg = MqttPublishRequestCreator.create_0x8002_req_msg(userid, bebindid);
+        MqttPublishRequest<StartaiMessage<Req.ContentBean>> x8002_req_msg = create_0x8002_req_msg(userid, bebindid);
         if (x8002_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8002_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -45,13 +49,44 @@ public class C_0x8002 {
         StartaiMqttPersistent.getInstance().send(x8002_req_msg, listener);
 
     }
+    /**
+     * 组添加好友包
+     *
+     * @param beBindingid 设备的sn
+     * @return
+     */
+    public static MqttPublishRequest<StartaiMessage<C_0x8002.Req.ContentBean>> create_0x8002_req_msg(String userid, String beBindingid) {
 
+        String bindingid = userid;
+        if (TextUtils.isEmpty(bindingid)) {
+
+            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
+                bindingid = userBean.getUserid();
+            }
+        }
+
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8002")
+                .setMsgcw("0x07")
+                .setContent(new C_0x8002.Req.ContentBean(bindingid, beBindingid)).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+    }
     /**
      * 绑定消息
      *
      * @param miof
      */
-    public static void m_0x8002_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
@@ -94,7 +129,7 @@ public class C_0x8002 {
 
             }
         } else {
-            SLog.e(TAG, "绑定失败");
+            SLog.e(TAG, "绑定失败 " +resp.getContent().getErrmsg());
 
             StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(resp, id, null);
 

@@ -68,9 +68,7 @@ public class STimerUtil {
 		}else {
 			return true;
 		}
-		
-		
+
 	}
 	
-
 }

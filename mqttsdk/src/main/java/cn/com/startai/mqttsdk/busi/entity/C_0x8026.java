@@ -1,20 +1,27 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 /**
- * 手机重置密码
+ * 重置密码
  * <p>
  * Created by Robin on 2018/8/3.
  * qq: 419109715 彬影
@@ -23,17 +30,21 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8026 implements Serializable {
 
     private static final String TAG = C_0x8026.class.getSimpleName();
-    public static String MSGTYPE = "0x8026";
+    public static final String MSGTYPE = "0x8026";
     public static String MSGCW = "0x07";
-    public static String MSG_DESC = "手机重置密码 ";
+    public static String MSG_DESC = "重置密码 ";
+
+    public static final String ACCOUNT_E = "E";
+    public static final String ACCOUNT_M = "M";
+
     /**
-     * 手机重置登录密码
+     * 重置登录密码
      *
      * @param listener
      */
     public static void m_0x8026_req(String mobile, String newPwd, IOnCallListener listener) {
 
-        MqttPublishRequest x8026_req_msg = MqttPublishRequestCreator.create_0x8026_req_msg(mobile, newPwd);
+        MqttPublishRequest x8026_req_msg = create_0x8026_req_msg(mobile, newPwd);
         if (x8026_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8026_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -42,12 +53,49 @@ public class C_0x8026 implements Serializable {
 
     }
 
+    /**
+     * 组 重置登录密码 数据包
+     *
+     * @return
+     */
+    public static MqttPublishRequest create_0x8026_req_msg(String mobile, String pwd) {
+
+
+        if (TextUtils.isEmpty(mobile) || TextUtils.isEmpty(pwd)) {
+
+            SLog.e(TAG, "参数非法 mobile pwd 不能为空");
+            return null;
+        }
+
+        String account = ACCOUNT_M;
+        if (SRegexUtil.isEmail(mobile)) {
+            account = ACCOUNT_E;
+        }
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype("0x8026")
+                .setMsgcw("0x07")
+                .setFromid(MqttConfigure.getSn(StartAI.getContext()) + "/" + MqttConfigure.appid)
+                .setContent(new C_0x8026.Req.ContentBean(mobile, pwd, account)).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
+    }
 
     /**
-     * 手机重置登录密码 结果返回
+     * 重置登录密码 结果返回
+     *
      * @param miof
      */
-    public static void m_0x8026_resp(String miof) {
+    public static void m_resp(String miof) {
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {
@@ -55,14 +103,16 @@ public class C_0x8026 implements Serializable {
             return;
         }
         if (resp.getResult() == 1) {
-            SLog.e(TAG, "手机重置登录密码 成功");
+            SLog.e(TAG, "重置登录密码 成功");
+
         } else {
             Resp.ContentBean content = resp.getContent();
             Req.ContentBean errcontent = content.getErrcontent();
             content.setMobile(errcontent.getMobile());
             content.setPwd(errcontent.getPwd());
+            content.setAccount(errcontent.getAccount());
 
-            SLog.e(TAG, "手机重置登录密码 失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onResetMobileLoginPwdResult(resp);
 
@@ -88,23 +138,32 @@ public class C_0x8026 implements Serializable {
 
             private String mobile = null; //手机号
             private String pwd = null; //新密码
-            private Req.ContentBean errcontent;
+
+            private String account = null;
+
+
+            public ContentBean(String mobile, String pwd, String account) {
+                this.mobile = mobile;
+                this.pwd = pwd;
+                this.account = account;
+            }
+
 
             @Override
             public String toString() {
                 return "ContentBean{" +
                         "mobile='" + mobile + '\'' +
                         ", pwd='" + pwd + '\'' +
-                        ", errcontent=" + errcontent +
+                        ", account='" + account + '\'' +
                         '}';
             }
 
-            public ContentBean getErrcontent() {
-                return errcontent;
+            public String getAccount() {
+                return account;
             }
 
-            public void setErrcontent(ContentBean errcontent) {
-                this.errcontent = errcontent;
+            public void setAccount(String account) {
+                this.account = account;
             }
 
             public ContentBean() {
@@ -173,6 +232,10 @@ public class C_0x8026 implements Serializable {
 
             private String mobile = null; //手机号
             private String pwd = null; //新密码
+
+            private String account = null;
+
+
             private Req.ContentBean errcontent = null;
 
             @Override
@@ -182,8 +245,17 @@ public class C_0x8026 implements Serializable {
                         ", errmsg='" + errmsg + '\'' +
                         ", mobile='" + mobile + '\'' +
                         ", pwd='" + pwd + '\'' +
+                        ", account='" + account + '\'' +
                         ", errcontent=" + errcontent +
                         '}';
+            }
+
+            public String getAccount() {
+                return account;
+            }
+
+            public void setAccount(String account) {
+                this.account = account;
             }
 
             public Req.ContentBean getErrcontent() {

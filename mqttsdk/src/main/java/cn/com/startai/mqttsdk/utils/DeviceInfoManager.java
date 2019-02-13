@@ -182,26 +182,27 @@ public class DeviceInfoManager {
             return "";
         }
 
-        if (ProductConsts.is_wing_mbox203()) {
-            //如果是A20就用cpu 序列号作为sn
-            if (!serial.contains("00000000") && !TextUtils.isEmpty(serial)) {
-                return serial;
-            }
-        }
-
-        String wholeStr = "";
-        if (ProductConsts.is_fiber_a31st()) { //如果是a31的机器
-            wholeStr = "11e6-7359-f51a8c58-b892-2fe2325b4c74" + mac;
-        } else {
-
-            if (mac.equals("02:00:00:00:00:00")) {
-                wholeStr = getAndroidId(context) + serial + mac;
-            } else {
-                wholeStr = serial + mac;
-            }
-
-        }
         if (ProductConsts.isAdaptation()) { //兼容老设备
+            if (ProductConsts.is_wing_mbox203()) {
+                //如果是A20就用cpu 序列号作为sn
+                if (!serial.contains("00000000") && !TextUtils.isEmpty(serial)) {
+                    return serial;
+                }
+            }
+
+            String wholeStr = "";
+            if (ProductConsts.is_fiber_a31st()) { //如果是a31的机器
+                wholeStr = "11e6-7359-f51a8c58-b892-2fe2325b4c74" + mac;
+            } else {
+
+                if (mac.equals("02:00:00:00:00:00")) {
+                    wholeStr = getAndroidId(context) + serial + mac;
+                } else {
+                    wholeStr = serial + mac;
+                }
+
+            }
+
             String tempStr = null;
             try {
                 tempStr = URLEncoder.encode(wholeStr, "UTF-8");
@@ -209,20 +210,15 @@ public class DeviceInfoManager {
                 e.printStackTrace();
             }
 
-            String sn = SMD5.generateMD5(tempStr);
+            String sn = getSn(tempStr);
 
             return sn;
         } else {
-            String sn = getSn(getAndroidId(context) + serial + mac);
+            String sn = getSn_16(getAndroidId(context) + serial + mac);
             return sn;
         }
 
 
-    }
-
-
-    public String getSn_16(String serial, String mac) {
-        return getSn_16(serial + mac);
     }
 
     public String getSn(String str) {
@@ -230,16 +226,7 @@ public class DeviceInfoManager {
     }
 
     public String getSn_16(String str) {
-        String sn = SMD5.generateMD5(str);
-        if (sn.length() == 32) {
-            sn = sn.substring(8, 24);
-        }
-        return sn;
-    }
-
-    public String getSn_16(Context context) {
-
-        String sn = getSn(context);
+        String sn = getSn(str);
         if (sn.length() == 32) {
             sn = sn.substring(8, 24);
         }

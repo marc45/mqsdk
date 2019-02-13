@@ -1,8 +1,7 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
-import android.text.TextUtils;
-
 import java.io.Serializable;
+import java.util.List;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
@@ -11,7 +10,6 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -20,29 +18,38 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**
- * 解绑第三方账号
+ * 分页获取好友列表
  * Created by Robin on 2018/8/22.
  * qq: 419109715 彬影
  */
 
-public class C_0x8036 implements Serializable {
+public class C_0x8038 implements Serializable {
 
-    private static final String TAG = C_0x8036.class.getSimpleName();
-    public static final String MSGTYPE = "0x8036";
+    private static final String TAG = C_0x8038.class.getSimpleName();
+    public static final String MSGTYPE = "0x8038";
     public static String MSGCW = "0x07";
-    public static String MSG_DESC = "解绑第三方账号 ";
+    public static String MSG_DESC = "分页获取好友列表 ";
 
-    public static final int THIRD_WECHAT = 10;
-    public static final int THIRD_ALIPAY = 11;
-    public static final int THIRD_QQ = 12;
-    public static final int THIRD_GOOGLE = 13;
-    public static final int THIRD_TWITTER = 14;
-    public static final int THIRD_AMAZON = 15;
-    public static final int THIRD_FACEBOOK = 16;
-    public static final int THIRD_MI = 17;
+
+    /*
+    1.查询用户绑定的设备
+2.查询用户的用户好友
+3.查询设备的设备列表
+4.查询设备的用户好友
+5.查询用户的手机列表
+6.查询手机的用户好友
+7.查询所有
+     */
+    public static final int TYPE_USER_DEVICE = 1;
+    public static final int TYPE_USER_USER = 2;
+    public static final int TYPE_DEVICE_DEVICE = 3;
+    public static final int TYPE_DEVICE_USER = 4;
+    public static final int TYPE_USER_MOBILE = 5;
+    public static final int TYPE_MOBILE_USER = 6;
+    public static final int TYPE_ALL = 7;
 
     /**
-     * 请求 解绑第三方账号
+     * 请求 分页获取好友列表
      *
      * @param listener
      */
@@ -58,16 +65,6 @@ public class C_0x8036 implements Serializable {
     }
 
     private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean req) {
-
-        String userid = req.getUserid();
-        int type = req.getType();
-
-        if (TextUtils.isEmpty(userid)) {
-            C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
-            if (currUser != null) {
-                req.setUserid(currUser.getUserid());
-            }
-        }
 
 
         StartaiMessage message = new StartaiMessage.Builder()
@@ -89,7 +86,7 @@ public class C_0x8036 implements Serializable {
 
 
     /**
-     * 请求 解绑第三方账号 返回结果
+     * 请求 分页获取好友列表 返回结果
      *
      * @param miof
      */
@@ -105,14 +102,16 @@ public class C_0x8036 implements Serializable {
             SLog.e(TAG, MSG_DESC + " 成功");
 
         } else {
-            C_0x8036.Resp.ContentBean content = resp.getContent();
-            C_0x8036.Req.ContentBean errcontent = content.getErrcontent();
+            C_0x8038.Resp.ContentBean content = resp.getContent();
+            C_0x8038.Req.ContentBean errcontent = content.getErrcontent();
+            content.setId(errcontent.getId());
+            content.setPage(errcontent.getPage());
+            content.setRows(errcontent.getRows());
             content.setType(errcontent.getType());
-            content.setUserid(errcontent.getUserid());
             SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
 
-        StartAI.getInstance().getPersisitnet().getEventDispatcher().onUnBindThirdAccountResult(resp);
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListByPageResult(resp);
 
     }
 
@@ -133,36 +132,45 @@ public class C_0x8036 implements Serializable {
 
         public static class ContentBean {
 
+
             /**
-             * userid :
-             * type : 10
+             * id :
+             * type : 1
+             * page : 1
+             * rows : 1
              */
 
-            private String userid;
+            private String id;
             private int type;
+            private int page;
+            private int rows;
 
             public ContentBean() {
             }
 
-            public ContentBean(String userid, int type) {
-                this.userid = userid;
+            public ContentBean(String id, int type, int page, int rows) {
+                this.id = id;
                 this.type = type;
+                this.page = page;
+                this.rows = rows;
             }
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "userid='" + userid + '\'' +
+                        "id='" + id + '\'' +
                         ", type=" + type +
+                        ", page=" + page +
+                        ", rows=" + rows +
                         '}';
             }
 
-            public String getUserid() {
-                return userid;
+            public String getId() {
+                return id;
             }
 
-            public void setUserid(String userid) {
-                this.userid = userid;
+            public void setId(String id) {
+                this.id = id;
             }
 
             public int getType() {
@@ -171,6 +179,22 @@ public class C_0x8036 implements Serializable {
 
             public void setType(int type) {
                 this.type = type;
+            }
+
+            public int getPage() {
+                return page;
+            }
+
+            public void setPage(int page) {
+                this.page = page;
+            }
+
+            public int getRows() {
+                return rows;
+            }
+
+            public void setRows(int rows) {
+                this.rows = rows;
             }
         }
 
@@ -214,12 +238,35 @@ public class C_0x8036 implements Serializable {
 
 
             /**
-             * userid :
-             * type : 10
+             * id :
+             * type : 1
+             * page : 1
+             * rows : 1
+             * total : 12
+             * friends : [{"id":"","bindingtime":111,"alias":"alias","connstatus":1,"featureid":"","mac":"","type":1}]
              */
 
-            private String userid;
+            private String id;
             private int type;
+            private int page;
+            private int rows;
+            private int total;
+            private List<C_0x8005.Resp.ContentBean> friends;
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "errcode='" + errcode + '\'' +
+                        ", errmsg='" + errmsg + '\'' +
+                        ", errcontent=" + errcontent +
+                        ", id='" + id + '\'' +
+                        ", type=" + type +
+                        ", page=" + page +
+                        ", rows=" + rows +
+                        ", total=" + total +
+                        ", friends=" + friends +
+                        '}';
+            }
 
             public Req.ContentBean getErrcontent() {
                 return errcontent;
@@ -229,31 +276,12 @@ public class C_0x8036 implements Serializable {
                 this.errcontent = errcontent;
             }
 
-            @Override
-            public String toString() {
-                return "ContentBean{" +
-                        "errcode='" + errcode + '\'' +
-                        ", errmsg='" + errmsg + '\'' +
-                        ", errcontent=" + errcontent +
-                        ", userid='" + userid + '\'' +
-                        ", type=" + type +
-                        '}';
+            public String getId() {
+                return id;
             }
 
-            public ContentBean() {
-            }
-
-            public ContentBean(String userid, int type) {
-                this.userid = userid;
-                this.type = type;
-            }
-
-            public String getUserid() {
-                return userid;
-            }
-
-            public void setUserid(String userid) {
-                this.userid = userid;
+            public void setId(String id) {
+                this.id = id;
             }
 
             public int getType() {
@@ -263,6 +291,39 @@ public class C_0x8036 implements Serializable {
             public void setType(int type) {
                 this.type = type;
             }
+
+            public int getPage() {
+                return page;
+            }
+
+            public void setPage(int page) {
+                this.page = page;
+            }
+
+            public int getRows() {
+                return rows;
+            }
+
+            public void setRows(int rows) {
+                this.rows = rows;
+            }
+
+            public int getTotal() {
+                return total;
+            }
+
+            public void setTotal(int total) {
+                this.total = total;
+            }
+
+            public List<C_0x8005.Resp.ContentBean> getFriends() {
+                return friends;
+            }
+
+            public void setFriends(List<C_0x8005.Resp.ContentBean> friends) {
+                this.friends = friends;
+            }
+
         }
     }
 

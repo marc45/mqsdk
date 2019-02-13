@@ -1,6 +1,5 @@
 package cn.com.startai.mqttsdk.busi;
 
-import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8003;
@@ -22,8 +21,11 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8033;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
@@ -356,6 +358,18 @@ public class BaseBusiManager implements IMiofBusi {
     }
 
     /**
+     * 重置密码
+     *
+     * @param mobileOrEmail 手机号 或 邮箱号
+     * @param pwd           登录密码
+     * @param listener
+     */
+    @Override
+    public void resetLoginPwd(String mobileOrEmail, String pwd, IOnCallListener listener) {
+        C_0x8026.m_0x8026_req(mobileOrEmail, pwd, listener);
+    }
+
+    /**
      * 第三方账号登录
      *
      * @param type     类型 1 微信登录 2 支付宝登录
@@ -443,6 +457,37 @@ public class BaseBusiManager implements IMiofBusi {
         C_0x8037.req(req, listener);
     }
 
+    /**
+     * 查询天气信息
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void getWeatherInfo(C_0x8035.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8035.req(req, listener);
+    }
 
+    /**
+     * 绑定邮箱
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void bindEmail(C_0x8039.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8039.req(req, listener);
+    }
+
+    /**
+     * 查询 绑定列表 分页
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void getBindListByPage(C_0x8038.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8038.req(req, listener);
+    }
 }
 

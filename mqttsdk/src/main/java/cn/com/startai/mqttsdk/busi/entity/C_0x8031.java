@@ -75,9 +75,10 @@ public class C_0x8031 implements Serializable {
                 .setMsgcw(MSGCW)
                 .setContent(new C_0x8031.Req.ContentBean(orderNum)).create();
 
-        if(!DistributeParam.GETREALORDERPAYSTATUS_DISTRIBUTE){
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
         }
+
 
 
         MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
@@ -110,7 +111,7 @@ public class C_0x8031 implements Serializable {
             Req.ContentBean errcontent = content.getErrcontent();
             content.setOrder_num(errcontent.getOrder_num());
 
-            SLog.e(TAG, MSG_DESC + " 失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetRealOrderPayStatusResult(resp);
     }

@@ -2,9 +2,12 @@ package cn.com.startai.mqttsdk.busi.entity;
 
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
+import cn.com.startai.mqttsdk.base.DistributeParam;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
+import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.ErrorMiofMsg;
+import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
@@ -24,7 +27,7 @@ public class C_0x8016 {
 
     private static final String TAG = C_0x8016.class.getSimpleName();
     public static String MSG_DESC = "查询最新版本 ";
-    public static String MSGTYPE = "0x8016";
+    public static final String MSGTYPE = "0x8016";
     public static String MSGCW = "0x07";
 
     /**
@@ -36,7 +39,7 @@ public class C_0x8016 {
      */
     public static void m_0x8016_req(String os, String packageName, IOnCallListener listener) {
 
-        MqttPublishRequest x8016_req_msg = MqttPublishRequestCreator.create_0x8016_req_msg(os, packageName);
+        MqttPublishRequest x8016_req_msg = create_0x8016_req_msg(os, packageName);
         if (x8016_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8016_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -46,13 +49,37 @@ public class C_0x8016 {
 
     }
 
+    /**
+     * 查询最新软件版本
+     *
+     * @return
+     */
+    public static MqttPublishRequest create_0x8016_req_msg(String os, String packageName) {
 
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype(C_0x8016.MSGTYPE)
+                .setMsgcw("0x07")
+                .setContent(new C_0x8016.Req.ContentBean(os, packageName)).create();
+
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
+    }
     /**
      * 查询最新版本
      *
      * @param miof
      */
-    public static void m_0x8016_resp(String miof) {
+    public static void m_resp(String miof) {
 
 
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
@@ -68,7 +95,7 @@ public class C_0x8016 {
             content.setAppid(errcontent.getAppid());
             content.setOs(errcontent.getOs());
             content.setPackageName(errcontent.getPackageName());
-            SLog.e(TAG, "查询最新版本失败");
+            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetLatestVersionResult(resp);
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import cn.com.startai.mqttsdk.busi.BaseBusiManager;
 import cn.com.startai.mqttsdk.busi.CommonBusiManager;
+import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.listener.IOnSubscribeListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
@@ -20,14 +21,14 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class StartAI implements IPersisitentNet {
     private static StartAI instance;
-    private static String TAG;
-    public static final String SDK_VERSION = "3.0.5";
+    private static String TAG = "StartAI";
+
 
     public static StartAI getInstance() {
         if (instance == null) {
             synchronized (StartAI.class) {
                 if (instance == null) {
-                    SLog.d(TAG, "sdk version = " + SDK_VERSION);
+                    SLog.d(TAG, "sdk version = " + BuildConfig.VERSION_NAME);
                     instance = new StartAI();
                 }
             }
