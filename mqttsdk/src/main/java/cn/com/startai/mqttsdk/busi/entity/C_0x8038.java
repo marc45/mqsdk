@@ -1,5 +1,7 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -66,6 +69,18 @@ public class C_0x8038 implements Serializable {
 
     private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean req) {
 
+        if (req == null) {
+            SLog.e(TAG, "req is empty");
+            return null;
+        }
+
+        if (TextUtils.isEmpty(req.getId())) {
+            UserBusi userBusi = new UserBusi();
+            C_0x8018.Resp.ContentBean currUser = userBusi.getCurrUser();
+            if (currUser != null && !TextUtils.isEmpty(currUser.getUserid())) {
+                req.setId(currUser.getUserid());
+            }
+        }
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype(MSGTYPE)
@@ -108,7 +123,7 @@ public class C_0x8038 implements Serializable {
             content.setPage(errcontent.getPage());
             content.setRows(errcontent.getRows());
             content.setType(errcontent.getType());
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
 
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetBindListByPageResult(resp);
@@ -146,6 +161,12 @@ public class C_0x8038 implements Serializable {
             private int rows;
 
             public ContentBean() {
+            }
+
+            public ContentBean(int type, int page, int rows) {
+                this.type = type;
+                this.page = page;
+                this.rows = rows;
             }
 
             public ContentBean(String id, int type, int page, int rows) {

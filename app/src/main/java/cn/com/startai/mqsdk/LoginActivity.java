@@ -24,6 +24,7 @@ import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
@@ -149,10 +150,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //                    return false;
 //                }
 //            });
-
-            C_0x8039.Req.ContentBean req = new C_0x8039.Req.ContentBean("", "419109715@qq.com");
-
-            StartAI.getInstance().getBaseBusiManager().bindEmail(req, new IOnCallListener() {
+//
+//            C_0x8039.Req.ContentBean req = new C_0x8039.Req.ContentBean("", "419109715@qq.com");
+//
+//            StartAI.getInstance().getBaseBusiManager().bindEmail(req, new IOnCallListener() {
+//                @Override
+//                public void onSuccess(MqttPublishRequest request) {
+//
+//                }
+//
+//                @Override
+//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+//
+//                }
+//
+//                @Override
+//                public boolean needUISafety() {
+//                    return false;
+//                }
+//            });
+//
+            C_0x8038.Req.ContentBean req = new C_0x8038.Req.ContentBean("18b0ae177fce4e5a", C_0x8038.TYPE_USER_DEVICE, 3, 3);
+            StartAI.getInstance().getBaseBusiManager().getBindListByPage(req, new IOnCallListener() {
                 @Override
                 public void onSuccess(MqttPublishRequest request) {
 

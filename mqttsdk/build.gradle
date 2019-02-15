@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 3141
-        versionName "3.1.41"
+        versionCode 3142
+        versionName "3.1.42"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     //mqtt
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+
 
 }
 
@@ -89,9 +90,9 @@ publish {
     //项目名称
     artifactId = 'mqsdk'
     //版本号
-    publishVersion = '3.1.41'
+    publishVersion = '3.1.42'
     //描述，不重要
-    desc = 'startai sdk 3.1.41'
+    desc = 'startai sdk 3.1.42'
     //网站，不重要
     website = 'https://www.startai.com.cn'
 

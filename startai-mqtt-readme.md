@@ -36,7 +36,7 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
     //mqtt 基础包
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     //startai mqtt  sdk包
-    implementation 'cn.com.startai:mqsdk:3.1.41'
+    implementation 'cn.com.startai:mqsdk:3.1.42'
     //json解析
     implementation 'com.google.code.gson:gson:2.8.5'
     //startai airkiss sdk （配网sdk与esptouch二选一）
@@ -1609,6 +1609,10 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 
 
 ###更新日志
+
+- 2019-02-15 v3.1.42
+		
+		1，优化分页查询绑定列表请求参数可不用填写userid,sdk会自动补全。
 
 - 2019-02-13 v3.1.41
 
