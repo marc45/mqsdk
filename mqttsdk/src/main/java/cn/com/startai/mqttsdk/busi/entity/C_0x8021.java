@@ -48,7 +48,7 @@ public class C_0x8021 {
 
      */
     public static final int TYPE_FAST_LOGIN = 1;
-    public static final int TYPE_FORGET_PWD = 2;
+    public static final int TYPE_RESET_PWD = 2;
     public static final int TYPE_REGISTER = 3;
     public static final int TYPE_THIRD_MUSICBOX_LOGIN = 4;
     public static final int TYPE_UPDATE_MOBILENUM = 5;

@@ -1,11 +1,8 @@
 package cn.com.startai.mqsdk;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -20,14 +17,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+
+import java.util.List;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 
 /**
@@ -170,25 +174,100 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //                }
 //            });
 //
-            C_0x8038.Req.ContentBean req = new C_0x8038.Req.ContentBean("18b0ae177fce4e5a", C_0x8038.TYPE_USER_DEVICE, 3, 3);
-            StartAI.getInstance().getBaseBusiManager().getBindListByPage(req, new IOnCallListener() {
-                @Override
-                public void onSuccess(MqttPublishRequest request) {
+//            C_0x8038.Req.ContentBean req = new C_0x8038.Req.ContentBean("18b0ae177fce4e5a", C_0x8038.TYPE_USER_DEVICE, 2, 3);
+//            StartAI.getInstance().getBaseBusiManager().getBindListByPage(req, new IOnCallListener() {
+//                @Override
+//                public void onSuccess(MqttPublishRequest request) {
+//
+//                }
+//
+//                @Override
+//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+//
+//                }
+//
+//                @Override
+//                public boolean needUISafety() {
+//                    return false;
+//                }
+//            });
 
-                }
 
-                @Override
-                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+            //获取验证码
+//            String mobile = "13333333333"; //手机号
+////            int type = C_0x8021.TYPE_FAST_LOGIN; // 业务类型为 快捷登录
+//            int type = C_0x8021.TYPE_RESET_PWD; // 业务类型为 验证码重置密码
+//            C_0x8021.Req.ContentBean req = new C_0x8021.Req.ContentBean(mobile, type);
+//            StartAI.getInstance().getBaseBusiManager().getIdentifyCode(req, onCallListener);
 
-                }
+            //校验验证码
 
-                @Override
-                public boolean needUISafety() {
-                    return false;
-                }
-            });
+//            String account = "123456789@qq.com";
+//            String code= "666555";
+//            int type = C_0x8022.TYPE_EMAIL_RESET_PWD; //业务类型为邮箱验证码 重置密码
+//            C_0x8022.Req.ContentBean req = new C_0x8022.Req.ContentBean(account,code,type);
+//            StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(req,onCallListener);
+//注册
+//            String uName = "123456789@qq.com"; //邮箱号
+//            String pwd = "abc123456"; //设置的登录密码
+//            int type = C_0x8017.TYPE_EMAIL_AFTER_CHECK_CODE;
+//            C_0x8017.Req.ContentBean req = new C_0x8017.Req.ContentBean(uName, pwd, type);
+//            StartAI.getInstance().getBaseBusiManager().register(req, onCallListener);
+
+            //发送邮件
+//            String email = "132456789@qq.com"; //注册的邮箱号
+////            int type = C_0x8023.TYPE_CODE_TO_REGISTER; //发送邮件的业务类型
+////            int type = C_0x8023.TYPE_LINK_TO_RESET_PWD; //发送邮件的业务类型
+//            int type = C_0x8023.TYPE_CODE_TO_RESET_PWD; //发送邮件的业务类型 通过验证码重置密码
+//            C_0x8023.Req.ContentBean req = new C_0x8023.Req.ContentBean(email, type);
+//            StartAI.getInstance().getBaseBusiManager().sendEmail(req, onCallListener);
+
+            //登录
+
+//            String uname = "13333333333"; //手机号
+//            String code = "666555"; //验证码
+//            String pwd = "abc123456"; //登录密码
+////            int type = C_0x8018.TYPE_MOBILE_CODE; //手机号 加验证码登录
+////            int type = C_0x8018.TYPE_MOBILE_PWD; //手机号加密码
+////            int type = C_0x8018.TYPE_EMAIL_PWD; //邮箱号加密码
+////            int type = C_0x8018.TYPE_UNAME_PWD; //用户名加密码
+//            int type = C_0x8018.TYPE_MOBILE_CODE_PWD; //双重验证登录
+//            C_0x8018.Req.ContentBean req = new C_0x8018.Req.ContentBean(uname,pwd, code, type);
+//            StartAI.getInstance().getBaseBusiManager().login(req, onCallListener);
+
+
+            //第三方登录
+
+//            int type = C_0x8027.THIRD_WECHAT;
+//            String code = "15W6E1F648WEW98E4FWE54FW";
+//            C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean(type,code);
+
+//            将从第三方登录后拿到的 用户通过 userInfo存储并提交登录
+            C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean();
+            try {
+                String facebookJson = "{\"id\":\"109241263559640\",\"name\":\"罗彬彬\",\"picture\":{\"data\":{\"height\":50,\"is_silhouette\":true,\"url\":\"https:\\/\\/platform-lookaside.fbsbx.com\\/platform\\/profilepic\\/?asid=109241263559640&height=50&width=50&ext=1553756148&hash=AeRRBT13kE6s5D9Y\",\"width\":50}},\"first_name\":\"彬彬\",\"last_name\":\"罗\"}";
+                req.fromFacebookJson(facebookJson);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(req,onCallListener);
+//重置登录密码
+
+//            String account = "123456789@qq.com"; //手机号
+//            String pwd = "abc123456"; //新密码
+//            C_0x8026.Req.ContentBean req = new C_0x8026.Req.ContentBean(account,pwd);
+//            StartAI.getInstance().getBaseBusiManager().resetLoginPwd(req, onCallListener);
+//查询用户信息
+//            StartAI.getInstance().getBaseBusiManager().getUserInfo(onCallListener);
+
+            //修改用户信息
+//            C_0x8020.Req.ContentBean req = new C_0x8020.Req.ContentBean();
+//            req.setNickName("新昵称"); //修改昵称
+//            StartAI.getInstance().getBaseBusiManager().updateUserInfo(req,onCallListener);
 
         } else if (i == R.id.tv_main_new_register) {
+
 
 
         } else if (i == R.id.tv_main_forget_pwd) {
@@ -199,6 +278,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         }
     }
+
+    private IOnCallListener onCallListener = new IOnCallListener() {
+        @Override
+        public void onSuccess(MqttPublishRequest request) {
+
+        }
+
+        @Override
+        public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+
+        }
+
+        @Override
+        public boolean needUISafety() {
+            return false;
+        }
+    };
+
 
     @Override
     protected void onDestroy() {

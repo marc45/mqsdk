@@ -417,25 +417,16 @@ public abstract class AOnStartaiMessageArriveListener implements IOnMessageArriv
 
     }
 
-    /**
-     * 重置手机登录密码结果
-     *
-     * @param result      1 成功 0失败
-     * @param errorCode   失败异常码
-     * @param errorMsg    失败异常码
-     * @param contentBean 成功内容
-     */
-    @Deprecated
-    public void onResetMobileLoginPwdResult(int result, String errorCode, String errorMsg, C_0x8026.Resp.ContentBean contentBean) {
 
-    }
+
+
 
     /**
-     * 重置手机登录密码结果
+     * 重置登录密码结果
      *
      * @param resp 成功内容
      */
-    public void onResetMobileLoginPwdResult(C_0x8026.Resp resp) {
+    public void onResetLoginPwdResult(C_0x8026.Resp resp) {
 
     }
 

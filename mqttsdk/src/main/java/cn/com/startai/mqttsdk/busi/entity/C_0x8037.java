@@ -1,6 +1,10 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.media.MediaRouter;
 import android.text.TextUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 
@@ -40,6 +44,7 @@ public class C_0x8037 implements Serializable {
     public static final int THIRD_AMAZON = 15;
     public static final int THIRD_FACEBOOK = 16;
     public static final int THIRD_MI = 17;
+    public static final int THIRD_SMALLROUTINE = 18;
 
     /**
      * 请求 绑定第三方账号
@@ -111,8 +116,9 @@ public class C_0x8037 implements Serializable {
             content.setUserid(errcontent.getUserid());
             content.setType(errcontent.getType());
             content.setUserinfo(errcontent.getUserinfo());
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
+
 
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindThirdAccountResult(resp);
 
@@ -147,6 +153,50 @@ public class C_0x8037 implements Serializable {
             private String code;
             private int type;
             private UserinfoBean userinfo;
+
+            public void fromFacebookJSONObject(JSONObject facebookJSONObject) {
+
+
+//                {
+//                    "id":"109110993572667",
+//                        "name":"罗彬彬",
+//                        "picture":{
+//                    "data":{
+//                        "height":50,
+//                                "is_silhouette":true,
+//                                "url":"https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=109110993572667&height=50&width=50&ext=1553743839&hash=AeQ6aK5Id-8t4Ky3",
+//                                "width":50
+//                    }
+//                },
+//                    "first_name":"彬彬",
+//                        "last_name":"罗"
+//                }
+
+
+                this.type = THIRD_FACEBOOK;
+                this.userinfo = new UserinfoBean();
+
+                String id = facebookJSONObject.optString("id");   //比如:1565455221565
+                String name = facebookJSONObject.optString("name");  //比如：Zhang San
+                String first_name = facebookJSONObject.optString("first_name");
+                String last_name = facebookJSONObject.optString("last_name");
+
+                //获取用户头像
+                JSONObject object_pic = facebookJSONObject.optJSONObject("picture");
+                JSONObject object_data = object_pic.optJSONObject("data");
+                String url = object_data.optString("url");
+
+                this.userinfo.setUnionid(id);
+                this.userinfo.setOpenid(id);
+                this.userinfo.setFirstName(first_name);
+                this.userinfo.setLastName(last_name);
+                this.userinfo.setNickname(name);
+                this.userinfo.setHeadimgurl(url);
+            }
+
+            public void fromFacebookJson(String facebookJson) throws JSONException {
+                fromFacebookJSONObject(new JSONObject(facebookJson));
+            }
 
             public ContentBean() {
             }
@@ -230,6 +280,7 @@ public class C_0x8037 implements Serializable {
                 private String lastName;
                 private String address;
                 private String unionid;
+
 
                 public UserinfoBean() {
                 }

@@ -54,8 +54,20 @@ public class BaseBusiManager implements IMiofBusi {
      * @param listener
      */
     @Override
+    @Deprecated
     public void register(String uName, String pwd, IOnCallListener listener) {
         C_0x8017.m_0x8017_req(uName, pwd, listener);
+    }
+
+    /**
+     * 注册
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void register(C_0x8017.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8017.req(req, listener);
     }
 
 
@@ -68,8 +80,20 @@ public class BaseBusiManager implements IMiofBusi {
      * @param listener
      */
     @Override
+    @Deprecated
     public void login(String uName, String pwd, String identifyCode, IOnCallListener listener) {
         C_0x8018.m_0x8018_req(uName, pwd, identifyCode, listener);
+    }
+
+    /**
+     * 登录
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void login(C_0x8018.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8018.req(req, listener);
     }
 
 
@@ -166,15 +190,27 @@ public class BaseBusiManager implements IMiofBusi {
      * @param listener
      */
     @Override
+    @Deprecated
     public void getIdentifyCode(String mobile, int type, IOnCallListener listener) {
         C_0x8021.m_0x8021_req(mobile, type, listener);
+    }
+
+    /**
+     * 获取手机验证码
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void getIdentifyCode(C_0x8021.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8021.req(req, listener);
     }
 
 
     /**
      * 检验手机验证码
      *
-     * @param mobile       手机号
+     * @param account      手机号 或邮箱号
      * @param identifyCode 验证码
      * @param type         1表示用户登录
      *                     2表示重置登录密码
@@ -182,8 +218,20 @@ public class BaseBusiManager implements IMiofBusi {
      * @param listener
      */
     @Override
-    public void checkIdentifyCode(String mobile, String identifyCode, int type, IOnCallListener listener) {
-        C_0x8022.m_0x8022_req(mobile, identifyCode, type, listener);
+    @Deprecated
+    public void checkIdentifyCode(String account, String identifyCode, int type, IOnCallListener listener) {
+        C_0x8022.m_0x8022_req(account, identifyCode, type, listener);
+    }
+
+    /**
+     * 检验手机验证码
+     *
+     * @param req
+     * @param listener
+     */
+    @Override
+    public void checkIdentifyCode(C_0x8022.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8022.req(req, listener);
     }
 
     /**
@@ -316,8 +364,20 @@ public class BaseBusiManager implements IMiofBusi {
      * @param type  类型 1 为重新发送激活邮件 2 为发送忘记密码邮件
      */
     @Override
+    @Deprecated
     public void sendEmail(String email, int type, IOnCallListener listener) {
         C_0x8023.m_0x8023_req(email, type, listener);
+    }
+
+    /**
+     * 请求发送邮件
+     *
+     * @param req      邮箱
+     * @param listener
+     */
+    @Override
+    public void sendEmail(C_0x8023.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8023.req(req, listener);
     }
 
     /**
@@ -345,28 +405,16 @@ public class BaseBusiManager implements IMiofBusi {
         C_0x8015.m_0x8015_req(userid, fid, remark, listener);
     }
 
-    /**
-     * 重置手机登录密码
-     *
-     * @param mobile   手机号
-     * @param pwd      登录密码
-     * @param listener
-     */
-    @Override
-    public void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener) {
-        C_0x8026.m_0x8026_req(mobile, pwd, listener);
-    }
 
     /**
-     * 重置密码
+     * 重置登录密码
      *
-     * @param mobileOrEmail 手机号 或 邮箱号
-     * @param pwd           登录密码
+     * @param req
      * @param listener
      */
     @Override
-    public void resetLoginPwd(String mobileOrEmail, String pwd, IOnCallListener listener) {
-        C_0x8026.m_0x8026_req(mobileOrEmail, pwd, listener);
+    public void resetLoginPwd(C_0x8026.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8026.req(req, listener);
     }
 
     /**

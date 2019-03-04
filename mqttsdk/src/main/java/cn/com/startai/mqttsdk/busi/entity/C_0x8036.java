@@ -40,6 +40,7 @@ public class C_0x8036 implements Serializable {
     public static final int THIRD_AMAZON = 15;
     public static final int THIRD_FACEBOOK = 16;
     public static final int THIRD_MI = 17;
+    public static final int THIRD_SMALLROUTINE = 18;
 
     /**
      * 请求 解绑第三方账号
@@ -60,7 +61,6 @@ public class C_0x8036 implements Serializable {
     private static MqttPublishRequest<StartaiMessage<Req.ContentBean>> create_req_msg(Req.ContentBean req) {
 
         String userid = req.getUserid();
-        int type = req.getType();
 
         if (TextUtils.isEmpty(userid)) {
             C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
@@ -109,7 +109,7 @@ public class C_0x8036 implements Serializable {
             C_0x8036.Req.ContentBean errcontent = content.getErrcontent();
             content.setType(errcontent.getType());
             content.setUserid(errcontent.getUserid());
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
 
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onUnBindThirdAccountResult(resp);

@@ -33,10 +33,10 @@ public class C_0x8017 {
     public static final String MSGTYPE = "0x8017";
     public static String MSGCW = "0x07";
 
-    public static final int TYPE_EMAIL_PASS = 1;
-    public static final int TYPE_MOBILE_PASS = 2;
-    public static final int TYPE_MOBILE_CODE = 3;
-    public static final int TYPE_EMAIL_CODE = 4;
+    public static final int TYPE_EMAIL_ACTIVATE_EMAIL = 1; //发送激活邮件注册
+    public static final int TYPE_MOBILE_AFTER_CHECK_CODE = 2; //检验手机验证码注册
+    public static final int TYPE_MOBILE_CODE_FAST_LOGIN = 3; //暂时用不上
+    public static final int TYPE_EMAIL_AFTER_CHECK_CODE = 4;//检验邮箱验证码注册
 
     /**
      * 注册
@@ -57,6 +57,53 @@ public class C_0x8017 {
     }
 
     /**
+     * 注册
+     *
+     * @param req
+     * @param listener
+     */
+    public static void req(Req.ContentBean req, IOnCallListener listener) {
+
+        MqttPublishRequest x8017_req_msg = create_req_msg(req);
+        if (x8017_req_msg == null) {
+            CallbackManager.callbackMessageSendResult(false, listener, x8017_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
+            return;
+        }
+        StartaiMqttPersistent.getInstance().send(x8017_req_msg, listener);
+    }
+
+    /**
+     * 组注册包
+     *
+     * @param req
+     * @return
+     */
+    public static MqttPublishRequest create_req_msg(Req.ContentBean req) {
+        if (req == null) {
+            SLog.e(TAG, "req is empty ");
+            return null;
+        }
+
+        StartaiMessage message = new StartaiMessage.Builder()
+                .setMsgtype(MSGTYPE)
+                .setMsgcw(MSGCW)
+                .setFromid(MqttConfigure.getSn(StartAI.getContext()))
+                .setContent(req).create();
+
+        if (!DistributeParam.isDistribute(MSGTYPE)) {
+            message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
+        }
+
+
+        MqttPublishRequest mqttPublishRequest = new MqttPublishRequest();
+        mqttPublishRequest.message = message;
+
+        mqttPublishRequest.topic = TopicConsts.getServiceTopic();
+        return mqttPublishRequest;
+
+    }
+
+    /**
      * 组注册包
      *
      * @param uName
@@ -67,9 +114,9 @@ public class C_0x8017 {
 
         int type = 0;
         if (SRegexUtil.isEmail(uName)) {
-            type = 1;
+            type = TYPE_EMAIL_ACTIVATE_EMAIL;
         } else if (SRegexUtil.isMobileSimple(uName)) {
-            type = 2;
+            type = TYPE_MOBILE_AFTER_CHECK_CODE;
         }
         if (type == 0) {
             SLog.e(TAG, "参数非法 类型不对");
@@ -122,7 +169,7 @@ public class C_0x8017 {
             content.setUname(errcontent.getUname());
             content.setPwd(errcontent.getPwd());
 
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onRegisterResult(resp);
 

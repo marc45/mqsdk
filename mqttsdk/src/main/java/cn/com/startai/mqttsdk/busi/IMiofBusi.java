@@ -2,7 +2,12 @@ package cn.com.startai.mqttsdk.busi;
 
 
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
@@ -30,8 +35,16 @@ public interface IMiofBusi {
      * @param pwd      密码
      * @param listener
      */
+    @Deprecated
     void register(String uName, String pwd, IOnCallListener listener);
 
+    /**
+     * 注册
+     *
+     * @param req
+     * @param listener
+     */
+    void register(C_0x8017.Req.ContentBean req, IOnCallListener listener);
 
     /**
      * 登录
@@ -44,6 +57,14 @@ public interface IMiofBusi {
      * @param listener
      */
     void login(String uName, String pwd, String identifyCode, IOnCallListener listener);
+
+    /**
+     * 登录
+     *
+     * @param req
+     * @param listener
+     */
+    void login(C_0x8018.Req.ContentBean req, IOnCallListener listener);
 
     /**
      * 添加设备或好友
@@ -115,7 +136,16 @@ public interface IMiofBusi {
      *                 3表示用户注册
      * @param listener
      */
+    @Deprecated
     void getIdentifyCode(String mobile, int type, IOnCallListener listener);
+
+    /**
+     * 获取手机验证码
+     *
+     * @param req
+     * @param listener
+     */
+    void getIdentifyCode(C_0x8021.Req.ContentBean req, IOnCallListener listener);
 
 
     /**
@@ -128,7 +158,17 @@ public interface IMiofBusi {
      *                     3表示用户注册
      * @param listener
      */
+    @Deprecated
     void checkIdentifyCode(String mobile, String identifyCode, int type, IOnCallListener listener);
+
+    /**
+     * 检验手机验证码
+     *
+     * @param req
+     * @param listener
+     */
+    void checkIdentifyCode(C_0x8022.Req.ContentBean req, IOnCallListener listener);
+
 
     /**
      * 消息透传
@@ -207,7 +247,6 @@ public interface IMiofBusi {
      * @param newPwd   新密码
      * @param listener
      */
-    @Deprecated
     void updateUserPwd(String oldPwd, String newPwd, IOnCallListener listener);
 
 
@@ -227,7 +266,15 @@ public interface IMiofBusi {
      * @param email 邮箱
      * @param type  类型 1 为重新发送激活邮件 2 为发送忘记密码邮件
      */
+    @Deprecated
     void sendEmail(String email, int type, IOnCallListener listener);
+
+    /**
+     * 请求发送邮件
+     *
+     * @param req 邮箱
+     */
+    void sendEmail(C_0x8023.Req.ContentBean req, IOnCallListener listener);
 
 
     /**
@@ -251,24 +298,14 @@ public interface IMiofBusi {
     void updateRemark(String userid, String fid, String remark, IOnCallListener listener);
 
 
-    /**
-     * 重置手机登录密码
-     *
-     * @param mobile   手机号
-     * @param pwd      登录密码
-     * @param listener
-     */
-    @Deprecated
-    void resetMobileLoginPwd(String mobile, String pwd, IOnCallListener listener);
 
     /**
      * 重置密码
      *
-     * @param mobileOrEmail 手机号 或邮箱号
-     * @param pwd           登录密码
+     * @param req 手机号 或邮箱号
      * @param listener
      */
-    void resetLoginPwd(String mobileOrEmail, String pwd, IOnCallListener listener);
+    void resetLoginPwd(C_0x8026.Req.ContentBean req, IOnCallListener listener);
 
     /**
      * 第三方账号登录

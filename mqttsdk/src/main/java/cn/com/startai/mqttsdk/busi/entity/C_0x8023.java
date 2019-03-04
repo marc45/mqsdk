@@ -41,11 +41,11 @@ public class C_0x8023 {
 
      */
 
-    public static final int TYPE_RE_ACTIVATE = 1;
-    public static final int TYPE_FORGET_PWD = 2;
-    public static final int TYPE_REGISTER = 6;
-    public static final int TYPE_RESET_PWD_COD = 7;
-    public static final int TYPE_UPDATE_EMAIL = 8;
+    public static final int TYPE_LINK_TO_RE_ACTIVATE= 1;
+    public static final int TYPE_LINK_TO_RESET_PWD= 2;
+    public static final int TYPE_CODE_TO_REGISTER = 6;
+    public static final int TYPE_CODE_TO_RESET_PWD = 7;
+    public static final int TYPE_CODE_TO_BIND_EMAIL = 8;
 
     /**
      * 请求发送邮件

@@ -36,7 +36,7 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
     //mqtt 基础包
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     //startai mqtt  sdk包
-    implementation 'cn.com.startai:mqsdk:3.1.42'
+    implementation 'cn.com.startai:mqsdk:3.1.44'
     //json解析
     implementation 'com.google.code.gson:gson:2.8.5'
     //startai airkiss sdk （配网sdk与esptouch二选一）
@@ -110,7 +110,7 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
 	 			//消息发送失败后可调用通用消息发送方法重发
             	StartAI.getInstance().send(request, this);
 	        }
-	
+			
 	        /**
 	         * 是否回调到ui线程
 	         * @return
@@ -167,9 +167,9 @@ StartAI云平台接入端(Android)SDK（以下简称“SDK”）封装了手机�
 
      // 注销消息回调 开发者需要在不使用回调的时候调用如下代码来注销回调
 	 PersistentEventDispatcher.getInstance().unregisterOnPushListener(listener);
-
+	
     
-
+	
 #####1.4.初始化sdk	
 
 
@@ -196,7 +196,10 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("13333333333", C_0x8021.TYPE_REGISTER, onCallListener);
+	String mobile = "13333333333"; //需要注册的手机号
+	int type = C_0x8021.TYPE_REGISTER; //type 类型为注册
+	C_0x8021.Req.ContentBean req = new C_0x8021.Req.ContentBean(mobile, type);
+	StartAI.getInstance().getBaseBusiManager().getIdentifyCode(req, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -223,7 +226,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode("13333333333", identify, C_0x8022.TYPE_MOBILE_REGISTER, onCallListener);
+	String account = "13333333333"; //手机号
+	String code= "652236"; //验证码
+	int type = C_0x8022.TYPE_MOBILE_REGISTER; //类型为手机号注册
+	C_0x8022.Req.ContentBean req = new C_0x8022.Req.ContentBean(account,code,type);
+	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(req, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -250,7 +257,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().register("13333333333", "123456", onCallListener);
+	String uName = "13333333333"; //手机号
+	String pwd = "abc123456"; //设置的登录密码
+	int type = C_0x8017.TYPE_MOBILE_AFTER_CHECK_CODE; //注册类型 手机验证码方式注册
+	C_0x8017.Req.ContentBean req = new C_0x8017.Req.ContentBean(uName, pwd, type);
+	StartAI.getInstance().getBaseBusiManager().register(req, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -270,7 +281,13 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 
 
 ######2.2.2.邮箱注册
+
+邮箱注册方式分为两种，激活链接方式和邮箱验证码方式。 
+
+########2.2.2.1 激活链接方式，通过发送激活链接邮件，然后点击邮箱内的激活链接的方式进行注册
 第一步：注册，注册成功后，StartAI云平台会发送激活邮件到指定邮箱
+
+
 
 【示例代码】
 
@@ -278,6 +295,10 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
+	String uName = "123456789@qq.com"; //邮箱号
+	String pwd = "abc123456"; //设置的登录密码
+	int type = C_0x8017.TYPE_EMAIL_ACTIVATE_EMAIL; //注册类型  发送激活邮件
+	C_0x8017.Req.ContentBean req = new C_0x8017.Req.ContentBean(uName, pwd, type);
 	StartAI.getInstance().getBaseBusiManager().register("111111111@qq.com", "123456", onCallListener);
 	
 	//实现业务处理回调
@@ -293,7 +314,6 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	        }
 	    }
 
-
 	}
  
 
@@ -302,6 +322,101 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 【示范图片】
 
 ![](https://i.imgur.com/or5kdGC.png)
+
+########2.2.2.2 邮箱验证码方式，通过发送验证码邮件到注册邮箱，然后通过校验验证码的方式进行注册 
+
+通过邮箱验证码方式注册账号，需要一个有效的邮箱号。注册时需要三步操作：获取邮箱验证码、校验验证码、注册。
+
+第一步：获取验证码，APP获取邮箱验证码时，SDK向云端请求发送邮箱验证码，如果请求成功，云端会给邮箱发送邮箱验证码。
+
+
+【示例代码】
+	
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求
+	String email = "132456789@qq.com"; //注册的邮箱号
+	int type = C_0x8023.TYPE_CODE_TO_REGISTER; //发送邮件的业务类型 通过验证码注册
+	C_0x8023.Req.ContentBean req = new C_0x8023.Req.ContentBean(email, type);
+	StartAI.getInstance().getBaseBusiManager().sendEmail(req, onCallListener);
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+	    @Override
+	    public void onSendEmailResult(C_0x8023.Resp resp) {
+ 
+	        if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            //获取验证码成功
+	        } else {
+	            //获取验证码失败
+	        }
+	    }
+
+
+	}
+ 
+
+第二步：校验验证码，用邮箱验证码注册时，APP把邮箱收到的验证码传给SDK，进行校验。
+
+
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求
+	String account = "123456789@qq.com";//邮件号
+	String code= "666555"; //邮箱验证码
+	int type = C_0x8022.TYPE_EMAIL_REGISTER; //类型为 邮箱注册
+	C_0x8022.Req.ContentBean req = new C_0x8022.Req.ContentBean(account,code,type);
+	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(req,onCallListener);
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+	
+	    @Override
+	    public void onCheckIdetifyResult(C_0x8022.Resp resp) {
+ 
+	        if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            //校验验证码成功
+	        } else {
+	            //校验验证码失败
+	        }
+	    }
+
+
+	}
+
+第三步：注册
+
+
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求
+	String uName = "123456789@qq.com"; //邮箱号
+	String pwd = "abc123456"; //设置的登录密码
+	int type = C_0x8017.TYPE_EMAIL_AFTER_CHECK_CODE; //注册 类型为 邮箱验证码方式
+	C_0x8017.Req.ContentBean req = new C_0x8017.Req.ContentBean(uName, pwd, type);
+	StartAI.getInstance().getBaseBusiManager().register(req, onCallListener);
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+	
+	    @Override
+	    public void onRegisterResult(C_0x8017.Resp resp) {
+	        TAndL.TL(getApplicationContext(), "注册结果 result = " + resp);
+	        if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            //注册成功
+	        } else {
+	            //注册失败
+	        }
+	    }
+
+
+	}
+
+
 
 #####2.3.登录部分
 用户登录时，用户名可以是注册过的手机号、邮箱。登录账号要先注册好，也可以直接使用手机进行快捷登录，如果更换了APPID，登录账号需要重新注册。
@@ -318,7 +433,10 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("11111111@qq.com", C_0x8021.TYPE_FAST_LOGIN, onCallListener);
+	String mobile = "13333333333"; //手机号
+	int type = C_0x8021.TYPE_FAST_LOGIN; // 业务类型为 快捷登录
+	C_0x8021.Req.ContentBean req = new C_0x8021.Req.ContentBean(mobile, type);
+	StartAI.getInstance().getBaseBusiManager().getIdentifyCode(req, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -345,7 +463,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().login("13333333333", "", "009527", onCallListener);
+	String uname = "13333333333"; //手机号
+	String code = "666555"; //验证码
+	int type = C_0x8018.TYPE_MOBILE_CODE; //手机号 加验证码登录
+	C_0x8018.Req.ContentBean req = new C_0x8018.Req.ContentBean(uname, code, type);
+	StartAI.getInstance().getBaseBusiManager().login(req, onCallListener); 
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -376,7 +498,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().login("13333333333", "123456", "", onCallListener);
+	String uname = "13333333333"; //手机号
+	String pwd = "abc123456"; //登录密码
+	int type = C_0x8018.TYPE_MOBILE_PWD; //手机号加密码
+	C_0x8018.Req.ContentBean req = new C_0x8018.Req.ContentBean(uname,pwd, "", type);
+	StartAI.getInstance().getBaseBusiManager().login(req, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -404,7 +530,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().login("11111111@qq.com", "123456", "", onCallListener);
+	String uname = "123456789@qq.com"; //邮箱号
+	String pwd = "abc123456"; //登录密码
+	int type = C_0x8018.TYPE_EMAIL_PWD; //邮箱号加密码
+	C_0x8018.Req.ContentBean req = new C_0x8018.Req.ContentBean(uname,pwd, "", type);
+	StartAI.getInstance().getBaseBusiManager().login(req, onCallListener); 
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -433,7 +563,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().login("jobs", "123456", "", onCallListener);
+	String uname = "Robin1015"; //用户名
+	String pwd = "abc123456"; //登录密码
+	int type = C_0x8018.TYPE_UNAME_PWD; //用户名加密码
+	C_0x8018.Req.ContentBean req = new C_0x8018.Req.ContentBean(uname,pwd, "", type);
+	StartAI.getInstance().getBaseBusiManager().login(req, onCallListener); 
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -463,7 +597,12 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().login("jobs", "123456", "009527", onCallListener);
+	String uname = "13333333333"; //手机号
+	String code = "666555"; //验证码
+	String pwd = "abc123456"; //登录密码
+	int type = C_0x8018.TYPE_MOBILE_CODE_PWD; //双重验证登录
+	C_0x8018.Req.ContentBean req = new C_0x8018.Req.ContentBean(uname,pwd, code, type);
+	StartAI.getInstance().getBaseBusiManager().login(req, onCallListener);
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -498,7 +637,31 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(C_0x8027.THIRD_WECHAT,"WechatCode",onCallListener);
+	int type = C_0x8027.THIRD_WECHAT;
+	String code = "15W6E1F648WEW98E4FWE54FW";
+	C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean(type,code);
+	StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(req,onCallListener);
+	
+
+	// facebook登录方式 
+	C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean();
+	//从facebook登录信息获取必要的登录信息 然后调用StartAI第三方登录接口
+	req.fromFacebookJSONObject(object);// facebook 获取登录后 获取用户信息返回的jsonobject
+	StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(req,onCallListener);
+ 
+ 	
+	//通用登录方式 如果第三方的api无法获取code 则采用以下方式 
+	int type = C_0x8027.THIRD_FACEBOOK;
+	C_0x8027.Req.ContentBean.UserinfoBean userInfo = new C_0x8027.Req.ContentBean.UserinfoBean();
+	userInfo.setLastName("第三方信息");
+	userInfo.setOpenid("第三方信息");
+	userInfo.setEmail("第三方信息");
+	userInfo.setNickname("第三方信息");
+	userInfo.setHeadimgurl("第三方信息");
+	//...
+	C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean(type,userInfo);
+	StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(req,onCallListener);
+ 
 
 
 	//实现业务处理回调
@@ -555,8 +718,8 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 
 #####2.5.重置密码部分
 
-如果忘记了用户密码，可以通过手机验证码或邮箱设置新的密码。SDK支持手机号重置密码和邮箱重置密码两种，手机号重置需要接收验证码，邮箱重置需要进入邮箱，根据链接提示进行重置。
-#####2.5.1.手机号重置密码时，需要先获取短信验证码再重置。获取短信验证码方式与手机注册时相同。
+如果忘记了用户密码，可以通过手机验证码或邮箱设置新的密码。SDK支持手机验证码重置密码和邮箱验证码重置密码及邮箱链接重置密码三种，手机号重置跟邮箱验证码重置需要接收验证码，邮箱链接重置需要进入邮箱，根据链接提示进行重置。
+#####2.5.1.手机号验证码重置密码，需要先获取短信验证码再重置。获取短信验证码方式与手机注册时相同。
 第一步：获取短信验证码
 
  
@@ -567,7 +730,10 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	StartAI.getInstance().getBaseBusiManager().getIdentifyCode("13333333333", C_0x8027.TYPE_FORGET_PWD, onCallListener);
+	String mobile = "13333333333"; //手机号
+	int type = C_0x8021.TYPE_RESET_PWD; // 业务类型为 验证码重置密码
+	C_0x8021.Req.ContentBean req = new C_0x8021.Req.ContentBean(mobile, type);
+	StartAI.getInstance().getBaseBusiManager().getIdentifyCode(req, onCallListener); 
 
 
 	//实现业务处理回调
@@ -576,8 +742,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 
 	    @Override
 	    public void onGetIdentifyCodeResult(C_0x8021.Resp resp) {
-	        super.onGetIdentifyCodeResult(resp);
-	         
+	       
 	        if (resp.getResult() == resp.RESULT_SUCCESS) {
 	            //获取验证码成功
 	        } else {
@@ -598,7 +763,11 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求
-	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(mobile, code, C_0x8022.TYPE_MOBILE_RESET_PWD, onCallListener);
+	String account = "13333333333"; //手机号
+	String code= "666555"; //验证码
+	int type = C_0x8022.TYPE_MOBILE_RESET_PWD; //业务类型为手机号重置密码
+	C_0x8022.Req.ContentBean req = new C_0x8022.Req.ContentBean(account,code,type);
+	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(req,onCallListener); 
 
 
 	//实现业务处理回调
@@ -630,16 +799,18 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	StartAI.getInstance().getBaseBusiManager().resetMobileLoginPwd(mobile, pwd, onCallListener);
+	String account = "13333333333"; //手机号
+	String pwd = "abc123456"; //新密码
+	C_0x8026.Req.ContentBean req = new C_0x8026.Req.ContentBean(account,pwd);
+	StartAI.getInstance().getBaseBusiManager().resetLoginPwd(req, onCallListener); 
 
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
 
 	    @Override
-	    public void onResetMobileLoginPwdResult(C_0x8026.Resp resp) {
-	        super.onResetMobileLoginPwdResult(resp);
-	
+	    public void onResetLoginPwdResult(C_0x8026.Resp resp) {
+	       
 	        if (resp.getResult() == 1) {
 	            TAndL.TL(getApplicationContext(), "重置密码成功 " + resp);
 	
@@ -652,7 +823,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	}
  
 
-#####2.5.2.邮箱号重置密码时，云端会给指定邮箱发送安全链接。用户需要到邮箱中查收邮件，并按邮件指示执行重置操作。重置密码邮件有可能进入用户的邮箱的垃圾箱中，需提醒用户。
+#####2.5.2.邮箱链接重置密码，云端会给指定邮箱发送安全链接。用户需要到邮箱中查收邮件，并按邮件指示执行重置操作。重置密码邮件有可能进入用户的邮箱的垃圾箱中，需提醒用户。
 
 【示例代码】
 	
@@ -660,7 +831,10 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	StartAI.getInstance().getBaseBusiManager().sendEmail(email, C_0x8023.TYPE_FORGET_PWD, onCallListener);
+	String email = "132456789@qq.com"; //注册的邮箱号
+	int type = C_0x8023.TYPE_LINK_TO_RESET_PWD; //发送邮件的业务类型 通过邮箱链接重置密码
+	C_0x8023.Req.ContentBean req = new C_0x8023.Req.ContentBean(email, type);
+	StartAI.getInstance().getBaseBusiManager().sendEmail(req, onCallListener); 
 
 
 	//实现业务处理回调
@@ -680,6 +854,101 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	}
 
 
+#####2.5.3.邮箱验证码重置密码
+
+
+【示例代码】
+
+第一步：发送邮箱验证码
+
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求 
+	String email = "132456789@qq.com"; // 邮箱号 
+	int type = C_0x8023.TYPE_CODE_TO_RESET_PWD; //发送邮件的业务类型 通过验证码重置密码
+	C_0x8023.Req.ContentBean req = new C_0x8023.Req.ContentBean(email, type);
+	StartAI.getInstance().getBaseBusiManager().sendEmail(req, onCallListener);
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onSendEmailResult(C_0x8023.Resp resp) {
+	         
+	         
+	        if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            //邮箱验证码发送成功
+	        } else {
+	            //邮箱验证码发送失败
+	        }
+	    }
+
+ 
+	}
+
+第二步：校验邮箱验证码
+
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求
+	String account = "123456789@qq.com";
+	String code= "666555";
+	int type = C_0x8022.TYPE_EMAIL_RESET_PWD; //业务类型为邮箱验证码 重置密码
+	C_0x8022.Req.ContentBean req = new C_0x8022.Req.ContentBean(account,code,type);
+	StartAI.getInstance().getBaseBusiManager().checkIdentifyCode(req,onCallListener);
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+
+	    @Override
+	    public void onCheckIdetifyResult(C_0x8022.Resp resp) {
+	        TAndL.TL(getApplicationContext(), "校验验证码结果 result = " + resp);
+	        if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            //校验验证码成功
+	        } else {
+	            //校验验证码失败
+	        }
+	    }
+	 
+	}
+
+第三步：重置密码
+
+	//设置监听
+	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
+
+	//发送请求 
+	String account = "123456789@qq.com"; //邮箱号
+	String pwd = "abc123456"; //新密码
+	C_0x8026.Req.ContentBean req = new C_0x8026.Req.ContentBean(account,pwd);
+	StartAI.getInstance().getBaseBusiManager().resetLoginPwd(req, onCallListener);
+
+
+	//实现业务处理回调
+	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
+
+	    @Override
+	    public void onResetLoginPwdResult(C_0x8026.Resp resp) {
+	        
+	        if (resp.getResult() == 1) {
+	            TAndL.TL(getApplicationContext(), "重置密码成功 " + resp);
+	
+	        } else {
+	            TAndL.TL(getApplicationContext(), "重置密码失败 " + resp);
+	        }
+	
+	    }
+ 
+	}
+ 
+
+
 #####2.6.查询用户信息
 
 【示例代码】
@@ -688,7 +957,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	StartAI.getInstance().getBaseBusiManager().getUserInfo(currUser.getUserid(), onCallListener);
+	StartAI.getInstance().getBaseBusiManager().getUserInfo(onCallListener);
 
 
 	//实现业务处理回调
@@ -696,7 +965,7 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 
 	    @Override
 	    public void onGetUserInfoResult(C_0x8024.Resp resp) {
-	        super.onGetUserInfoResult(resp);
+	       
 	        if (resp.getResult() ==  resp.RESULT_SUCCESS) {
 	            //查询用户信息成功
 	        }else{
@@ -716,9 +985,9 @@ StartAI云平台提供两种用户注册方式：手机注册、邮箱注册。
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
 	//发送请求 
-	C_0x8020.Req.ContentBean contentBean = new C_0x8020.Req.ContentBean();
-	contentBean.setNickName(nickName);
-	StartAI.getInstance().getBaseBusiManager().updateUserInfo(contentBean, onCallListener);
+	C_0x8020.Req.ContentBean req = new C_0x8020.Req.ContentBean();
+	req.setNickName("新昵称"); //修改昵称
+	StartAI.getInstance().getBaseBusiManager().updateUserInfo(req,onCallListener); 
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -800,11 +1069,16 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 		EsptouchAsyncTask mTask = new EsptouchAsyncTask(getApplicationContext(), bssid, ssid, pwd, deviceCount, timeout, myListener);
 		mTask.execute();
 
+
 		//停止配置
-        if (mTask != null) {
-            mTask.cancelEsptouch();
-            mTask = null;
-        }		
+		void stopEsptouch(){ 
+	        if (mTask != null) {
+	            mTask.cancelEsptouch();
+	            mTask = null;
+	        }	
+
+		}
+				
 
 
 ####4.设备发现与绑定
@@ -839,12 +1113,16 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
 
-
 	    @Override
 	    public void onBindResult(C_0x8002.Resp errResp, String id, C_0x8002.Resp.ContentBean.BebindingBean bebinding) {
+			 if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            TAndL.TL(getApplicationContext(), "添加成功 ");
 
-	        TAndL.TL(getApplicationContext(), "添加结果  " + errResp);
-			//如果绑定成功 开发者需要保存对端的相关信息
+	        } else {
+	            TAndL.TL(getApplicationContext(), "添加失败 ");
+	        }
+	        
+			 
 	    }
 
  
@@ -873,13 +1151,13 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
 	    @Override
 	    public void onUnBindResult(C_0x8004.Resp resp, String id, String beUnbindid) {
-	        super.onUnBindResult(resp, id, beUnbindid);
+	        
 	
-	
-	        TAndL.TL(getApplicationContext(), "删除结果 " + resp);
-	
-	        if (resp.getResult() == 1) {
-	            StartAI.getInstance().getBaseBusiManager().getBindList(1, onCallListener);
+	        if (resp.getResult() == resp.RESULT_SUCCESS) {
+	            TAndL.TL(getApplicationContext(), "删除 成功 ");
+
+	        } else {
+	            TAndL.TL(getApplicationContext(), "删除 失败 ");
 	        }
 	
 	    }
@@ -918,7 +1196,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
 	    @Override
 	    public void onPassthroughResult(C_0x8200.Resp resp, String dataString, byte[] dataByteArray) {
-	        super.onPassthroughResult(resp, dataString, dataByteArray);
+	        
 	        
 			TAndL.TL(getApplicationContext(),"接收到来自 "+resp.getFromid()+" 的消息 msg = "+dataString);			
 
@@ -926,53 +1204,6 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
  
 	}
-
-
-
->请求成功及失败数据包格式(以查询绑定列表为例)
-    
-    //正常       
-    {
-	    "fromid": "Cloud/BXTM",
-	    "m_ver": "Json_1.2.4_9.2.1",
-	    "msgcw": "0x08",
-	    "msgtype": "0x8005",
-	    "result": 1,
-	    "toid": "8e55c1e1ddc6c2249fc4daa2319a0f6d",
-	    "ts": 1530499287362,
-	    "content": [
-	        {
-	            "apptype": "smartBox",
-	            "bindingtime": 1530257761935,
-	            "connstatus": 1,
-	            "id": "736F6C863300F4EB1EE79CC8015B503D",
-	            "topic": "Q/client/736F6C863300F4EB1EE79CC8015B503D",
-	            "type": 1
-	        },
-	        {
-	            "apptype": "smartCtrl",
-	            "bindingtime": 1530087011556,
-	            "connstatus": 1,
-	            "id": "7D7E77A1578AE531BB78C8170B18F47C",
-	            "topic": "Q/client/7D7E77A1578AE531BB78C8170B18F47C",
-	            "type": 6
-	        }
-	    ]
-    }
-    //失败   
-    {
-	    "fromid": "Cloud/BXTM",
-	    "m_ver": "Json_1.2.4_9.2.1",
-	    "msgcw": "0x08",
-	    "msgtype": "0x8005",
-	    "result": 0,
-	    "toid": "8e55c1e1ddc6c2249fc4daa2319a0f6d",
-	    "ts": 1530499287362,
-	    "content": {
-	        "errcode": "0x800203",
-	        "errmsg": "被绑定id无效"
-	    }
-    }  
 
 
 ####6.其他接口
@@ -990,6 +1221,29 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 	req.setCode(resp.code); //code 来自微信授权返回
 	req.setType(C_0x8037.THIRD_WECHAT); //绑定微信账号
 	StartAI.getInstance().getBaseBusiManager().bindThirdAccount(req,onCallListener)
+
+
+
+	// 绑定facebook账号
+	C_0x8037.Req.ContentBean req = new C_0x8037.Req.ContentBean();
+	//从facebook登录信息获取必要的登录信息 然后调用StartAI绑定第三方账号接口
+	req.fromFacebookJSONObject(object);
+	StartAI.getInstance().getBaseBusiManager().bindThirdAccount(req,onCallListener);
+ 
+ 	
+	//通用登录方式 如果第三方的api无法获取code 则采用以下方式 
+	int type = C_0x8037.THIRD_FACEBOOK;
+	C_0x8037.Req.ContentBean.UserinfoBean userInfo = new C_0x8037.Req.ContentBean.UserinfoBean();
+	userInfo.setLastName("第三方信息");
+	userInfo.setOpenid("第三方信息");
+	userInfo.setEmail("第三方信息");
+	userInfo.setNickname("第三方信息");
+	userInfo.setHeadimgurl("第三方信息");
+	//...
+	C_0x8037.Req.ContentBean req = new C_0x8037.Req.ContentBean(type,userInfo);
+	StartAI.getInstance().getBaseBusiManager().bindThirdAccount(req,onCallListener);
+ 
+
 
 	//实现业务处理回调
 	AOnStartaiMessageArriveListener listener = new AOnStartaiMessageArriveListener() {
@@ -1018,7 +1272,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 	//设置监听
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
-	//发送请求
+	//发送请求 userid可不填写 sdk自动 补全
 	C_0x8036.Req.ContentBean req = new C_0x8036.Req.ContentBean("userId", C_0x8036.THIRD_WECHAT);  //解绑 微信
 	StartAI.getInstance().getBaseBusiManager().unBindThirdAccount(req,onCallListener)
 
@@ -1051,7 +1305,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 	//设置监听
 	PersistentEventDispatcher.getInstance().registerOnPushListener(listener); 
 
-	//发送请求 接口调用前需要先 调用 获取验证码，检验验证码
+	//发送请求 接口调用前需要先 调用 获取验证码，检验验证码 
 	C_0x8034.Req.ContentBean req = new C_0x8034.Req.ContentBean("userId", mobile); //mobile 需要绑定的手机号
 	StartAI.getInstance().getBaseBusiManager().bindMobileNum(req,onCallListener)
 
@@ -1105,6 +1359,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
  
 	}
+
 ######查询支付支付结果
 【示例代码】
 	
@@ -1134,6 +1389,7 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
 
  
 	}
+
 ######请求下单（生成预付单）
 【示例代码】
 	
@@ -1199,57 +1455,55 @@ Airkiss，Esptouch都是使用UDP广播方式，由手机端发出含有目标�
  
 
 
+>请求成功及失败数据包格式(以查询绑定列表为例)
+    
+    //正常       
+    {
+	    "fromid": "Cloud/BXTM",
+	    "m_ver": "Json_1.2.4_9.2.1",
+	    "msgcw": "0x08",
+	    "msgtype": "0x8005",
+	    "result": 1,
+	    "toid": "8e55c1e1ddc6c2249fc4daa2319a0f6d",
+	    "ts": 1530499287362,
+	    "content": [
+	        {
+	            "apptype": "smartBox",
+	            "bindingtime": 1530257761935,
+	            "connstatus": 1,
+	            "id": "736F6C863300F4EB1EE79CC8015B503D",
+	            "topic": "Q/client/736F6C863300F4EB1EE79CC8015B503D",
+	            "type": 1
+	        },
+	        {
+	            "apptype": "smartCtrl",
+	            "bindingtime": 1530087011556,
+	            "connstatus": 1,
+	            "id": "7D7E77A1578AE531BB78C8170B18F47C",
+	            "topic": "Q/client/7D7E77A1578AE531BB78C8170B18F47C",
+	            "type": 6
+	        }
+	    ]
+    }
+    //失败   
+    {
+	    "fromid": "Cloud/BXTM",
+	    "m_ver": "Json_1.2.4_9.2.1",
+	    "msgcw": "0x08",
+	    "msgtype": "0x8005",
+	    "result": 0,
+	    "toid": "8e55c1e1ddc6c2249fc4daa2319a0f6d",
+	    "ts": 1530499287362,
+	    "content": {
+	        "errcode": "0x800203",
+	        "errmsg": "被绑定id无效"
+	    }
+    }  
+
+
+
 ### 部分请求|返回参数实体结构 
 
->C_0x8035.Resp.ContentBean 查询天气信息 返回数据 
-
-成员 | 类型 | 描述 | 备注
-:|
-lat | String | 纬度  | "115.9918900000"
-lng | String | 经度  | "36.4626820000" 
-province | String | 省份  | "广东"
-city | String | 城市  | "广州" 
-district | String | 区  | "天河" 
-qlty | String | 空气质量  | "重度污染"
-tmp | String | 当前温度  | "16" 
-weather | String | 天气描述  | "多云"  
-weatherPic | String | 天气图片链接  | "http://www.abc.com/aaa.jpg "
- 
-
->C_0x8028.Req.ContentBean 请求下单 请求数据 
-
-成员 | 类型 | 描述 |必须 | 备注
-:|
-platform | int | 支付平台 | 1 | C_0x8028.PLATFOME_WECHAT(1)微信支付<br>   C_0x8028.PLATFOME_ALIPAY(2)支付宝支付<br>  
-type | int |交易类型 | 1 |  C_0x8028.TYPE_DEPOSIT(1)押金充值<br> C_0x8028.TYPE_BALANCE(2)余额充值<br> C_0x8028.TYPE_ORDER(3)订单支付<br>
-goods_description | String | 商品描述 | 1 | 显示在微信支付单 如 “充电宝-押金充值”
-fee_type | String | 货币类型 | 1 | "CNY"
-total_fee | int | 总金额 | 1 | 单位： 分
-order_num | String | 订单号 | 1 | 
- 
- 
-
->C_0x8031.Resp.ContentBean 查询支付结果 返回数据
-
-成员 | 类型 | 描述 |  备注
-:|
-platform | int | 支付平台 |   C_0x8031.PLATFORM_WECHAT(1)微信 <br>C_0x8031.PLATFORM_ALIPAY(2)支付宝 <br> C_0x8031.PLATFORM_SMALL_APP(3) 微信小程序 
-userid | String | 用户id |  
-openid | String | 用户在商户appid下的唯一id |  
-is_subscribe | String | 是否订阅 |  
-bank_type | String | 付款银行 | 
-total_fee | String | 交易金额 | 单位：分  
-out_trade_no | String | 商户订单号 | 
-transaction_id | String | 微信/支付宝支付订单号 | 
-trade_type | String | 交易类型 |  "APP"
-time_end | String | 支付完成时间 | 2018-11-11 22:22:22
-trade_state | String | 交易状态 |  核心字段<br> C_0x8031.TRADE_STATE_SUCCESS(SUCCESS)支付成功<br> C_0x8031.TRADE_STATE_REFUND（REFUND）转入退款<br> C_0x8031.TRADE_STATE_NOTPAY(NOTPAY)未支付<br> C_0x8031.TRADE_STATE_CLOSED(CLOSED)已关闭<br> C_0x8031.TRADE_STATE_REVOKED(REVOKED)已撤销（刷卡支付）<br> C_0x8031.TRADE_STATE_USERPAYING(USERPAYING)用户支付中<br> C_0x8031.TRADE_STATE_PAYERROR(PAYERROR)支付失败(其他原因，如银行返回失败)<br> C_0x8031.TRADE_STATE_ERROR(ERROR)错误 
-coupon_fee | String | 代金券金额 | 单位：分
-cash_fee | String | 现金支付金额 | 单位：分 
-coupon_count | String | 代金券数量 | 单位：分 
-trade_state_desc | String | 交易状态描述 | "支付成功"
- 
-   
 >C_0x8002.Resp.ContentBean.BebindingBean 添加设备|好友成功返回结果
 
 成员 | 类型 | 描述 | 备注
@@ -1260,15 +1514,7 @@ featureid | String | 功能id |
 connstatus | int | 连接状态 | 1表示在线0表示离线
 topic | String | 对端的topic | 在点对点发消息时需要携带此参数  
 
->C_0x8018.Resp.ContentBean 登录成功返回结果
 
-成员 | 类型 | 描述 | 备注
-:|
-userid | String | 用户id | 
-token | String | 用户token | 
-uname | String | 用户名 | email/mobile/username
-type | int | 登录类型 | 1表示邮箱加密码 2表示手机号加密码 3表示手机号加验证码 4表示用户名加密码 5.双重认证 手机号+验证码+密码
-expire_in | long | token时效 | 单位 秒  
 
 >C_0x8005.Resp.ContentBean 查询好友|设备列表成功结果 
 
@@ -1280,6 +1526,83 @@ id | String | sn或userid |
 type | int | 好友类型 |  1.查询用户绑定的设备2.查询设备的用户列表3.查询用户的用户好友4.查询设备的设备列表5.查询用户的手机列表6.查询手机的用户好友7.查询所有
 alias | String | 别名 | 如果没有设置默认为对方的sn或suerid
 topic | String | 对端的topic | 在点对点发消息时需要携带此参数  
+
+
+>C_0x8017.Req.ContentBean 注册 （手机号及邮箱注册）请求参数
+
+成员 | 类型 | 描述 | 必填 | 备注
+:|
+uname | String | 手机号或邮箱号  |1| "13838383838"或"123456789@qq.com"
+pwd | String | 密码  |1| "abc123456"
+type | int | 注册类型  |1| C_0x8017.TYPE_EMAIL_ACTIVATE_EMAIL(1) 发送激活邮件通过点击激活链接进行注册 <br>C_0x8017.TYPE_MOBILE_AFTER_CHECK_CODE(2) 效验手机验证码注册 <br>C_0x8017.TYPE_MOBILE_CODE_FAST_LOGIN(3) 快捷登录（已经调整为服务器自动注册，暂时用不上） <br>C_0x8017.TYPE_EMAIL_AFTER_CHECK_CODE(4) 检验邮箱验证码注册 <br>
+ 
+
+>C_0x8018.Req.ContentBean 登录 请求参数
+
+成员 | 类型 | 描述 | 必填 | 备注
+:|
+uname | String | 登录账号  |1| "13838383838" ,"123@qq.com", "Robin"
+pwd | String | 密码  |1(0)| "abc123456"
+identifyCode | String | 验证码  |0(1)| "666555"
+type | int | 类型  |1| C_0x8018.TYPE_EMAIL_PWD(1)邮箱加密码 <br>C_0x8018.TYPE_MOBILE_PWD(2)手机号加密码 <br> C_0x8018.TYPE_MOBILE_CODE(3)手机号加验证码 <br> C_0x8018.TYPE_UNAME_PWD(4)用户名加密码 <br> C_0x8018.TYPE_MOBILE_CODE_PWD(5)三重验证登录，手机号加密码加验证码 <br> 
+ 
+ 
+
+>C_0x8018.Resp.ContentBean 登录成功返回结果
+
+成员 | 类型 | 描述 | 备注
+:|
+userid | String | 用户id | 
+token | String | 用户token | 
+uname | String | 用户名 | email/mobile/username
+type | int | 登录类型 | 1表示邮箱加密码 2表示手机号加密码 3表示手机号加验证码 4表示用户名加密码 5.双重认证 手机号+验证码+密码
+expire_in | long | token时效 | 单位 秒  
+ 
+ 
+>C_0x8020.Req.ContentBean 修改用户信息请求实体
+
+成员 | 类型 | 描述 | 必填 |备注
+:|
+userid | String | 用户id | 1 | 
+userName | String | 登录用户名 | 0 | 修改后不可再次更改
+birthday | String | 生日 | 0 | 格式 1991-12-11
+province | String | 省 | 0 |  
+city | String | 市 | 0 |  
+town | String | 区 | 0 | 
+address | String | 详细地址 | 0 |  
+nickName | String | 昵称 | 0 | 
+headPic | String | 头像 | 0 | http://file.startai.com.cn/aaaa.jpg
+sex | String | 性别 |  0 |  男/女
+firstName | String | 名 | 0 |  
+lastName | String | 姓 |  0 |  
+注：在请求时，如果不想修改此字段请将无需填写,服务器会自动保存上次的数据。
+
+ 
+
+>C_0x8021.Req.ContentBean 发送手机验证码 请求数据
+
+成员 | 类型 | 描述 | 必填 | 备注
+:|
+mobile | String | 手机号  |1| "13838383838"
+type | int | 业务类型  |1| C_0x8021.TYPE_FAST_LOGIN(1) 快捷登录 <br> C_0x8021.TYPE_RESET_PWD(2) 重置密码 <br> C_0x8021.TYPE_REGISTER(3) 注册 <br> C_0x8021.TYPE_THIRD_MUSICBOX_LOGIN(4) 第三方音响登录 <br> C_0x8021.TYPE_UPDATE_MOBILENUM(5) 绑定手机号 <br> 
+ 
+
+>C_0x8022.Req.ContentBean 效验验证码（手机短信验证码或邮箱验证码）
+
+成员 | 类型 | 描述 | 必填 | 备注
+:|
+account | String | 手机号或邮箱号  |1| "13838383838"或"123456789@qq.com"
+identifyCode | String | 短信验证码或邮箱验证码  |1| "666555"
+type | int | 业务类型  |1|  C_0x8022.TYPE_MOBILE_LOGIN(1) 手机号码快捷登录 <br> C_0x8022.TYPE_MOBILE_RESET_PWD(2) 手机重置登录密码 <br> C_0x8022.TYPE_MOBILE_REGISTER(3) 手机号注册 <br> C_0x8022.TYPE_MOBILE_THIRD_MUBICBOX_LOGIN(4) 第三方音响登录 <br> C_0x8022.TYPE_MOBILE_UPDATE_MOBILENUM(5) 绑定手机号 <br> C_0x8022.TYPE_EMAIL_REGISTER(6) 邮箱注册 <br> C_0x8022.TYPE_EMAIL_RESET_PWD(7) 邮箱重置密码 <br>C_0x8022.TYPE_EMAIL_UPDATE_EMAILNUM(8) 绑定邮箱号 <br>
+
+
+>C_0x8023.Req.ContentBean 发送邮件 请求参数
+
+成员 | 类型 | 描述 | 必填 | 备注
+:|
+email | String |  邮箱号  |1|  "123456789@qq.com"
+type | int | 业务类型  |1|  C_0x8023.TYPE_LINK_TO_RE_ACTIVATE(1) 重发激活邮件 <br>C_0x8023.TYPE_LINK_TO_RESET_PWD(2) 发送重置密码链接 <br>C_0x8023.TYPE_CODE_TO_REGISTER(6) 发送邮箱验证码注册 <br>C_0x8023.TYPE_CODE_TO_RESET_PWD(7) 通过邮箱验证码重置密码 <br>C_0x8023.TYPE_CODE_TO_BIND_EMAIL(8) 通过邮箱验证码绑定邮箱号 <br>
+
 
 >C_0x8024.Resp.ContentBean 查询用户信息返回实体
 
@@ -1303,25 +1626,72 @@ email | String | 邮箱号  |
 thirdInfos | List | 第三方账号信息 |   nickName 
 
 
->C_0x8020.Req.ContentBean 修改用户信息请求实体
 
-成员 | 类型 | 描述 | 必填 |备注
+>C_0x8027.req.ContentBean 
+>
+> 请求参数
+
+成员 | 类型 | 描述 | 必填 | 备注
 :|
-userid | String | 用户id | 1 | 
-userName | String | 登录用户名 | 0 | 修改后不可再次更改
-birthday | String | 生日 | 0 | 格式 1991-12-11
-province | String | 省 | 0 |  
-city | String | 市 | 0 |  
-town | String | 区 | 0 | 
-address | String | 详细地址 | 0 |  
-nickName | String | 昵称 | 0 | 
-headPic | String | 头像 | 0 | http://file.startai.com.cn/aaaa.jpg
-sex | String | 性别 |  0 |  男/女
-firstName | String | 名 | 0 |  
-lastName | String | 姓 |  0 |  
-注：在请求时，如果不想修改此字段请将无需填写,服务器会自动保存上次的数据。
+code | String |  第三方登录api获取  |1(0)|  "15W6E1F648WEW98E4FWE54FW" 
+type | String |  类型  |1|  C_0x8027.THIRD_WECHAT(10)微信登录 <br> C_0x8027.THIRD_ALIPAY(11)支付宝登录 <br> C_0x8027.THIRD_QQ(12)QQ登录 <br> C_0x8027.THIRD_GOOGLE(13)Google登录 <br> C_0x8027.THIRD_TWITTER(14)推特登录 <br> C_0x8027.THIRD_AMAZON(15)亚马逊登录 <br> C_0x8027.THIRD_FACEBOOK(16)Facebook登录 <br> C_0x8027.THIRD_MI(17)小米登录 <br>  
+userinfo | C_0x8027.Req.ContentBean.UserinfoBean |  第三方用户信息  |0(1)|   在无法通过第三方登录api获取code的情况下，需要app自己完成第三方登录，然后获取用户信息通过sdk进行提交
 
  
+ 
+>C_0x8028.Req.ContentBean 请求下单 请求数据 
+
+成员 | 类型 | 描述 |必须 | 备注
+:|
+platform | int | 支付平台 | 1 | C_0x8028.PLATFOME_WECHAT(1)微信支付<br>   C_0x8028.PLATFOME_ALIPAY(2)支付宝支付<br>  
+type | int |交易类型 | 1 |  C_0x8028.TYPE_DEPOSIT(1)押金充值<br> C_0x8028.TYPE_BALANCE(2)余额充值<br> C_0x8028.TYPE_ORDER(3)订单支付<br>
+goods_description | String | 商品描述 | 1 | 显示在微信支付单 如 “充电宝-押金充值”
+fee_type | String | 货币类型 | 1 | "CNY"
+total_fee | int | 总金额 | 1 | 单位： 分
+order_num | String | 订单号 | 1 | 
+ 
+
+
+
+>C_0x8031.Resp.ContentBean 查询支付结果 返回数据
+
+成员 | 类型 | 描述 |  备注
+:|
+platform | int | 支付平台 |   C_0x8031.PLATFORM_WECHAT(1)微信 <br>C_0x8031.PLATFORM_ALIPAY(2)支付宝 <br> C_0x8031.PLATFORM_SMALL_APP(3) 微信小程序 
+userid | String | 用户id |  
+openid | String | 用户在商户appid下的唯一id |  
+is_subscribe | String | 是否订阅 |  
+bank_type | String | 付款银行 | 
+total_fee | String | 交易金额 | 单位：分  
+out_trade_no | String | 商户订单号 | 
+transaction_id | String | 微信/支付宝支付订单号 | 
+trade_type | String | 交易类型 |  "APP"
+time_end | String | 支付完成时间 | 2018-11-11 22:22:22
+trade_state | String | 交易状态 |  核心字段<br> C_0x8031.TRADE_STATE_SUCCESS(SUCCESS)支付成功<br> C_0x8031.TRADE_STATE_REFUND（REFUND）转入退款<br> C_0x8031.TRADE_STATE_NOTPAY(NOTPAY)未支付<br> C_0x8031.TRADE_STATE_CLOSED(CLOSED)已关闭<br> C_0x8031.TRADE_STATE_REVOKED(REVOKED)已撤销（刷卡支付）<br> C_0x8031.TRADE_STATE_USERPAYING(USERPAYING)用户支付中<br> C_0x8031.TRADE_STATE_PAYERROR(PAYERROR)支付失败(其他原因，如银行返回失败)<br> C_0x8031.TRADE_STATE_ERROR(ERROR)错误 
+coupon_fee | String | 代金券金额 | 单位：分
+cash_fee | String | 现金支付金额 | 单位：分 
+coupon_count | String | 代金券数量 | 单位：分 
+trade_state_desc | String | 交易状态描述 | "支付成功"
+ 
+   
+
+
+>C_0x8035.Resp.ContentBean 查询天气信息 返回数据 
+
+成员 | 类型 | 描述 | 备注
+:|
+lat | String | 纬度  | "115.9918900000"
+lng | String | 经度  | "36.4626820000" 
+province | String | 省份  | "广东"
+city | String | 城市  | "广州" 
+district | String | 区  | "天河" 
+qlty | String | 空气质量  | "重度污染"
+tmp | String | 当前温度  | "16" 
+weather | String | 天气描述  | "多云"  
+weatherPic | String | 天气图片链接  | "http://www.abc.com/aaa.jpg "
+ 
+
+
 
 >MqttPublishRequest < RequestType > 消息发送请求实体
 
@@ -1610,6 +1980,17 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 
 ###更新日志
 
+
+- 2019-02-27 v3.1.44 
+
+		1，优化第三方登录，绑定第三方账号接口入参方式。
+
+- 2019-02-20 v3.1.43
+		
+		1，优化接口调用参数，添加文档接口参数描述及备注。
+		2，调整部分接口的type类型字段移动到具体的业务类中。
+		3，添加第三方登录，绑定第三方账号，解绑第三方登录接口类型THIRD_SMALLROUTINE = 18。
+
 - 2019-02-15 v3.1.42
 		
 		1，优化分页查询绑定列表请求参数可不用填写userid,sdk会自动补全。
@@ -1618,7 +1999,7 @@ content | Object | 具体的内容  | 1|   不同的消息类型，content格式
 
 		1，添加分页查询绑定列表功能。
 		2，添加绑定邮箱号功能。
-		3，实例异常码。
+		3，补全异常码。
 
 - 2019-01-19 v3.1.39
 

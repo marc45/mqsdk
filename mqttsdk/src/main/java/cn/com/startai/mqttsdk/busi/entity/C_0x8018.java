@@ -45,6 +45,22 @@ public class C_0x8018 {
     public static final String MSGTYPE = "0x8018";
     public static String MSGCW = "0x07";
 
+    public static final int TYPE_EMAIL_PWD = 1;
+    public static final int TYPE_MOBILE_PWD = 2;
+    public static final int TYPE_MOBILE_CODE = 3;
+    public static final int TYPE_UNAME_PWD = 4;
+    public static final int TYPE_MOBILE_CODE_PWD = 5;
+
+    public static final int THIRD_WECHAT = 10;
+    public static final int THIRD_ALIPAY = 11;
+    public static final int THIRD_QQ = 12;
+    public static final int THIRD_GOOGLE = 13;
+    public static final int THIRD_TWITTER = 14;
+    public static final int THIRD_AMAZON = 15;
+    public static final int THIRD_FACEBOOK = 16;
+    public static final int THIRD_MI = 17;
+    public static final int THIRD_SMALLROUTINE = 18;
+
     /**
      * 登录
      *
@@ -335,6 +351,12 @@ public class C_0x8018 {
                         ", identifyCode='" + identifyCode + '\'' +
                         ", type=" + type +
                         '}';
+            }
+
+            public ContentBean(String uname, String identifyCode, int type) {
+                this.uname = uname;
+                this.identifyCode = identifyCode;
+                this.type = type;
             }
 
             public ContentBean(String uname, String pwd, String identifyCode, int type) {

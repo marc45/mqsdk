@@ -31,14 +31,28 @@ public class Type {
         public static final int MUSIC_BOX_LOGIN = 4;
         public static final int BIND_MOBILE_NUM = 5;
 
+
+        public static final int TYPE_EMAIL_REGISTER = 6;
+        public static final int TYPE_EMAIL_RESET_PWD = 7;
+        public static final int TYPE_EMAIL_UPDATE_EMAILNUM = 8;
+
     }
 
     public static class SendEmail {
 
-        //1 为重新发送激活邮件 2 为发送忘记密码邮件
+
+        /*
+1 为重新发送激活邮件
+2 为发送忘记密码邮件
+6 为发送注册验证码邮件
+7 为发送重置密码验证码邮件
+8 为发送更换/添加绑定邮箱验证码邮件
+ */
         public static final int RESEND_ACTIVATE = 1;
         public static final int FORGET_PWD = 2;
-
+        public static final int TYPE_REGISTER = 6;
+        public static final int TYPE_RESET_PWD_COD = 7;
+        public static final int TYPE_UPDATE_EMAIL = 8;
     }
 
     public static class Login {
@@ -71,6 +85,7 @@ public class Type {
         public static final int THIRD_FACEBOOK = 16;
         public static final int THIRD_MI = 17;
 
+        public static final int THIRD_SMALLROUTINE = 18;
 
     }
 
@@ -79,9 +94,13 @@ public class Type {
         /*
         1表示邮箱加密码
         2表示手机号加密码
+        3表示手机加验证码
+        4表示邮箱加验证码
         */
         public static final int EMAIL_PWD = 1;
         public static final int MOBILE_PWD = 2;
+        public static final int TYPE_MOBILE_CODE = 3;
+        public static final int TYPE_EMAIL_CODE = 4;
     }
 
     public static final class GetBindList {

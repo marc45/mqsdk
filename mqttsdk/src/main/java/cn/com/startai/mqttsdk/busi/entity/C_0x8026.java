@@ -34,17 +34,24 @@ public class C_0x8026 implements Serializable {
     public static String MSGCW = "0x07";
     public static String MSG_DESC = "重置密码 ";
 
-    public static final String ACCOUNT_E = "E";
-    public static final String ACCOUNT_M = "M";
+
+    public static void req(Req.ContentBean req,IOnCallListener listener){
+        if(req== null){
+            SLog.d(TAG,"req is empty");
+            return;
+        }
+
+        m_0x8026_req(req.getAccount(),req.getPwd(),listener);
+    }
 
     /**
      * 重置登录密码
      *
      * @param listener
      */
-    public static void m_0x8026_req(String mobile, String newPwd, IOnCallListener listener) {
+    public static void m_0x8026_req(String account, String newPwd, IOnCallListener listener) {
 
-        MqttPublishRequest x8026_req_msg = create_0x8026_req_msg(mobile, newPwd);
+        MqttPublishRequest x8026_req_msg = create_0x8026_req_msg(account, newPwd);
         if (x8026_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8026_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -58,25 +65,21 @@ public class C_0x8026 implements Serializable {
      *
      * @return
      */
-    public static MqttPublishRequest create_0x8026_req_msg(String mobile, String pwd) {
+    public static MqttPublishRequest create_0x8026_req_msg(String account, String pwd) {
 
 
-        if (TextUtils.isEmpty(mobile) || TextUtils.isEmpty(pwd)) {
+        if (TextUtils.isEmpty(account) || TextUtils.isEmpty(pwd)) {
 
-            SLog.e(TAG, "参数非法 mobile pwd 不能为空");
+            SLog.e(TAG, "参数非法 account pwd 不能为空");
             return null;
         }
 
-        String account = ACCOUNT_M;
-        if (SRegexUtil.isEmail(mobile)) {
-            account = ACCOUNT_E;
-        }
 
         StartaiMessage message = new StartaiMessage.Builder()
-                .setMsgtype("0x8026")
-                .setMsgcw("0x07")
+                .setMsgtype(MSGTYPE)
+                .setMsgcw(MSGCW)
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()) + "/" + MqttConfigure.appid)
-                .setContent(new C_0x8026.Req.ContentBean(mobile, pwd, account)).create();
+                .setContent(new C_0x8026.Req.ContentBean(account, pwd)).create();
 
         if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
@@ -105,16 +108,16 @@ public class C_0x8026 implements Serializable {
         if (resp.getResult() == 1) {
             SLog.e(TAG, "重置登录密码 成功");
 
+
         } else {
             Resp.ContentBean content = resp.getContent();
             Req.ContentBean errcontent = content.getErrcontent();
-            content.setMobile(errcontent.getMobile());
             content.setPwd(errcontent.getPwd());
             content.setAccount(errcontent.getAccount());
 
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
-        StartAI.getInstance().getPersisitnet().getEventDispatcher().onResetMobileLoginPwdResult(resp);
+        StartAI.getInstance().getPersisitnet().getEventDispatcher().onResetLoginPwdResult(resp);
 
     }
 
@@ -136,23 +139,16 @@ public class C_0x8026 implements Serializable {
         public static class ContentBean {
 
 
-            private String mobile = null; //手机号
             private String pwd = null; //新密码
 
             private String account = null;
 
 
-            public ContentBean(String mobile, String pwd, String account) {
-                this.mobile = mobile;
-                this.pwd = pwd;
-                this.account = account;
-            }
 
 
             @Override
             public String toString() {
                 return "ContentBean{" +
-                        "mobile='" + mobile + '\'' +
                         ", pwd='" + pwd + '\'' +
                         ", account='" + account + '\'' +
                         '}';
@@ -169,18 +165,11 @@ public class C_0x8026 implements Serializable {
             public ContentBean() {
             }
 
-            public ContentBean(String mobile, String pwd) {
-                this.mobile = mobile;
+            public ContentBean(String account, String pwd) {
+                this.account = account;
                 this.pwd = pwd;
             }
 
-            public String getMobile() {
-                return mobile;
-            }
-
-            public void setMobile(String mobile) {
-                this.mobile = mobile;
-            }
 
             public String getPwd() {
                 return pwd;
@@ -230,7 +219,6 @@ public class C_0x8026 implements Serializable {
         public static class ContentBean extends BaseContentBean {
 
 
-            private String mobile = null; //手机号
             private String pwd = null; //新密码
 
             private String account = null;
@@ -243,7 +231,6 @@ public class C_0x8026 implements Serializable {
                 return "ContentBean{" +
                         "errcode='" + errcode + '\'' +
                         ", errmsg='" + errmsg + '\'' +
-                        ", mobile='" + mobile + '\'' +
                         ", pwd='" + pwd + '\'' +
                         ", account='" + account + '\'' +
                         ", errcontent=" + errcontent +
@@ -269,18 +256,7 @@ public class C_0x8026 implements Serializable {
             public ContentBean() {
             }
 
-            public ContentBean(String mobile, String pwd) {
-                this.mobile = mobile;
-                this.pwd = pwd;
-            }
 
-            public String getMobile() {
-                return mobile;
-            }
-
-            public void setMobile(String mobile) {
-                this.mobile = mobile;
-            }
 
             public String getPwd() {
                 return pwd;

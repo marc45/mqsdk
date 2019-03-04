@@ -4,7 +4,6 @@ import android.content.Context;
 
 import cn.com.startai.mqttsdk.busi.BaseBusiManager;
 import cn.com.startai.mqttsdk.busi.CommonBusiManager;
-import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.listener.IOnSubscribeListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;

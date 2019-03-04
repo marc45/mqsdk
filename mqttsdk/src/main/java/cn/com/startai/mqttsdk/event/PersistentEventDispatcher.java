@@ -668,10 +668,11 @@ public class PersistentEventDispatcher {
     }
 
 
+
     /**
-     * 手机重置登录密码 结果回调
+     *   重置登录密码 结果回调
      */
-    public void onResetMobileLoginPwdResult(final C_0x8026.Resp resp) {
+    public void onResetLoginPwdResult(final C_0x8026.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
@@ -683,14 +684,12 @@ public class PersistentEventDispatcher {
                         StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                list.onResetMobileLoginPwdResult(resp);
-                                list.onResetMobileLoginPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+                                list.onResetLoginPwdResult(resp);
 
                             }
                         });
                     } else {
-                        list.onResetMobileLoginPwdResult(resp);
-                        list.onResetMobileLoginPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
+                        list.onResetLoginPwdResult(resp);
 
                     }
                 }
@@ -699,7 +698,6 @@ public class PersistentEventDispatcher {
             }
         }
     }
-
 
     /**
      * 回调更新用户信息结果

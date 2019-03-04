@@ -31,8 +31,6 @@ public class C_0x8022 {
     public static final String MSGTYPE = "0x8022";
     public static String MSGCW = "0x07";
 
-    public static final String ACCOUNT_M = "M";
-    public static final String ACCOUNT_E = "E";
 
     public static final int TYPE_MOBILE_LOGIN = 1;
     public static final int TYPE_MOBILE_RESET_PWD = 2;
@@ -46,14 +44,14 @@ public class C_0x8022 {
     /**
      * 检验验证码
      *
-     * @param mobile       手机号
+     * @param account      手机号 或邮箱
      * @param identifyCode 验证码
      * @param type         类型1表示用户登录2表示修改登录密码3表示用户注册
      * @param listener
      */
-    public static void m_0x8022_req(String mobile, String identifyCode, int type, IOnCallListener listener) {
+    public static void m_0x8022_req(String account, String identifyCode, int type, IOnCallListener listener) {
 
-        MqttPublishRequest x8022_req_msg = create_0x8022_req_msg(mobile, identifyCode, type);
+        MqttPublishRequest x8022_req_msg = create_0x8022_req_msg(account, identifyCode, type);
         if (x8022_req_msg == null) {
             CallbackManager.callbackMessageSendResult(false, listener, x8022_req_msg, new StartaiError(StartaiError.ERROR_SEND_PARAM_INVALIBLE));
             return;
@@ -70,35 +68,39 @@ public class C_0x8022 {
      */
     public static void req(Req.ContentBean req, IOnCallListener listener) {
         if (req != null) {
-            m_0x8022_req(req.getMobile(), req.getIdentifyCode(), req.getType(), listener);
+            String account = "";
+            if (!TextUtils.isEmpty(req.getAccount())) {
+                account = req.getAccount();
+            }
+
+            if (!TextUtils.isEmpty(req.getMobile())) {
+                account = req.getMobile();
+            }
+            m_0x8022_req(account, req.getIdentifyCode(), req.getType(), listener);
         }
     }
 
     /**
      * 组校验验证码包
      *
-     * @param mobile       手机号
+     * @param account      手机号
      * @param identifyCode 验证码
      * @param type         1表示用户登录  2表示修改登录密码 3表示用户注册
      * @return
      */
-    public static MqttPublishRequest create_0x8022_req_msg(String mobile, String identifyCode, int type) {
+    public static MqttPublishRequest create_0x8022_req_msg(String account, String identifyCode, int type) {
 
-        if (TextUtils.isEmpty(mobile) || TextUtils.isEmpty(identifyCode) || type == 0) {
+        if (TextUtils.isEmpty(account) || TextUtils.isEmpty(identifyCode) || type == 0) {
             SLog.e(TAG, "参数非法 mibile 及验证码不能为空 或type类型不对");
             return null;
         }
 
-        String account = ACCOUNT_M;
-        if (SRegexUtil.isEmail(mobile)) {
-            account = ACCOUNT_E;
-        }
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype(MSGTYPE)
                 .setMsgcw(MSGCW)
                 .setFromid(MqttConfigure.getSn(StartAI.getContext()))
-                .setContent(new C_0x8022.Req.ContentBean(mobile, identifyCode, type, account)).create();
+                .setContent(new C_0x8022.Req.ContentBean(account, identifyCode, type)).create();
 
         if (!DistributeParam.isDistribute(MSGTYPE)) {
             message.setFromid(MqttConfigure.getSn(StartAI.getContext()));
@@ -128,12 +130,8 @@ public class C_0x8022 {
 
             SLog.e(TAG, "检验验证码成功");
 
+
             String mobile = resp.getContent().getMobile();
-            if (SRegexUtil.isEmail(mobile)) {
-                resp.getContent().setAccount(ACCOUNT_E);
-            } else {
-                resp.getContent().setAccount(ACCOUNT_M);
-            }
 
         } else {
             Resp.ContentBean content = resp.getContent();
@@ -171,13 +169,6 @@ public class C_0x8022 {
             private String account;
 
 
-            public ContentBean(String mobile, String identifyCode, int type, String account) {
-                this.mobile = mobile;
-                this.identifyCode = identifyCode;
-                this.type = type;
-                this.account = account;
-            }
-
             @Override
             public String toString() {
                 return "ContentBean{" +
@@ -199,8 +190,9 @@ public class C_0x8022 {
             public ContentBean() {
             }
 
-            public ContentBean(String mobile, String identifyCode, int type) {
-                this.mobile = mobile;
+            public ContentBean(String account, String identifyCode, int type) {
+                this.mobile = account;
+                this.account = account;
                 this.identifyCode = identifyCode;
                 this.type = type;
             }
