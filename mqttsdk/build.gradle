@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 3144
-        versionName "3.1.44"
+        versionCode 3146
+        versionName "3.1.46"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -76,7 +76,6 @@ task makeAAR(type: Copy) {
     //include ,exclude参数来设置过滤
     //重命名
     rename('mqttsdk-debug.aar', 'startai-mqtt-3.1.3.aar')
-
 }
 makeAAR.dependsOn(build)
 
@@ -90,9 +89,9 @@ publish {
     //项目名称
     artifactId = 'mqsdk'
     //版本号
-    publishVersion = '3.1.44'
+    publishVersion = '3.1.46'
     //描述，不重要
-    desc = 'startai sdk 3.1.44'
+    desc = 'startai sdk 3.1.46'
     //网站，不重要
     website = 'https://www.startai.com.cn'
 

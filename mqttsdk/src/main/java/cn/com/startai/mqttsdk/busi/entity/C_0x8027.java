@@ -19,7 +19,7 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
-import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SLog;
 
 /**

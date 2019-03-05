@@ -11,7 +11,6 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8028;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8031;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8034;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8036;
@@ -19,7 +18,6 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8037;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
 /**
  * Created by Robin on 2018/6/20.
@@ -386,5 +384,7 @@ public interface IMiofBusi {
      * 查询 绑定列表 分页
      */
     void getBindListByPage(C_0x8038.Req.ContentBean req, IOnCallListener listener);
+
+
 }
 

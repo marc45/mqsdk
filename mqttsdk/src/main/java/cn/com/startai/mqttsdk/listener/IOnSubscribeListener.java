@@ -8,6 +8,5 @@ public interface IOnSubscribeListener {
 
     void onFailed(String topic, StartaiError error);
 
-    boolean needUISafety();
 
 }

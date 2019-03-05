@@ -8,11 +8,5 @@ public interface IConnectionStateListener {
 
     void onDisconnect(int errorCode, String errorMsg);
 
-    /**
-     * 是否回调到ui线程
-     *
-     * @return
-     */
-    boolean needUISafety();
 
 }

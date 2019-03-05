@@ -56,10 +56,6 @@ public class MyApp extends Application {
 
             }
 
-            @Override
-            public boolean needUISafety() {
-                return false;
-            }
 
             @Override
             public void onGetWeatherInfoResult(C_0x8035.Resp resp) {
@@ -110,10 +106,6 @@ public class MyApp extends Application {
                 TAndL.TL(getApplicationContext(), "连接断开 " + "errcoe = " + errorCode + "errmsg = " + errorMsg);
             }
 
-            @Override
-            public boolean needUISafety() {
-                return true;
-            }
         });
 
 

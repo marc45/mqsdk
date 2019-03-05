@@ -1,11 +1,7 @@
-package cn.com.startai.mqttsdk.utils;
+package cn.com.startai.mqttsdk.listener;
 
 
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.event.IConnectionStateListener;
-import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.listener.IOnSubscribeListener;
-import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 
 /**
@@ -29,16 +25,7 @@ public class CallbackManager {
         if (listener != null) {
 
 
-            if (listener.needUISafety()) {
-                StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callbackSubResult_(result, topic, error, listener);
-                    }
-                });
-            } else {
-                callbackSubResult_(result, topic, error, listener);
-            }
+            callbackSubResult_(result, topic, error, listener);
 
         }
 
@@ -67,16 +54,7 @@ public class CallbackManager {
         if (listener != null) {
 
 
-            if (listener.needUISafety()) {
-                StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callbackSubResult_(result, topic, error, listener);
-                    }
-                });
-            } else {
-                callbackSubResult_(result, topic, error, listener);
-            }
+            callbackSubResult_(result, topic, error, listener);
 
         }
 
@@ -102,16 +80,8 @@ public class CallbackManager {
      */
     public static void callbackMessageSendResult(final boolean result, final IOnCallListener listener, final MqttPublishRequest request, final StartaiError startaiError) {
         if (listener != null) {
-            if (listener.needUISafety()) {
-                StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callbackMessageSendResult_(result, listener, request, startaiError);
-                    }
-                });
-            } else {
-                callbackMessageSendResult_(result, listener, request, startaiError);
-            }
+
+            callbackMessageSendResult_(result, listener, request, startaiError);
 
         }
     }
@@ -125,8 +95,6 @@ public class CallbackManager {
         }
 
     }
-
-
 
 
 }

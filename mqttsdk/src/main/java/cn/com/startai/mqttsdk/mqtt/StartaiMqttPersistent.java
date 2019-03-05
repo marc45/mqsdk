@@ -10,7 +10,6 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import cn.com.startai.mqttsdk.IPersisitentNet;
@@ -46,7 +44,6 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
-import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.control.AreaConfig;
 import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.SPController;
@@ -62,11 +59,10 @@ import cn.com.startai.mqttsdk.listener.StartaiPingListener;
 import cn.com.startai.mqttsdk.listener.StartaiTimerPingSender;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
-import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
-import cn.com.startai.mqttsdk.utils.STimerUtil;
 import cn.com.startai.mqttsdk.utils.task.CheckActiviteTask;
 import cn.com.startai.mqttsdk.utils.task.CheckAreNodeTask;
 import cn.com.startai.mqttsdk.utils.task.CheckUnCompleteMsgTask;
@@ -112,9 +108,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
      * 位置及外网ip
      */
     private AreaLocation areaLocation;
-    private boolean isDisconnAndReconn;
     private PersistentEventDispatcher eventDispatcher;
-    private boolean avaliToktn;
     private int hostIndex; //初始化 broak 节点下标 ，
 
     private HashMap<Integer, Integer> hostMaps = new HashMap<>();//第个节点连接失败次数
@@ -1187,7 +1181,6 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
         SLog.d(TAG, "准备断开连接并重连");
 
-        isDisconnAndReconn = true;
         disConnect(false);
 
         reconnect();

@@ -31,6 +31,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 
@@ -98,23 +99,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (i == R.id.bt_login2_login) {
 
 
-//            C_0x8035.Req.ContentBean req = new C_0x8035.Req.ContentBean("36.4626820000", "115.9918900000");
-//            StartAI.getInstance().getBaseBusiManager().getWeatherInfo(req, new IOnCallListener() {
-//                @Override
-//                public void onSuccess(MqttPublishRequest request) {
-//
-//                }
-//
-//                @Override
-//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
-//
-//                }
-//
-//                @Override
-//                public boolean needUISafety() {
-//                    return false;
-//                }
-//            });
+            C_0x8035.Req.ContentBean req = new C_0x8035.Req.ContentBean("36.4626820000", "115.9918900000");
+            StartAI.getInstance().getBaseBusiManager().getWeatherInfo(req, new IOnCallListener() {
+                @Override
+                public void onSuccess(MqttPublishRequest request) {
+
+                }
+
+                @Override
+                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+
+                }
+
+
+            });
 
 
 //            C_0x8028.Req.ContentBean request = new C_0x8028.Req.ContentBean(C_0x8028.TYPE_DEPOSIT, C_0x8028.PLATFOME_WECHAT, "aaabbcc", "测试充值", "CNY", "11");
@@ -243,15 +241,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //            C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean(type,code);
 
 //            将从第三方登录后拿到的 用户通过 userInfo存储并提交登录
-            C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean();
-            try {
-                String facebookJson = "{\"id\":\"109241263559640\",\"name\":\"罗彬彬\",\"picture\":{\"data\":{\"height\":50,\"is_silhouette\":true,\"url\":\"https:\\/\\/platform-lookaside.fbsbx.com\\/platform\\/profilepic\\/?asid=109241263559640&height=50&width=50&ext=1553756148&hash=AeRRBT13kE6s5D9Y\",\"width\":50}},\"first_name\":\"彬彬\",\"last_name\":\"罗\"}";
-                req.fromFacebookJson(facebookJson);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(req,onCallListener);
+//            C_0x8027.Req.ContentBean req = new C_0x8027.Req.ContentBean();
+//            try {
+//                String facebookJson = "{\"id\":\"109241263559640\",\"name\":\"罗彬彬\",\"picture\":{\"data\":{\"height\":50,\"is_silhouette\":true,\"url\":\"https:\\/\\/platform-lookaside.fbsbx.com\\/platform\\/profilepic\\/?asid=109241263559640&height=50&width=50&ext=1553756148&hash=AeRRBT13kE6s5D9Y\",\"width\":50}},\"first_name\":\"彬彬\",\"last_name\":\"罗\"}";
+//                req.fromFacebookJson(facebookJson);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//            StartAI.getInstance().getBaseBusiManager().loginWithThirdAccount(req,onCallListener);
 //重置登录密码
 
 //            String account = "123456789@qq.com"; //手机号
@@ -290,10 +288,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         }
 
-        @Override
-        public boolean needUISafety() {
-            return false;
-        }
     };
 
 

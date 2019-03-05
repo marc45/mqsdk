@@ -7,7 +7,6 @@ import java.io.Serializable;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.DistributeParam;
-import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
@@ -15,10 +14,9 @@ import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
-import cn.com.startai.mqttsdk.utils.CallbackManager;
+import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
-import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 /**
  * 重置密码

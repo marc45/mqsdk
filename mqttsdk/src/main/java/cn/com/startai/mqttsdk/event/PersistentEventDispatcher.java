@@ -33,12 +33,10 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8038;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8039;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8200;
 import cn.com.startai.mqttsdk.listener.HostChangeListener;
-import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
 
 public class PersistentEventDispatcher {
 
-    Handler handler = new Handler(Looper.getMainLooper());
     private static PersistentEventDispatcher instance;
 
     private static final String TAG = PersistentEventDispatcher.class.getName();
@@ -65,6 +63,7 @@ public class PersistentEventDispatcher {
         }
         return instance;
     }
+
 
     public void registerHostChangeListener(HostChangeListener listener) {
         synchronized (this) {
@@ -130,16 +129,7 @@ public class PersistentEventDispatcher {
 
         if (connectStateListenerList != null) {
             for (final IConnectionStateListener listener : connectStateListenerList) {
-                if (listener.needUISafety()) {
-                    StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onConnectFail(error, errorMsg);
-                        }
-                    });
-                } else {
-                    listener.onConnectFail(error, errorMsg);
-                }
+                listener.onConnectFail(error, errorMsg);
             }
         }
 
@@ -151,20 +141,8 @@ public class PersistentEventDispatcher {
     public void onTokenExpire(final C_0x8018.Resp.ContentBean resp) {
         if (connectStateListenerList != null) {
             for (final IConnectionStateListener listener : connectStateListenerList) {
-                if (listener.needUISafety()) {
-                    StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            if (listener instanceof ICommonStateListener) {
-                                ((ICommonStateListener) listener).onTokenExpire(resp);
-                            }
-                        }
-                    });
-                } else {
-                    if (listener instanceof ICommonStateListener) {
-                        ((ICommonStateListener) listener).onTokenExpire(resp);
-                    }
+                if (listener instanceof ICommonStateListener) {
+                    ((ICommonStateListener) listener).onTokenExpire(resp);
                 }
             }
         }
@@ -174,16 +152,7 @@ public class PersistentEventDispatcher {
 
         if (connectStateListenerList != null) {
             for (final IConnectionStateListener listener : connectStateListenerList) {
-                if (listener.needUISafety()) {
-                    StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onConnected();
-                        }
-                    });
-                } else {
-                    listener.onConnected();
-                }
+                listener.onConnected();
             }
         }
     }
@@ -199,16 +168,7 @@ public class PersistentEventDispatcher {
 
         if (connectStateListenerList != null) {
             for (final IConnectionStateListener listener : connectStateListenerList) {
-                if (listener.needUISafety()) {
-                    StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onDisconnect(errorCode, errorMsg);
-                        }
-                    });
-                } else {
-                    listener.onDisconnect(errorCode, errorMsg);
-                }
+                listener.onDisconnect(errorCode, errorMsg);
             }
         }
     }
@@ -222,40 +182,16 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
-
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-
-
-                            @Override
-                            public void run() {
-
-                                try {
-                                    byte[] bytes = SStringUtils.hexStr2ByteArr(resp.getContent().replace(" ", ""));
-                                    list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), bytes);
-                                    list.onPassthroughResult(resp, resp.getContent(), bytes);
-                                    return;
-                                } catch (NumberFormatException e) {
-//                                    e.printStackTrace();
-                                }
-                                list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), null);
-                                list.onPassthroughResult(resp, resp.getContent(), null);
-                            }
-                        });
-                    } else {
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
                         try {
                             byte[] bytes = SStringUtils.hexStr2ByteArr(resp.getContent().replace(" ", ""));
-                            list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), bytes);
                             list.onPassthroughResult(resp, resp.getContent(), bytes);
                             return;
                         } catch (NumberFormatException e) {
 //                                    e.printStackTrace();
                         }
-                        list.onPassthroughResult(resp.getResult(), resp, "", "", resp.getContent(), null);
                         list.onPassthroughResult(resp, resp.getContent(), null);
-                    }
                 }
 
 
@@ -276,22 +212,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onHardwareActivateResult(resp);
-                                list.onHardwareActivateResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-                            }
-                        });
-                    } else {
-                        list.onHardwareActivateResult(resp);
-                        list.onHardwareActivateResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onHardwareActivateResult(resp);
                 }
 
 
@@ -309,26 +233,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onActiviteResult(resp);
-
-                                list.onActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
-
-
-                            }
-                        });
-                    } else {
-                        list.onActiviteResult(resp);
-                        list.onActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
-
-
-                    }
+                    list.onActiviteResult(resp);
                 }
 
 
@@ -346,24 +254,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onUnActiviteResult(resp);
-                                list.onUnActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
-
-
-                            }
-                        });
-                    } else {
-                        list.onUnActiviteResult(resp);
-                        list.onUnActiviteResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
-
-                    }
+                    list.onUnActiviteResult(resp);
                 }
 
             }
@@ -380,22 +274,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onUpdateRemarkResult(resp);
-                                list.onUpdateRemarkResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-                            }
-                        });
-                    } else {
-
-                        list.onUpdateRemarkResult(resp);
-                        list.onUpdateRemarkResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-                    }
+                    list.onUpdateRemarkResult(resp);
                 }
 
 
@@ -414,23 +296,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetLatestVersionResult(resp);
-                                list.onGetLatestVersionResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                            }
-                        });
-                    } else {
-                        list.onGetLatestVersionResult(resp);
-                        list.onGetLatestVersionResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onGetLatestVersionResult(resp);
                 }
 
 
@@ -448,24 +317,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onRegisterResult(resp);
-                                list.onRegisterResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-
-                            }
-                        });
-                    } else {
-                        list.onRegisterResult(resp);
-                        list.onRegisterResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onRegisterResult(resp);
                 }
 
 
@@ -486,20 +341,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onLogoutResult(result, errorCode, errorMsg);
-                            }
-                        });
-                    } else {
-                        list.onLogoutResult(result, errorCode, errorMsg);
-
-                    }
+                    list.onLogoutResult(result, errorCode, errorMsg);
                 }
 
 
@@ -515,23 +360,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onLoginResult(resp);
-                                list.onLoginResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                            }
-                        });
-                    } else {
-                        list.onLoginResult(resp);
-                        list.onLoginResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onLoginResult(resp);
                 }
 
 
@@ -547,23 +379,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetIdentifyCodeResult(resp);
-                                list.onGetIdentifyCodeResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                            }
-                        });
-                    } else {
-                        list.onGetIdentifyCodeResult(resp);
-                        list.onGetIdentifyCodeResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onGetIdentifyCodeResult(resp);
                 }
 
             }
@@ -578,24 +397,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onSendEmailResult(resp);
-                                list.onSendEmailResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-
-                            }
-                        });
-                    } else {
-                        list.onSendEmailResult(resp);
-                        list.onSendEmailResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onSendEmailResult(resp);
                 }
 
 
@@ -611,22 +416,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetUserInfoResult(resp);
-                                list.onGetUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                            }
-                        });
-                    } else {
-                        list.onGetUserInfoResult(resp);
-                        list.onGetUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-                    }
+                    list.onGetUserInfoResult(resp);
                 }
 
 
@@ -643,23 +436,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onUpdateUserPwdResult(resp);
-                                list.onUpdateUserPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                            }
-                        });
-                    } else {
-                        list.onUpdateUserPwdResult(resp);
-                        list.onUpdateUserPwdResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-                    }
+                    list.onUpdateUserPwdResult(resp);
                 }
 
 
@@ -668,30 +448,17 @@ public class PersistentEventDispatcher {
     }
 
 
-
     /**
-     *   重置登录密码 结果回调
+     * 重置登录密码 结果回调
      */
     public void onResetLoginPwdResult(final C_0x8026.Resp resp) {
 
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
-
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onResetLoginPwdResult(resp);
-
-                            }
-                        });
-                    } else {
-                        list.onResetLoginPwdResult(resp);
-
-                    }
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
+                    list.onResetLoginPwdResult(resp);
                 }
 
 
@@ -707,25 +474,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onUpdateUserInfoResult(resp);
-                                list.onUpdateUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-
-                            }
-                        });
-                    } else {
-                        list.onUpdateUserInfoResult(resp);
-                        list.onUpdateUserInfoResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), resp.getContent());
-
-
-                    }
+                    list.onUpdateUserInfoResult(resp);
                 }
 
 
@@ -740,24 +492,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onCheckIdetifyResult(resp);
-                                list.onCheckIdetifyResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
-
-
-                            }
-                        });
-                    } else {
-                        list.onCheckIdetifyResult(resp);
-                        list.onCheckIdetifyResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg());
-
-                    }
+                    list.onCheckIdetifyResult(resp);
                 }
 
 
@@ -770,24 +508,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
-
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onThirdPaymentUnifiedOrderResult(resp);
-
-
-                            }
-                        });
-                    } else {
-                        list.onThirdPaymentUnifiedOrderResult(resp);
-
-                    }
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
+                    list.onThirdPaymentUnifiedOrderResult(resp);
                 }
-
 
             }
         }
@@ -804,24 +528,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
-
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onBindResult(resp, id, bebindInfo);
-                                list.onBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, bebindInfo);
-
-                            }
-                        });
-                    } else {
-                        list.onBindResult(resp, id, bebindInfo);
-                        list.onBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, bebindInfo);
-                    }
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
+                    list.onBindResult(resp, id, bebindInfo);
                 }
-
 
             }
         }
@@ -837,23 +547,13 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
-
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onUnBindResult(resp, id, beunbindid);
-                                list.onUnBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, beunbindid);
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
 
-                            }
-                        });
-                    } else {
-                        list.onUnBindResult(resp, id, beunbindid);
-                        list.onUnBindResult(resp.getResult(), resp.getContent().getErrcode(), resp.getContent().getErrmsg(), id, beunbindid);
-                    }
+                    list.onUnBindResult(resp, id, beunbindid);
+
+
                 }
 
 
@@ -874,19 +574,12 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onDeviceConnectStatusChange(userid, status, sn);
-                            }
-                        });
-                    } else {
-                        list.onDeviceConnectStatusChange(userid, status, sn);
-                    }
+                    list.onDeviceConnectStatusChange(userid, status, sn);
+
+
                 }
 
 
@@ -904,19 +597,12 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetRealOrderPayStatus(response);
-                            }
-                        });
-                    } else {
-                        list.onGetRealOrderPayStatus(response);
-                    }
+                    list.onGetRealOrderPayStatus(response);
+
+
                 }
 
 
@@ -932,19 +618,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetAlipayAuthInfoResult(response);
-                            }
-                        });
-                    } else {
-                        list.onGetAlipayAuthInfoResult(response);
-                    }
+                    list.onGetAlipayAuthInfoResult(response);
                 }
 
 
@@ -960,19 +637,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onBindMobileNumResult(response);
-                            }
-                        });
-                    } else {
-                        list.onBindMobileNumResult(response);
-                    }
+                    list.onBindMobileNumResult(response);
                 }
 
 
@@ -988,21 +656,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetBindListResult(response);
-                                list.onGetBindListResult(response.getResult(), response.getErrcode(), response.getErrmsg(), response.getToid(), response.getResp());
-                            }
-                        });
-                    } else {
-                        list.onGetBindListResult(response);
-                        list.onGetBindListResult(response.getResult(), response.getErrcode(), response.getErrmsg(), response.getToid(), response.getResp());
-                    }
+                    list.onGetBindListResult(response);
                 }
 
 
@@ -1020,19 +677,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onUnBindThirdAccountResult(resp);
-                            }
-                        });
-                    } else {
-                        list.onUnBindThirdAccountResult(resp);
-                    }
+                    list.onUnBindThirdAccountResult(resp);
                 }
 
 
@@ -1049,19 +697,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetWeatherInfoResult(resp);
-                            }
-                        });
-                    } else {
-                        list.onGetWeatherInfoResult(resp);
-                    }
+                    list.onGetWeatherInfoResult(resp);
                 }
 
 
@@ -1078,19 +717,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onBindThirdAccountResult(resp);
-                            }
-                        });
-                    } else {
-                        list.onBindThirdAccountResult(resp);
-                    }
+                    list.onBindThirdAccountResult(resp);
                 }
 
 
@@ -1107,19 +737,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onGetBindListByPageResult(resp);
-                            }
-                        });
-                    } else {
-                        list.onGetBindListByPageResult(resp);
-                    }
+                    list.onGetBindListByPageResult(resp);
                 }
 
 
@@ -1136,19 +757,10 @@ public class PersistentEventDispatcher {
         if (messageArriveListenerList != null) {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
-                if (listener instanceof AOnStartaiMessageArriveListener) {
-                    final AOnStartaiMessageArriveListener list = (AOnStartaiMessageArriveListener) listener;
+                if (listener instanceof IOnStartaiMsgArriveListener) {
+                    final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
 
-                    if (listener.needUISafety()) {
-                        StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.onBindEmailResult(resp);
-                            }
-                        });
-                    } else {
-                        list.onBindEmailResult(resp);
-                    }
+                    list.onBindEmailResult(resp);
                 }
 
 
@@ -1163,17 +775,7 @@ public class PersistentEventDispatcher {
             for (final IOnMessageArriveListener listener : messageArriveListenerList) {
 
 
-                if (listener.needUISafety()) {
-                    StartaiMqttPersistent.getInstance().getMainHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            listener.onCommand(topic, msg);
-                        }
-                    });
-                } else {
-                    listener.onCommand(topic, msg);
-                }
+                listener.onCommand(topic, msg);
 
             }
         }

@@ -52,6 +52,7 @@ public class DistributeParam {
     public static boolean GETALIPAYAUTHINFO_DISTRIBUTE = false;//查询支付宝认证信息
     public static boolean GETWEATHERINFO_DISTRIBUTE = false;//查询天气
     public static boolean LOGINWITHTHIRDACCOUNT_DISTRIBUTE = false;//第三方账号登录
+    public static boolean GETREALORDERPAYSTATUS_DISTRIBUTE = false;//查询真实订单支付结果
 
 
     public static boolean BIND_DISTRIBUTE = true;//添加设备或好友
@@ -61,7 +62,6 @@ public class DistributeParam {
     public static boolean UPDATEUSERINFO_DISTRIBUTE = true;//更新用户信息
     public static boolean GETUSERINFO_DISTRIBUTE = true;//查询用户信息
     public static boolean UPDATEREMARK_DISTRIBUTE = true;//修改好友|设备 备注名
-    public static boolean GETREALORDERPAYSTATUS_DISTRIBUTE = true;//查询真实订单支付结果
     public static boolean UNBINDTHIRDACCOUNT_DISTRIBUTE = true;//解绑第三方账号
     public static boolean BINDTHIRDACCOUNT_DISTRIBUTE = true;//绑定第三方账号
     public static boolean BINDMOBILENUM_DISTRIBUTE = true;//关联手机号

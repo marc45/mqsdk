@@ -10,11 +10,5 @@ public interface IOnMessageArriveListener {
      */
     void onCommand(String topic, String msg);
 
-    /**
-     * 是否回调到ui线程
-     *
-     * @return
-     */
-    boolean needUISafety();
 
 }
