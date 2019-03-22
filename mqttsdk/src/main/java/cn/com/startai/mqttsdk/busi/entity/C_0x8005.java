@@ -35,6 +35,7 @@ public class C_0x8005 implements Serializable {
     public static String MSG_DESC = "查询绑定关系 ";
     public static final String MSGTYPE = "0x8005";
     public static String MSGCW = "0x07";
+    
 //    private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
 
@@ -91,7 +92,6 @@ public class C_0x8005 implements Serializable {
 
         }
 
-
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype("0x8005")
                 .setMsgcw("0x07")
@@ -109,7 +109,7 @@ public class C_0x8005 implements Serializable {
     /**
      * 查询绑定关系返回
      *
-     * @param result
+     * @param miof
      * @param miof
      */
     public static void m_resp(String miof) {
@@ -137,7 +137,7 @@ public class C_0x8005 implements Serializable {
             if (userBean != null) {
 
                 //重置数据库，将 type 先设为 "remove"
-                SDBmanager.getInstance().resetTopic(resp.getToid());
+                SDBmanager.getInstance().resetTopic(userBean.getUserid());
                 if (resp.getContent().size() > 0) {
 
                     for (Resp.ContentBean contentBean : resp.getContent()) {
@@ -146,10 +146,10 @@ public class C_0x8005 implements Serializable {
                             continue;
                         }
 
-                        TopicBean topicBeanWill = new TopicBean(TopicConsts.getSubFriendWillTopic(contentBean.id), "set", "", resp.getToid());
+                        TopicBean topicBeanWill = new TopicBean(TopicConsts.getSubFriendWillTopic(contentBean.id), "set", "", userBean.getUserid());
                         SDBmanager.getInstance().addOrUpdateTopic(topicBeanWill);
 
-                        TopicBean topicBeanReport = new TopicBean(TopicConsts.getSubFriendReportTopic(contentBean.id), "set", "", resp.getToid());
+                        TopicBean topicBeanReport = new TopicBean(TopicConsts.getSubFriendReportTopic(contentBean.id), "set", "", userBean.getUserid());
                         SDBmanager.getInstance().addOrUpdateTopic(topicBeanReport);
                     }
                     //订阅对应主题

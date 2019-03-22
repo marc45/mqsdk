@@ -1,5 +1,6 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import cn.com.startai.mqttsdk.StartAI;
@@ -48,6 +49,11 @@ public class C_0x8015 {
 
 
     }
+
+    public static void req(@NonNull Req.ContentBean req, IOnCallListener listener) {
+        m_0x8015_req("", req.getFid(), req.getRemark(), listener);
+    }
+
     /**
      * 组 修改备注名数据包
      *
@@ -139,6 +145,11 @@ public class C_0x8015 {
             private String id;
             private String fid;
             private String remark;
+
+            public ContentBean(String fid, String remark) {
+                this.fid = fid;
+                this.remark = remark;
+            }
 
             @Override
             public String toString() {

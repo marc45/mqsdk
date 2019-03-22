@@ -186,6 +186,7 @@ public class MqttPublishRequestCreator {
             contentBean.setClientid(MqttConfigure.clientid);
             contentBean.setSn(MqttConfigure.getSn(StartAI.getContext()));
 
+
             DeviceInfoManager instance = DeviceInfoManager.getInstance();
             contentBean.setM_ver(MqttConfigure.m_ver);
             C_0x8001.Req.ContentBean.FirmwareParamBean firmwareParamBean = new C_0x8001.Req.ContentBean.FirmwareParamBean();

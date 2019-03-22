@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import cn.com.startai.mqttsdk.IPersisitentNet;
 import cn.com.startai.mqttsdk.PersistentConnectState;
@@ -41,6 +43,7 @@ import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.BaseBusiHandler;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8019;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
@@ -518,7 +521,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
             @Override
             public void run() {
 
-                if (connectStatus == PersistentConnectState.CONNECTED&&SPController.getIsActivite()) {
+                if (connectStatus == PersistentConnectState.CONNECTED && SPController.getIsActivite()) {
 
 
                     //激活后才回调连接成功
@@ -580,7 +583,6 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                         client.setCallback(mqttCallback);
 
                         if (options != null) {
-                            
 
 
                             client.connect(options).waitForCompletion();
@@ -607,6 +609,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
                             checkUnCompleteMsg();
 
+
                             if (SPController.getIsActivite()) {
                                 //激活后才回调连接成功
                                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectSuccess();
@@ -624,6 +627,8 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                             }
                             lastHost = host;
 
+
+                            reportIp();
 
                         } else {
                             StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectFailed(StartaiError.ERROR_CONN_CER, "签名文件有误或找不到");
@@ -928,10 +933,26 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                 return;
             }
 
+
         }
 
     }
 
+    private void reportIp() {
+
+        new Thread() {
+            @Override
+            public void run() {
+                AreaLocation areaLocation = AreaConfig.getArea();
+                if (areaLocation != null && !TextUtils.isEmpty(areaLocation.getQuery())) {
+                    C_0x8019.Req.ContentBean req = new C_0x8019.Req.ContentBean(MqttConfigure.getSn(context), new C_0x8019.Req.ContentBean.StatusParam(areaLocation.getQuery()));
+                    C_0x8019.m_0x8019req(req, null);
+                } else {
+                    Log.w(TAG, "outterIp = " + areaLocation);
+                }
+            }
+        }.start();
+    }
 
     /**
      * 重连
@@ -1060,6 +1081,8 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                 SLog.e(TAG, "定位失败，采用默认节点 " + defaultHost + " 进行连接");
                 return defaultHost;
             } else {
+
+
                 // cn us
 
                 String finalUrl = "";

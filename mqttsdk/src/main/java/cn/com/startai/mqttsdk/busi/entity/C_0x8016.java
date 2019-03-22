@@ -1,5 +1,7 @@
 package cn.com.startai.mqttsdk.busi.entity;
 
+import android.content.Context;
+
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.DistributeParam;
@@ -46,6 +48,10 @@ public class C_0x8016 {
 
     }
 
+    public static void req(IOnCallListener listener) {
+        m_0x8016_req("", "", listener);
+    }
+
     /**
      * 查询最新软件版本
      *
@@ -53,6 +59,12 @@ public class C_0x8016 {
      */
     public static MqttPublishRequest create_0x8016_req_msg(String os, String packageName) {
 
+        os = "android";
+
+        Context context = StartAI.getContext();
+        if (context != null) {
+            packageName = context.getApplicationInfo().packageName;
+        }
 
         StartaiMessage message = new StartaiMessage.Builder()
                 .setMsgtype(C_0x8016.MSGTYPE)
@@ -71,6 +83,7 @@ public class C_0x8016 {
         return mqttPublishRequest;
 
     }
+
     /**
      * 查询最新版本
      *
@@ -92,7 +105,7 @@ public class C_0x8016 {
             content.setAppid(errcontent.getAppid());
             content.setOs(errcontent.getOs());
             content.setPackageName(errcontent.getPackageName());
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetLatestVersionResult(resp);
 

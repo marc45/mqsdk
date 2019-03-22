@@ -32,6 +32,7 @@ public class C_0x8024 implements Serializable {
     private static final String TAG = C_0x8024.class.getSimpleName();
     public static final String MSGTYPE = "0x8024";
     public static String MSGCW = "0x07";
+
     /**
      * 请求查询用户信息
      *
@@ -83,6 +84,7 @@ public class C_0x8024 implements Serializable {
         return mqttPublishRequest;
 
     }
+
     /**
      * 请求查询 用户信息返回结果
      *
@@ -102,7 +104,7 @@ public class C_0x8024 implements Serializable {
             Req.ContentBean errcontent = content.getErrcontent();
             content.setUserid(errcontent.getUserid());
 
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetUserInfoResult(resp);
     }

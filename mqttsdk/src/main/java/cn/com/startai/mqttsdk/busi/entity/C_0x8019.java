@@ -25,6 +25,7 @@ public class C_0x8019 {
     public static String MSG_DESC = "更新设备信息 ";
     public static final String MSGTYPE = "0x8019";
     public static String MSGCW = "0x07";
+
     /**
      * 更新设备信息
      *
@@ -52,8 +53,8 @@ public class C_0x8019 {
         }
 
         StartaiMessage message = new StartaiMessage.Builder()
-                .setMsgtype("0x8019")
-                .setMsgcw("0x07")
+                .setMsgtype(MSGTYPE)
+                .setMsgcw(MSGCW)
                 .setContent(contentBean).create();
 
         if (!DistributeParam.isDistribute(MSGTYPE)) {
@@ -88,7 +89,7 @@ public class C_0x8019 {
             SLog.e(TAG, "更新设备信息成功");
         } else {
 
-            SLog.e(TAG, MSG_DESC+" 失败 "+resp.getContent().getErrmsg());
+            SLog.e(TAG, MSG_DESC + " 失败 " + resp.getContent().getErrmsg());
         }
 //            StartAI.getInstance().getPersisitnet().getEventDispatcher().onGetIdentifyResult(result, errorMiofMsg.getContentBean().getErrcode(), errorMiofMsg.getContentBean().getErrmsg());
 
@@ -111,6 +112,86 @@ public class C_0x8019 {
 
         public static class ContentBean {
 
+            private String sn;
+            private StatusParam statusParam;
+            private BusinessParam businessParam;
+
+            public ContentBean(String sn, BusinessParam businessParam) {
+                this.sn = sn;
+                this.businessParam = businessParam;
+            }
+
+            public ContentBean(String sn, StatusParam statusParam) {
+                this.sn = sn;
+                this.statusParam = statusParam;
+            }
+
+            public ContentBean(BusinessParam businessParam) {
+                this.businessParam = businessParam;
+            }
+
+            public ContentBean(StatusParam statusParam) {
+                this.statusParam = statusParam;
+            }
+
+            public ContentBean() {
+            }
+
+            public ContentBean(StatusParam statusParam, BusinessParam businessParam) {
+                this.statusParam = statusParam;
+                this.businessParam = businessParam;
+            }
+
+            @Override
+            public String toString() {
+                return "ContentBean{" +
+                        "statusParam=" + statusParam +
+                        ", businessParam=" + businessParam +
+                        '}';
+            }
+
+            public StatusParam getStatusParam() {
+                return statusParam;
+            }
+
+            public void setStatusParam(StatusParam statusParam) {
+                this.statusParam = statusParam;
+            }
+
+            public BusinessParam getBusinessParam() {
+                return businessParam;
+            }
+
+            public void setBusinessParam(BusinessParam businessParam) {
+                this.businessParam = businessParam;
+            }
+
+            public static class StatusParam {
+                private String ip;
+
+                public StatusParam(String ip) {
+                    this.ip = ip;
+                }
+
+                @Override
+                public String toString() {
+                    return "StatusParam{" +
+                            "ip='" + ip + '\'' +
+                            '}';
+                }
+
+                public String getIp() {
+                    return ip;
+                }
+
+                public void setIp(String ip) {
+                    this.ip = ip;
+                }
+            }
+
+            public static class BusinessParam {
+
+            }
 
         }
 

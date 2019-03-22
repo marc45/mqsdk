@@ -48,6 +48,7 @@ public class C_0x8002 {
         StartaiMqttPersistent.getInstance().send(x8002_req_msg, listener);
 
     }
+
     /**
      * 组添加好友包
      *
@@ -80,6 +81,7 @@ public class C_0x8002 {
         mqttPublishRequest.topic = TopicConsts.getServiceTopic();
         return mqttPublishRequest;
     }
+
     /**
      * 绑定消息
      *
@@ -128,12 +130,12 @@ public class C_0x8002 {
 
             }
         } else {
-            SLog.e(TAG, "绑定失败 " +resp.getContent().getErrmsg());
-
-            StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(resp, id, null);
+            SLog.e(TAG, "绑定失败 " + resp.getContent().getErrmsg());
+            Resp.ContentBean.BebindingBean bebindingBean = new Resp.ContentBean.BebindingBean();
+            bebindingBean.setId(resp.content.getErrcontent().getBebindingid());
+            StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(resp, id, bebindingBean);
 
         }
-
 
     }
 

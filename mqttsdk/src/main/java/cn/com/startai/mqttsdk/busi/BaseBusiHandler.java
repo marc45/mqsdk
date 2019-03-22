@@ -72,9 +72,9 @@ public class BaseBusiHandler {
             }
 
 
-            if (!checkMsg(appid, msgcw)) {
-                return;
-            }
+//            if (!checkMsg(appid, msgcw)) {
+//                return;
+//            }
 
 
         } catch (JSONException e) {

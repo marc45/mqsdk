@@ -5,23 +5,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * <pre>
- *     author: Blankj
- *     blog  : http://blankj.com
- *     time  : 2016/08/02
- *     desc  : utils about regex
- * </pre>
- */
+
 public final class SRegexUtil {
 
     private SRegexUtil() {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // If u want more please visit http://toutiao.com/i6231678548520731137
-    ///////////////////////////////////////////////////////////////////////////
 
     /**
      * Return whether input matches regex of simple mobile.

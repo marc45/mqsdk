@@ -11,7 +11,7 @@ public class GlobalVariable {
 
     public static C_0x8000.Resp.ContentBean areaNodeBean;
 
-
+//    public static String outterIp;
 
 
 }

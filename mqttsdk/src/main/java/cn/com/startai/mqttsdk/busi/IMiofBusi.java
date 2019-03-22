@@ -2,6 +2,7 @@ package cn.com.startai.mqttsdk.busi;
 
 
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8015;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
@@ -69,7 +70,6 @@ public interface IMiofBusi {
      *
      * @param bebindingid 对端 的用户id或sn
      */
-    @Deprecated
     void bind(String bebindingid, IOnCallListener listener);
 
     /**
@@ -225,6 +225,7 @@ public interface IMiofBusi {
      * @param userid
      * @param listener
      */
+    @Deprecated
     void getUserInfo(String userid, IOnCallListener listener);
 
 
@@ -235,7 +236,15 @@ public interface IMiofBusi {
      * @param packageName 包名 如果是固件 packagname可不填写
      * @param listener
      */
+    @Deprecated
     void getLatestVersion(String os, String packageName, IOnCallListener listener);
+
+    /**
+     * 获取最新软件版本
+     *
+     * @param listener
+     */
+    void getLatestVersion(IOnCallListener listener);
 
 
     /**
@@ -286,6 +295,14 @@ public interface IMiofBusi {
     void updateRemark(String fid, String remark, IOnCallListener listener);
 
     /**
+     * 修改备注名
+     *
+     * @param req
+     * @param listener
+     */
+    void updateRemark(C_0x8015.Req.ContentBean req, IOnCallListener listener);
+
+    /**
      * 修改好友|设备 备注名
      *
      * @param userid   自己id
@@ -293,14 +310,14 @@ public interface IMiofBusi {
      * @param remark   备注
      * @param listener
      */
+    @Deprecated
     void updateRemark(String userid, String fid, String remark, IOnCallListener listener);
-
 
 
     /**
      * 重置密码
      *
-     * @param req 手机号 或邮箱号
+     * @param req      手机号 或邮箱号
      * @param listener
      */
     void resetLoginPwd(C_0x8026.Req.ContentBean req, IOnCallListener listener);

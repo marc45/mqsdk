@@ -93,40 +93,7 @@ public class C_0x8018 {
 
             String dbUname = currUserFromDb.getUName();//第三方登录时没有uname
 
-
-            if (uName.equals(dbUname)) {
-
-                //已经登录
-                long expire_in = currUserFromDb.getExpire_in();
-
-                long time = currUserFromDb.getTime();
-
-                long diff = (System.currentTimeMillis() - time) / 1000 - expire_in;
-                if (expire_in > 0 && diff > 0) {
-                    SLog.d(TAG, "账号登录状态已过期，需要重新登录");
-
-                } else {
-                    SLog.d(TAG, "账号登录状态未过期，直接回调登录成功");
-                    Resp.ContentBean contentBean = new Resp.ContentBean();
-                    contentBean.setuName(dbUname);
-                    contentBean.setToken(currUserFromDb.getToken());
-                    contentBean.setType(currUserFromDb.getType());
-                    contentBean.setExpire_in(currUserFromDb.getExpire_in());
-                    contentBean.setUserid(currUserFromDb.getUserid());
-
-                    Resp resp = new Resp();
-                    resp.setContent(contentBean);
-                    resp.setResult(1);
-                    resp.setToid(contentBean.getUserid());
-                    StartAI.getInstance().getPersisitnet().getEventDispatcher().onLoginResult(resp);
-                    return;
-                }
-
-
-            } else {
-                SLog.d(TAG, "切换账号登录");
-
-
+            if (!uName.equals(dbUname)) {
                 isChangeUser = true;
             }
 
@@ -245,11 +212,10 @@ public class C_0x8018 {
     /**
      * 登出
      */
-
     public static void logout() {
 
         logoutAndReconnect();
-
+        SLog.e(TAG, "登出成功");
         StartAI.getInstance().getPersisitnet().getEventDispatcher().onLogoutResult(1, "", "");
 
     }
@@ -348,6 +314,11 @@ public class C_0x8018 {
                         ", identifyCode='" + identifyCode + '\'' +
                         ", type=" + type +
                         '}';
+            }
+
+            public ContentBean(String uname, String pwd) {
+                this.uname = uname;
+                this.pwd = pwd;
             }
 
             public ContentBean(String uname, String identifyCode, int type) {

@@ -126,6 +126,9 @@ activateType:激活类型 如果APP代智能设备激活 值为2 ,自己激活�
             private int activateType;
             private String m_ver;
 
+            private FirmwareParamBean firmwareParam;
+
+
             public int getActivateType() {
                 return activateType;
             }
@@ -134,7 +137,6 @@ activateType:激活类型 如果APP代智能设备激活 值为2 ,自己激活�
                 this.activateType = activateType;
             }
 
-            private FirmwareParamBean firmwareParam;
 
             public String getApptype() {
                 return apptype;
@@ -183,6 +185,7 @@ activateType:激活类型 如果APP代智能设备激活 值为2 ,自己激活�
             public void setM_ver(String m_ver) {
                 this.m_ver = m_ver;
             }
+
 
             public FirmwareParamBean getFirmwareParam() {
                 return firmwareParam;

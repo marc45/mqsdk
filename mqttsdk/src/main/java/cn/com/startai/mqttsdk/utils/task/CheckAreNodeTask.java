@@ -1,12 +1,15 @@
 package cn.com.startai.mqttsdk.utils.task;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.TimerTask;
 
 import cn.com.startai.mqttsdk.base.GlobalVariable;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8019;
 import cn.com.startai.mqttsdk.control.AreaConfig;
 import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.control.entity.AreaLocation;
@@ -73,6 +76,8 @@ public class CheckAreNodeTask extends AsyncTask {
 
         if (isNeedToGet_0x8000) {
             AreaLocation areaLocation = AreaConfig.getArea();
+
+
             C_0x8000.m_0x8000_req(areaLocation == null ? "" : areaLocation.getQuery(), null);
 
             STimerUtil.schedule("checkGetAreaNode", new TimerTask() {
@@ -85,4 +90,8 @@ public class CheckAreNodeTask extends AsyncTask {
         }
         return null;
     }
+
+
+
+
 }

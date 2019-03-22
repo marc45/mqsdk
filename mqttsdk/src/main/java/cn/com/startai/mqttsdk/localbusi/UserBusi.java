@@ -13,6 +13,9 @@ import cn.com.startai.mqttsdk.control.entity.UserBean;
 
 public class UserBusi {
 
+
+
+
     /**
      * 获取当前登录的用户
      *
@@ -41,6 +44,15 @@ public class UserBusi {
         SPController.setUserInfo(null);
         return currUserFromSp;
 
+    }
+
+    public String getUserId() {
+        String userId = "";
+        C_0x8018.Resp.ContentBean currUser = getCurrUser();
+        if (currUser != null) {
+            userId = currUser.getUserid();
+        }
+        return userId;
     }
 
 

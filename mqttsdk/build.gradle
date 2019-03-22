@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 3146
-        versionName "3.1.46"
+        versionCode 3154
+        versionName "3.1.54"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -40,31 +40,6 @@ dependencies {
 
 }
 
-//task makeAAR(type:Copy){
-//
-//    delete 'libs/startai-mq-android-3.0.1.aar'
-//    from('build/outputs/aar/')
-//    into('libs/')
-//    include('mqttsdk-debug.aar')
-//    rename('mqttsdk-debug.aar','startai-mq-android-3.0.1.aar')
-//
-//}
-//
-//task makeJar(type: Copy) {
-//    //删除存在的
-//    delete 'libs/startai-mqtt-3.0.5.jar'
-//    //设置拷贝的文件
-//    from('build/intermediates/bundles/debug/')
-//    //打进jar包后的文件目录
-//    into('libs/')
-//    //将classes.jar放入build/libs/目录下
-//    //include ,exclude参数来设置过滤
-//    //（我们只关心classes.jar这个文件）
-//    include('classes.jar')
-//    //重命名
-//    rename('classes.jar', 'startai-mqtt-3.0.5.jar')
-//}
-//makeJar.dependsOn(build)
 
 
 task makeAAR(type: Copy) {
@@ -89,9 +64,9 @@ publish {
     //项目名称
     artifactId = 'mqsdk'
     //版本号
-    publishVersion = '3.1.46'
+    publishVersion = '3.1.54'
     //描述，不重要
-    desc = 'startai sdk 3.1.46'
+    desc = 'startai sdk 3.1.54'
     //网站，不重要
     website = 'https://www.startai.com.cn'
 

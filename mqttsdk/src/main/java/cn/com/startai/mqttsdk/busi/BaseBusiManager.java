@@ -1,5 +1,7 @@
 package cn.com.startai.mqttsdk.busi;
 
+import java.util.List;
+
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8003;
@@ -107,6 +109,7 @@ public class BaseBusiManager implements IMiofBusi {
 
         bind("", bebindingid, listener);
     }
+
 
     /**
      * 添加设备或好友
@@ -326,9 +329,20 @@ public class BaseBusiManager implements IMiofBusi {
      *
      * @param listener
      */
+    @Deprecated
     @Override
     public void getLatestVersion(String os, String packageName, IOnCallListener listener) {
         C_0x8016.m_0x8016_req(os, packageName, listener);
+    }
+
+    /**
+     * 查询最新软件 版本号
+     *
+     * @param listener
+     */
+    @Override
+    public void getLatestVersion(IOnCallListener listener) {
+        C_0x8016.req(listener);
     }
 
     /**
@@ -400,9 +414,21 @@ public class BaseBusiManager implements IMiofBusi {
      * @param remark   备注
      * @param listener
      */
+    @Deprecated
     @Override
     public void updateRemark(String userid, String fid, String remark, IOnCallListener listener) {
         C_0x8015.m_0x8015_req(userid, fid, remark, listener);
+    }
+
+    /**
+     * 修备注名
+     *
+     * @param req 对方的sn 跟新的备注名
+     * @param listener
+     */
+    @Override
+    public void updateRemark(C_0x8015.Req.ContentBean req, IOnCallListener listener) {
+        C_0x8015.req(req, listener);
     }
 
 

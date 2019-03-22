@@ -76,7 +76,7 @@ public class DistributeParam {
             case C_0x8001.MSGTYPE:
                 break;
             case C_0x8002.MSGTYPE:
-                return BINDMOBILENUM_DISTRIBUTE;
+                return BIND_DISTRIBUTE;
             case C_0x8003.MSGTYPE:
                 return UNACTIVITE_DISTRIBUTE;
             case C_0x8004.MSGTYPE:
