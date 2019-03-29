@@ -93,7 +93,7 @@ public class C_0x8001 {
                 SLog.e(TAG, "激活失败");
                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onActiviteResult(resp);
             } else {
-                SLog.e(TAG, "代激活失败 " +resp.getContent().getErrmsg()) ;
+                SLog.e(TAG, "代激活失败 " + resp.getContent().getErrmsg());
                 //代发的激活失败
                 StartAI.getInstance().getPersisitnet().getEventDispatcher().onHardwareActivateResult(resp);
             }
@@ -109,14 +109,6 @@ public class C_0x8001 {
 
         public static class ContentBean extends BaseContentBean {
 
-            /*
-            终端请求云端注册业务，clientid项为GUID，clientid,sn,apptype, m_ver,appid,domian不能为空
-apptype:设备类型
-广告屏为smartAd,智能音响为smartBox,智能插座 smartOl,网关为smartGw,智能手机为smartCrtl等
-firmwareParam:
-为固件参数
-activateType:激活类型 如果APP代智能设备激活 值为2 ,自己激活为1 或者不填写该字段
-             */
 
             private String apptype;
             private String domain;

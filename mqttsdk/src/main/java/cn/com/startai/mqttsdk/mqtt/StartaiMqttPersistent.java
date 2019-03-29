@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import cn.com.startai.mqttsdk.IPersisitentNet;
 import cn.com.startai.mqttsdk.PersistentConnectState;
@@ -42,6 +42,7 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.BaseBusiHandler;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8019;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
@@ -56,19 +57,17 @@ import cn.com.startai.mqttsdk.control.entity.MsgWillSendBean;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
 import cn.com.startai.mqttsdk.control.entity.UserBean;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
+import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.listener.IOnSubscribeListener;
 import cn.com.startai.mqttsdk.listener.StartaiPingListener;
 import cn.com.startai.mqttsdk.listener.StartaiTimerPingSender;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
-import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SStringUtils;
-import cn.com.startai.mqttsdk.utils.task.CheckActiviteTask;
-import cn.com.startai.mqttsdk.utils.task.CheckAreNodeTask;
-import cn.com.startai.mqttsdk.utils.task.CheckUnCompleteMsgTask;
+import cn.com.startai.mqttsdk.utils.STimerUtil;
 
 /**
  * mqtt 业务处理 主类
@@ -605,10 +604,6 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
                             checkActivite();
 
-                            checkGetAreaNode();
-
-                            checkUnCompleteMsg();
-
 
                             if (SPController.getIsActivite()) {
                                 //激活后才回调连接成功
@@ -623,12 +618,12 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                                 //判断token是否失败
                                 checkIsAvaliToken();
 
+                                checkGetAreaNode();
+                                checkUnCompleteMsg();
+                                reportIp();
 
                             }
                             lastHost = host;
-
-
-                            reportIp();
 
                         } else {
                             StartAI.getInstance().getPersisitnet().getEventDispatcher().onConnectFailed(StartaiError.ERROR_CONN_CER, "签名文件有误或找不到");
@@ -741,8 +736,20 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
     private void checkUnCompleteMsg() {
 
-        new CheckUnCompleteMsgTask().execute();
 
+        ArrayList<MsgWillSendBean> allMsgWillSend = SDBmanager.getInstance().getAllMsgWillSend();
+
+        for (MsgWillSendBean msgWillSendBean : allMsgWillSend) {
+            if (msgWillSendBean != null) {
+                SLog.d(TAG, "找到一条待发送的消息 " + msgWillSendBean);
+                MqttPublishRequest request = new MqttPublishRequest();
+                request.topic = msgWillSendBean.getToid();
+                request.message = SJsonUtils.fromJson(msgWillSendBean.getMsgWillSend(), StartaiMessage.class);
+
+                StartaiMqttPersistent.getInstance().sendMessage(request, null);
+
+            }
+        }
     }
 
     private boolean isRealConnectToIntnet() {
@@ -862,7 +869,21 @@ public class StartaiMqttPersistent implements IPersisitentNet {
     }
 
     private void checkActivite() {
-        new CheckActiviteTask().execute();
+        STimerUtil.schedule("checkActivite", new TimerTask() {
+            @Override
+            public void run() {
+
+                boolean isActivite = SPController.getIsActivite();
+                if (!isActivite) {
+                    SLog.d(TAG, "设备未激活，正在准备激活");
+                    C_0x8001.m_0x8001_req(null, null);
+                } else {
+                    SLog.d(TAG, "设备已经正常激活");
+                    STimerUtil.close("checkActivite");
+                    cancel();
+                }
+            }
+        }, 0, 60 * 1000);
     }
 
     /**
@@ -870,7 +891,63 @@ public class StartaiMqttPersistent implements IPersisitentNet {
      */
     public void checkGetAreaNode() {
 
-        new CheckAreNodeTask().execute();
+        if (!SPController.getIsActivite()) {
+            //如果设备还没有激活，取消获取
+
+            return;
+        }
+
+        boolean isNeedToGet_0x8000 = false;
+
+        if (MqttConfigure.changeHostTimeDelay == 0) {
+            SLog.d(TAG, "没有设置自动切换节点，不需要去获取区域节点信息");
+            return;
+        }
+
+        if (GlobalVariable.areaNodeBean == null || GlobalVariable.areaNodeBean.getNode().size() == 0) {
+
+            SLog.d(TAG, "没有获取过节点信息");
+            isNeedToGet_0x8000 = true;
+        }
+
+        if (!isNeedToGet_0x8000) {
+            //获取上次同步 区域节点的时间， 如果 大于 设定值就去同步一下
+            long lastGet_0x8000_RespTime = SPController.getLastGet_0x800_respTime(); //上次同步时间
+            int syncTime = GlobalVariable.areaNodeBean.getCycle() * 1000; //同步周期
+            long peroid = System.currentTimeMillis() - lastGet_0x8000_RespTime;
+            SLog.d(TAG, "验证上次同步区域节点时间 lastGet = " + lastGet_0x8000_RespTime + " syncTime = " + syncTime + " peroid = " + peroid);
+            if (!isNeedToGet_0x8000 && peroid >= syncTime) {
+                SLog.d(TAG, "获取过节点信息，但离上次获取已经超过了限定值,重新同步区域节点信息");
+                isNeedToGet_0x8000 = true;
+            } else {
+                SLog.d(TAG, "未到同步区域节点时间，无需同步");
+
+                long delay = syncTime - peroid;
+                SLog.d(TAG, delay + "ms后将会再次同步");
+                STimerUtil.schedule("checkGetAreaNode", new TimerTask() {
+                    @Override
+                    public void run() {
+                        checkGetAreaNode();
+                    }
+                }, delay, delay);
+
+            }
+        }
+
+        if (isNeedToGet_0x8000) {
+            AreaLocation areaLocation = AreaConfig.getArea();
+
+            C_0x8000.m_0x8000_req(areaLocation == null ? "" : areaLocation.getQuery(), null);
+
+            STimerUtil.schedule("checkGetAreaNode", new TimerTask() {
+                @Override
+                public void run() {
+                    checkGetAreaNode();
+                }
+            }, 60 * 1000, 60 * 1000);
+
+        }
+        return;
     }
 
     /**
@@ -939,8 +1016,7 @@ public class StartaiMqttPersistent implements IPersisitentNet {
     }
 
     private void reportIp() {
-
-        new Thread() {
+        STimerUtil.schedule("reportIp", new TimerTask() {
             @Override
             public void run() {
                 AreaLocation areaLocation = AreaConfig.getArea();
@@ -950,8 +1026,12 @@ public class StartaiMqttPersistent implements IPersisitentNet {
                 } else {
                     Log.w(TAG, "outterIp = " + areaLocation);
                 }
+
+                STimerUtil.close("reportIp");
+                cancel();
             }
-        }.start();
+        }, 100);
+
     }
 
     /**
