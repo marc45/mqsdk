@@ -115,7 +115,6 @@ public class C_0x8000 {
                     StartaiMqttPersistent.getInstance().checkGetAreaNode();
                 }
             }, cycle);
-
         }
     }
 
