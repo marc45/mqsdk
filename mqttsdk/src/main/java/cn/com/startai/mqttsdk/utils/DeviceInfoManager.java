@@ -172,6 +172,7 @@ public class DeviceInfoManager {
         return point.y;
     }
 
+
     /**
      * SN生成,MD5加密
      */

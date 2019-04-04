@@ -47,9 +47,9 @@ public class MyApp extends Application {
         Stetho.initializeWithDefaults(this);
 
 
-        MqttInitParam initParam = new MqttInitParam(appid);
 
-        StartAI.getInstance().initialization(getApplicationContext(), initParam);
+
+
         PersistentEventDispatcher.getInstance().registerOnPushListener(new AOnStartaiMessageArriveListener() {
             @Override
             public void onCommand(String topic, String msg) {

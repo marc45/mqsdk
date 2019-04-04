@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        mqsdk {
-            keyAlias 'mqsdk'
+        qxsdk {
+            keyAlias 'qxsdk'
             keyPassword 'startai'
             storeFile file('D:/key/startai-key')
             storePassword 'startai'
@@ -17,19 +17,22 @@ android {
         versionCode 10005
         versionName "1.0.005"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.qxsdk
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.mqsdk
+            signingConfig signingConfigs.qxsdk
         }
         debug {
-            signingConfig signingConfigs.mqsdk
+            signingConfig signingConfigs.qxsdk
         }
     }
     lintOptions {
         abortOnError false
+    }
+    productFlavors {
     }
 }
 repositories {
@@ -48,15 +51,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
     //chrom inspect 调试工具
     implementation 'com.facebook.stetho:stetho:1.4.2'
     //json解析
     implementation 'com.google.code.gson:gson:2.8.5'
     //mqtt
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
-
     implementation project(':mqttsdk')
-
-
 }

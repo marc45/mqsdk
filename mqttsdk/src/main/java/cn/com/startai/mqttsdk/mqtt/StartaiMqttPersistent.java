@@ -23,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.w3c.dom.ls.LSException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -76,22 +77,21 @@ import cn.com.startai.mqttsdk.utils.STimerUtil;
  */
 
 public class StartaiMqttPersistent implements IPersisitentNet {
-    private static String TAG = StartaiMqttPersistent.class.getSimpleName();
+
+    private static String TAG = "StartaiMqttPersistent";
     private static String TAGBUSI = TAG + "BUSI";
     private static String TAGSEND = TAG + "SEND";
 
-    private static StartaiMqttPersistent instance;
-    private static Handler mConnectHandler;
-    private static Handler mBusiHandler;
-    private static Handler mMessageSendHandler;
-    private static HandlerThread htConnect;
-    private static HandlerThread htBusi;
-    private static HandlerThread htSend;
+    private Handler mConnectHandler;
+    private Handler mBusiHandler;
+    private Handler mMessageSendHandler;
+    private HandlerThread htConnect;
+    private HandlerThread htBusi;
+    private HandlerThread htSend;
 
     private PersistentConnectState connectStatus;
 
     private MqttAsyncClient client;
-
 
     private Context context;
 
@@ -117,46 +117,29 @@ public class StartaiMqttPersistent implements IPersisitentNet {
     private StartaiTimerPingSender startaiTimerPingSender;
     private String host;
 
+    //将构造函数私有化
+    private StartaiMqttPersistent() {
+    }
+
+    public static StartaiMqttPersistent getInstance() {
+        return SingleTonHoulder.singleTonInstance;
+    }
+
+    //静态内部类
+    private static class SingleTonHoulder {
+        private static final StartaiMqttPersistent singleTonInstance = new StartaiMqttPersistent();
+    }
+
+
     public String getHost() {
         return host;
     }
 
-    private StartaiMqttPersistent() {
-
-    }
-
-
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
-
-    public Handler getMainHandler() {
-        return mainHandler;
-    }
 
     public boolean isInit() {
-        return SPController.getIsActivite();
+        return context != null;
     }
 
-    public static StartaiMqttPersistent getInstance() {
-
-        if (instance == null) {
-            instance = new StartaiMqttPersistent();
-            htConnect = new HandlerThread(TAG);
-            htConnect.start();
-            mConnectHandler = new Handler(htConnect.getLooper());
-
-            htBusi = new HandlerThread(TAGBUSI);
-            htBusi.start();
-            mBusiHandler = new Handler(htBusi.getLooper());
-
-            htSend = new HandlerThread(TAGSEND);
-            htSend.start();
-            mMessageSendHandler = new Handler(htSend.getLooper());
-
-        }
-
-        return instance;
-
-    }
 
     private BaseBusiHandler busihandler;
 
@@ -440,30 +423,50 @@ public class StartaiMqttPersistent implements IPersisitentNet {
      * @param
      */
     public synchronized void disConnect(final boolean isUnint) {
+        if (mConnectHandler != null) {
+            mConnectHandler.post(new Runnable() {
+                @Override
+                public void run() {
 
-        mConnectHandler.post(new Runnable() {
-            @Override
-            public void run() {
+                    toDisconnect();
+                    if (isUnint) {
+                        mConnectHandler.removeCallbacksAndMessages(null);
+                        htConnect.quit();
+                        htConnect = null;
+                        mConnectHandler = null;
+                        SLog.e(TAG, "htConnect quit");
+                    }
 
-                toDisconnect();
-                if (isUnint) {
-                    mConnectHandler.removeCallbacksAndMessages(null);
-                    htConnect.quit();
-                    SLog.e(TAG, "htConnect quit");
                 }
-
-            }
-        });
+            });
+        }
     }
 
 
     @Override
-    public void initialization(final Context context, final MqttInitParam pa) {
+    public void initialization(Context ctx, final MqttInitParam pa) {
+
+        if (isInit()) {
+            SLog.e(TAG, "no neet to repeat init");
+            return;
+        }
 
         if (!initMqttConfiguration(pa)) {
             return;
         }
-        this.context = context;
+        context = ctx;
+        htConnect = new HandlerThread(TAG);
+        htConnect.start();
+        mConnectHandler = new Handler(htConnect.getLooper());
+
+        htBusi = new HandlerThread(TAGBUSI);
+        htBusi.start();
+        mBusiHandler = new Handler(htBusi.getLooper());
+
+        htSend = new HandlerThread(TAGSEND);
+        htSend.start();
+        mMessageSendHandler = new Handler(htSend.getLooper());
+
         connect();
         registerNetReceiver();
     }
@@ -500,15 +503,23 @@ public class StartaiMqttPersistent implements IPersisitentNet {
 
         disConnect(true);
 
-        mainHandler.removeCallbacksAndMessages(null);
         mMessageSendHandler.removeCallbacksAndMessages(null);
         htSend.quit();
+        htSend = null;
+        mMessageSendHandler = null;
         SLog.e(TAG, "htSend quit");
+
         mBusiHandler.removeCallbacksAndMessages(null);
         htBusi.quit();
-        SLog.e(TAG, "htBusi quit");
+        htBusi = null;
+        mBusiHandler = null;
 
-        instance = null;
+        SLog.e(TAG, "htBusi quit");
+        context = null;
+        host = null;
+        GlobalVariable.areaNodeBean = null;
+        hostIndex = 0;
+        hostMaps.clear();
 
     }
 

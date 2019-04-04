@@ -21,13 +21,21 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class SDBmanager {
 
-    private static SDBmanager instance;
     private DbManager.DaoConfig daoConfig;
     private static DbManager db;
     private final String DB_NAME = "qxsdk.db";
     private static final int VERSION = 2;
     private static String TAG = SDBmanager.class.getSimpleName();
 
+
+    public static SDBmanager getInstance() {
+        return SingleTonHoulder.singleTonInstance;
+    }
+
+    //静态内部类
+    public static class SingleTonHoulder {
+        private static final SDBmanager singleTonInstance = new SDBmanager();
+    }
 
     private SDBmanager() {
         SLog.d(TAG, "准备打开数据库");
@@ -52,12 +60,7 @@ public class SDBmanager {
         return db;
     }
 
-    public static SDBmanager getInstance() {
-        if (instance == null) {
-            instance = new SDBmanager();
-        }
-        return instance;
-    }
+
 
     public void deleteAllDB() {
         try {

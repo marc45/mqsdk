@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 3157
-        versionName "3.1.57"
+        versionCode 3165
+        versionName "3.1.65"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -64,9 +64,9 @@ publish {
     //项目名称
     artifactId = 'mqsdk'
     //版本号
-    publishVersion = '3.1.57'
+    publishVersion = '3.1.65'
     //描述，不重要
-    desc = 'startai sdk 3.1.57'
+    desc = 'startai sdk 3.1.65'
     //网站，不重要
     website = 'https://www.startai.com.cn'
 

@@ -59,7 +59,11 @@ public class PersistentEventDispatcher {
     public static PersistentEventDispatcher getInstance() {
 
         if (instance == null) {
-            instance = new PersistentEventDispatcher();
+            synchronized (PersistentEventDispatcher.class) {
+                if (instance == null) {
+                    instance = new PersistentEventDispatcher();
+                }
+            }
         }
         return instance;
     }
@@ -184,14 +188,14 @@ public class PersistentEventDispatcher {
 
                 if (listener instanceof IOnStartaiMsgArriveListener) {
                     final IOnStartaiMsgArriveListener list = (IOnStartaiMsgArriveListener) listener;
-                        try {
-                            byte[] bytes = SStringUtils.hexStr2ByteArr(resp.getContent().replace(" ", ""));
-                            list.onPassthroughResult(resp, resp.getContent(), bytes);
-                            return;
-                        } catch (NumberFormatException e) {
+                    try {
+                        byte[] bytes = SStringUtils.hexStr2ByteArr(resp.getContent().replace(" ", ""));
+                        list.onPassthroughResult(resp, resp.getContent(), bytes);
+                        return;
+                    } catch (NumberFormatException e) {
 //                                    e.printStackTrace();
-                        }
-                        list.onPassthroughResult(resp, resp.getContent(), null);
+                    }
+                    list.onPassthroughResult(resp, resp.getContent(), null);
                 }
 
 

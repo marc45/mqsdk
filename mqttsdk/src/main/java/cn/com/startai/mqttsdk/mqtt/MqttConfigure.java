@@ -73,8 +73,9 @@ public class MqttConfigure {
 
         if (TextUtils.isEmpty(sn)) {
 
-            sn = StartAI.getInstance().getDeviceInfoManager().getSn(context);
 
+            DeviceInfoManager deviceInfoManager = StartAI.getInstance().getDeviceInfoManager();
+            sn = deviceInfoManager.getSn_16(deviceInfoManager.getSn(context) + appid);
         }
 
         SLog.d(TAG, "getSn use time = " + (System.currentTimeMillis() - t) + " sn = " + sn);

@@ -33,6 +33,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 
 /**
@@ -56,6 +57,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        MqttInitParam initParam = new MqttInitParam(MyApp.appid);
+        StartAI.getInstance().initialization(getApplicationContext(), initParam);
         Toolbar toolbar = (Toolbar) findViewById(R.id.include);
         toolbar.setTitle("用户登录");
         setSupportActionBar(toolbar);
@@ -63,6 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         initView();
         initListener();
+
     }
 
 
@@ -83,9 +87,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         int id = item.getItemId();
         if (id == R.id.action_settings) {
 
-            return true;
         } else if (id == R.id.action_3_login) {
 
+            StartAI.getInstance().initialization(getApplicationContext(), new MqttInitParam(MyApp.appid));
 
         }
         return super.onOptionsItemSelected(item);
@@ -267,7 +271,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else if (i == R.id.tv_main_new_register) {
 
 
-
         } else if (i == R.id.tv_main_forget_pwd) {
 
         } else if (i == R.id.tv_login_forget_email) {
@@ -294,8 +297,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         StartAI.getInstance().unInit();
+
 
     }
 
