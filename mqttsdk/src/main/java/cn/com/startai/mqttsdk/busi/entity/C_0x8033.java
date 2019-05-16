@@ -18,6 +18,8 @@ import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 查询支付宝密钥
  * Created by Robin on 2018/8/22.
@@ -26,7 +28,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8033 implements Serializable {
 
-    private static final String TAG = C_0x8033.class.getSimpleName();
     public static final String MSGTYPE = "0x8033";
     public static String MSGCW = "0x07";
     public static String MSG_DESC = "查询支付宝密钥 ";

@@ -12,6 +12,8 @@ import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * sdk 初始化相关参数
  * Created by Robin on 2018/6/14.
@@ -20,7 +22,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class MqttConfigure {
 
-    private static final String TAG = MqttConfigure.class.getSimpleName();
 
     private static String sn;
     public static String domain;

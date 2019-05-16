@@ -14,8 +14,6 @@ import cn.com.startai.mqttsdk.control.entity.UserBean;
 public class UserBusi {
 
 
-
-
     /**
      * 获取当前登录的用户
      *
@@ -31,18 +29,7 @@ public class UserBusi {
             SPController.setUserInfo(null);
             return contentBean;
         }
-
-
-        C_0x8018.Resp.ContentBean currUserFromSp = getCurrUserFromSp();
-
-        if (currUserFromSp == null) {
-            return null;
-        }
-
-        UserBean userBean = new UserBean(currUserFromSp.getUserid(), currUserFromSp.getToken(), currUserFromSp.getExpire_in(), currUserFromSp.getuName(), 0, 1);
-        SDBmanager.getInstance().addOrUpdateUser(userBean);
-        SPController.setUserInfo(null);
-        return currUserFromSp;
+        return null;
 
     }
 
@@ -64,12 +51,12 @@ public class UserBusi {
 
     }
 
-    public C_0x8018.Resp.ContentBean getCurrUserFromSp() {
-        C_0x8018.Resp.ContentBean userInfo = SPController.getUserInfo();
-
-        return userInfo;
-
-    }
+//    public C_0x8018.Resp.ContentBean getCurrUserFromSp() {
+//        C_0x8018.Resp.ContentBean userInfo = SPController.getUserInfo();
+//
+//        return userInfo;
+//
+//    }
 
 
     public void resetDBUser() {

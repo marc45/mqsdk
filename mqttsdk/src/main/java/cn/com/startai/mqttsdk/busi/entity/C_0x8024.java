@@ -12,13 +12,15 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 查询用户信息
@@ -29,7 +31,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8024 implements Serializable {
 
     public static String MSG_DESC = "查询用户信息 ";
-    private static final String TAG = C_0x8024.class.getSimpleName();
     public static final String MSGTYPE = "0x8024";
     public static String MSGCW = "0x07";
 
@@ -61,7 +62,9 @@ public class C_0x8024 implements Serializable {
 
         if (TextUtils.isEmpty(userid)) {
 
-            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            userid = SUserManager.getInstance().getUserId();
+
+            C_0x8018.Resp.ContentBean userBean = SUserManager.getInstance().getCurrUser();
             if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
                 userid = userBean.getUserid();
                 loginType = userBean.getType();

@@ -29,7 +29,6 @@ import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 public class SLog {
 
     private static boolean isDebug = true;
-    private static String TAG = "SLog";
     private static Handler mHandler;
 
     //    private Context context = StartAI.init().getContext();

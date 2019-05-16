@@ -7,12 +7,14 @@ import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 消息透传
@@ -22,7 +24,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8200 {
 
-    private static final String TAG = C_0x8200.class.getSimpleName();
     public static final String MSGTYPE = "0x8200";
 
     /**
@@ -59,9 +60,10 @@ public class C_0x8200 {
             String[] aar = topic.split("/");
             String sn = aar[aar.length - 1].replace("-A", "");
             resp.setFromid(sn);
-            C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
-            if (currUser != null) {
-                resp.setToid(currUser.getUserid());
+
+            String userId = SUserManager.getInstance().getUserId();
+            if (!TextUtils.isEmpty(userId)) {
+                resp.setToid(userId);
             }
         }
 

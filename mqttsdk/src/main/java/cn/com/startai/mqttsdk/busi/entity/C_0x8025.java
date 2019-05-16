@@ -11,13 +11,15 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 修改密码
@@ -30,7 +32,6 @@ public class C_0x8025 implements Serializable {
     public static String MSG_DESC = "修改密码 ";
     public static final  String MSGTYPE = "0x8025";
     public static String MSGCW = "0x07";
-    private static final String TAG = C_0x8025.class.getSimpleName();
 
     /**
      * 请求修改登录 密码
@@ -57,7 +58,7 @@ public class C_0x8025 implements Serializable {
 
         String userid = uid;
         if (TextUtils.isEmpty(userid)) {
-            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+            C_0x8018.Resp.ContentBean userBean = SUserManager.getInstance().getCurrUser();
             if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
                 userid = userBean.getUserid();
             }

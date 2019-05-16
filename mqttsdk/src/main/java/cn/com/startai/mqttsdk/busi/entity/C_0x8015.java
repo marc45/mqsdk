@@ -10,13 +10,15 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 修改备注名
@@ -27,7 +29,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class C_0x8015 {
     public static final String MSGTYPE = "0x8015";
 
-    private static final String TAG = C_0x8015.class.getSimpleName();
     public static String MSG_DESC = "修改备注名 ";
     public static String MSGCW = "0x07";
 
@@ -64,11 +65,7 @@ public class C_0x8015 {
 
         String userid = uid;
         if (TextUtils.isEmpty(userid)) {
-
-            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-            if (userBean != null) {
-                userid = userBean.getUserid();
-            }
+            userid = SUserManager.getInstance().getUserId();
         }
 
 

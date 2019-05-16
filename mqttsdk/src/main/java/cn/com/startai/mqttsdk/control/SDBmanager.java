@@ -13,6 +13,8 @@ import cn.com.startai.mqttsdk.db.KeyValue;
 import cn.com.startai.mqttsdk.db.sqlite.WhereBuilder;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 数据库管理类
  * Created by Robin on 2018/7/17.
@@ -25,7 +27,6 @@ public class SDBmanager {
     private static DbManager db;
     private final String DB_NAME = "qxsdk.db";
     private static final int VERSION = 2;
-    private static String TAG = SDBmanager.class.getSimpleName();
 
 
     public static SDBmanager getInstance() {
@@ -37,7 +38,7 @@ public class SDBmanager {
         private static final SDBmanager singleTonInstance = new SDBmanager();
     }
 
-    private SDBmanager() {
+    private  SDBmanager() {
         SLog.d(TAG, "准备打开数据库");
         this.daoConfig = (new DbManager.DaoConfig())
                 .setDbName(DB_NAME)
@@ -46,7 +47,7 @@ public class SDBmanager {
                 .setDbOpenListener(new DbManager.DbOpenListener() {
                     public void onDbOpened(DbManager db) {
                         db.getDatabase().enableWriteAheadLogging();
-                        SLog.d(SDBmanager.TAG, "数据库已经打开 name = " + DB_NAME + " verison = " + VERSION);
+                        SLog.d(TAG, "数据库已经打开 name = " + DB_NAME + " verison = " + VERSION);
                     }
                 }).setDbUpgradeListener(new DbManager.DbUpgradeListener() {
                     public void onUpgrade(DbManager db, int oldVersion, int newVersion) {

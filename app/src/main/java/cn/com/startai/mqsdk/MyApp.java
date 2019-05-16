@@ -13,6 +13,7 @@ import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.event.AOnStartaiMessageArriveListener;
 import cn.com.startai.mqttsdk.event.ICommonStateListener;
 import cn.com.startai.mqttsdk.event.PersistentEventDispatcher;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
 /**
@@ -22,11 +23,11 @@ import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
 
 public class MyApp extends Application {
 
-//    public static String appid = "7446b4eaf72aafe4fabc5dac3374fcb8";//开发者平台获取 rp8
+    public static String appid = "7446b4eaf72aafe4fabc5dac3374fcb8";//开发者平台获取 rp8
 
 
-    public static String appid = "f818c2704026de3c35c5aee06120ff98";//开发者平台获取 wifi插座
-
+//    public static String appid = "f818c2704026de3c35c5aee06120ff98";//开发者平台获取 wifi插座
+//
 
     private static String TAG = MyApp.class.getSimpleName();
 
@@ -107,6 +108,12 @@ public class MyApp extends Application {
             }
 
         });
+
+
+
+
+
+
 
 
     }

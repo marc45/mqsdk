@@ -39,7 +39,6 @@ public class PersistentEventDispatcher {
 
     private static PersistentEventDispatcher instance;
 
-    private static final String TAG = PersistentEventDispatcher.class.getName();
 
     protected ArrayList<IOnMessageArriveListener> messageArriveListenerList;
     protected ArrayList<IConnectionStateListener> connectStateListenerList;

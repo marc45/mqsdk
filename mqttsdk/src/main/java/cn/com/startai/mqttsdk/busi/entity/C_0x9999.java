@@ -5,9 +5,11 @@ import android.text.TextUtils;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * Created by Robin on 2018/7/16.
@@ -16,7 +18,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x9999 {
 
-    private static String TAG = C_0x9999.class.getSimpleName();
     public static final String MSGTYPE = "0x9999";
 
     /**
@@ -48,7 +49,7 @@ public class C_0x9999 {
         }
         SLog.e(TAG, "设备离线 " + sn);
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+        C_0x8018.Resp.ContentBean userBean = SUserManager.getInstance().getCurrUser();
         if (userBean != null) {
 
             StartAI.getInstance().getPersisitnet().getEventDispatcher().onDeviceConnectStatusChanged(userBean.getUserid(), 0, sn);

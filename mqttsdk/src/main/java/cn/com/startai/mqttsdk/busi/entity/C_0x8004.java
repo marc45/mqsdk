@@ -11,7 +11,7 @@ import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
@@ -19,17 +19,20 @@ import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
-/**删除好友或设备
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
+/**
+ * 删除好友或设备
  * Created by Robin on 2018/5/10.
  * qq: 419109715 彬影
  */
 
 public class C_0x8004 {
 
-    private static String TAG = C_0x8004.class.getSimpleName();
     public static String MSG_DESC = "删除好友或设备 ";
     public static final String MSGTYPE = "0x8004";
     public static String MSGCW = "0x07";
+
     /**
      * 删除好友或设备
      *
@@ -45,6 +48,7 @@ public class C_0x8004 {
         StartaiMqttPersistent.getInstance().send(x8004_req_msg, listener);
 
     }
+
     /**
      * 组删除好友包
      *
@@ -55,11 +59,7 @@ public class C_0x8004 {
 
         String bindingid = userid;
         if (TextUtils.isEmpty(bindingid)) {
-
-            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-                bindingid = userBean.getUserid();
-            }
+            bindingid = SUserManager.getInstance().getUserId();
         }
 
 
@@ -91,7 +91,7 @@ public class C_0x8004 {
         }
         int result = resp.getResult();
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+        C_0x8018.Resp.ContentBean userBean = SUserManager.getInstance().getCurrUser();
         String id = "";
         if (userBean != null) {
             id = userBean.getUserid();

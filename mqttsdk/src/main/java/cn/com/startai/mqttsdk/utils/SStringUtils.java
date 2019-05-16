@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * Created by Robin on 2018/4/16.
  * qq: 419109715 彬影
@@ -13,7 +15,6 @@ import java.util.regex.Pattern;
 
 public class SStringUtils {
 
-    private static String TAG = "SStringUtils";
 
     /**
      * 将byte数组转换为表示16进制值的字符串， 如：byte[]{8,18}转换为：0813， 和public static byte[]

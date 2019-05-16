@@ -43,13 +43,14 @@ import cn.com.startai.mqttsdk.busi.entity.MiofTag;
 import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * Created by Robin on 2018/6/14.
  * qq: 419109715 彬影
  */
 
 public class BaseBusiHandler {
-    private static String TAG = "BaseBusiHandler";
 
     public void handMessage(String topic, String msg) {
 

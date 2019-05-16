@@ -15,6 +15,8 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 请求发送邮件
  * Created by Robin on 2018/8/4.
@@ -24,7 +26,6 @@ import cn.com.startai.mqttsdk.utils.SRegexUtil;
 public class C_0x8023 {
 
     public static String MSG_DESC = "请求发送邮件 ";
-    private static final String TAG = C_0x8023.class.getSimpleName();
     public static final String MSGTYPE = "0x8023";
     public static String MSGCW = "0x07";
 

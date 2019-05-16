@@ -18,6 +18,8 @@ import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 重置密码
  * <p>
@@ -27,7 +29,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8026 implements Serializable {
 
-    private static final String TAG = C_0x8026.class.getSimpleName();
     public static final String MSGTYPE = "0x8026";
     public static String MSGCW = "0x07";
     public static String MSG_DESC = "重置密码 ";

@@ -17,20 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.json.JSONException;
-
-import java.util.List;
-
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.base.StartaiError;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8027;
+import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8035;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
 import cn.com.startai.mqttsdk.mqtt.MqttInitParam;
@@ -50,6 +39,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String TAG = LoginActivity.class.getSimpleName();
     private TextView tvProtocol;
     private TextView tvRegister2;
+    private long l;
 
 
     @Override
@@ -85,7 +75,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_fast_login) {
+
+            StartAI.getInstance().getPersisitnet().disconnectAndReconnect();
 
         } else if (id == R.id.action_3_login) {
 
@@ -103,20 +95,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (i == R.id.bt_login2_login) {
 
 
-            C_0x8035.Req.ContentBean req = new C_0x8035.Req.ContentBean("36.4626820000", "115.9918900000");
-            StartAI.getInstance().getBaseBusiManager().getWeatherInfo(req, new IOnCallListener() {
-                @Override
-                public void onSuccess(MqttPublishRequest request) {
-
-                }
-
-                @Override
-                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
-
-                }
-
-
-            });
+//            C_0x8035.Req.ContentBean req = new C_0x8035.Req.ContentBean("36.4626820000", "115.9918900000");
+//            StartAI.getInstance().getBaseBusiManager().getWeatherInfo(req, new IOnCallListener() {
+//                @Override
+//                public void onSuccess(MqttPublishRequest request) {
+//
+//                }
+//
+//                @Override
+//                public void onFailed(MqttPublishRequest request, StartaiError startaiError) {
+//
+//                }
+//
+//
+//            });
 
 
 //            C_0x8028.Req.ContentBean request = new C_0x8028.Req.ContentBean(C_0x8028.TYPE_DEPOSIT, C_0x8028.PLATFOME_WECHAT, "aaabbcc", "测试充值", "CNY", "11");
@@ -268,6 +260,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //            req.setNickName("新昵称"); //修改昵称
 //            StartAI.getInstance().getBaseBusiManager().updateUserInfo(req,onCallListener);
 
+
+            C_0x8005.m_0x8005_req("510463634c677dd2", 1, null);
+            C_0x8005.m_0x8005_req("45D11290012961561402C769AF2D53EC", 4, null);
+
+
         } else if (i == R.id.tv_main_new_register) {
 
 
@@ -293,14 +290,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     };
 
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        StartAI.getInstance().unInit();
+    public void onBackPressed() {
 
+        if (System.currentTimeMillis() - l < 2 * 1000) {
+            StartAI.getInstance().unInit();
+            super.onBackPressed();
+        } else {
+            TAndL.TL(getApplicationContext(), "再次点击返回键退出");
+        }
+        l = System.currentTimeMillis();
 
     }
+
 
     private void initView() {
 

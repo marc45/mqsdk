@@ -12,13 +12,15 @@ import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 分页获取好友列表
@@ -28,7 +30,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8038 implements Serializable {
 
-    private static final String TAG = C_0x8038.class.getSimpleName();
     public static final String MSGTYPE = "0x8038";
     public static String MSGCW = "0x07";
     public static String MSG_DESC = "分页获取好友列表 ";
@@ -75,11 +76,9 @@ public class C_0x8038 implements Serializable {
         }
 
         if (TextUtils.isEmpty(req.getId())) {
-            UserBusi userBusi = new UserBusi();
-            C_0x8018.Resp.ContentBean currUser = userBusi.getCurrUser();
-            if (currUser != null && !TextUtils.isEmpty(currUser.getUserid())) {
-                req.setId(currUser.getUserid());
-            }
+
+
+            req.setId(SUserManager.getInstance().getUserId());
         }
 
         StartaiMessage message = new StartaiMessage.Builder()

@@ -11,6 +11,8 @@ import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 
 /**
  * Created by Robin on 2018/5/8.
@@ -20,7 +22,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 public class StartaiPingListener implements StartaiTimerPingSender.PingListener {
 
 
-    private String TAG = this.getClass().getSimpleName();
 
     private long t;
 

@@ -16,6 +16,8 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.STimerUtil;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 获取可用ip组
  * Created by Robin on 2018/5/10.
@@ -24,7 +26,6 @@ import cn.com.startai.mqttsdk.utils.STimerUtil;
 
 public class C_0x8000 {
 
-    private static String TAG = C_0x8000.class.getSimpleName();
     public static String MSG_DESC = "获取可用ip组 ";
     public static final String MSGTYPE = "0x8000";
     public static String MSGCW = "0x07";

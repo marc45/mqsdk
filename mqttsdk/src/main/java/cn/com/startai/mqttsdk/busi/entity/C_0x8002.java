@@ -11,13 +11,15 @@ import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 绑定
@@ -27,7 +29,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8002 {
 
-    private static String TAG = C_0x8002.class.getSimpleName();
     public static String MSG_DESC = "绑定 ";
     public static final String MSGTYPE = "0x8002";
     public static String MSGCW = "0x07";
@@ -59,11 +60,7 @@ public class C_0x8002 {
 
         String bindingid = userid;
         if (TextUtils.isEmpty(bindingid)) {
-
-            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-                bindingid = userBean.getUserid();
-            }
+            bindingid = SUserManager.getInstance().getUserId();
         }
 
 
@@ -90,13 +87,9 @@ public class C_0x8002 {
     public static void m_resp(String miof) {
 
 
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-        String id = "";
-        if (userBean != null) {
-            id = userBean.getUserid();
-        } else {
+        String id = SUserManager.getInstance().getUserId();
+        if (TextUtils.isEmpty(id)) {
             id = MqttConfigure.getSn(StartAI.getContext());
-
         }
         Resp resp = SJsonUtils.fromJson(miof, Resp.class);
         if (resp == null) {
@@ -118,7 +111,7 @@ public class C_0x8002 {
 
             StartAI.getInstance().getPersisitnet().getEventDispatcher().onBindResult(resp, id, bebinding);
 
-            if (userBean != null) {
+            if (!TextUtils.isEmpty(id)) {
 
                 TopicBean topicBeanWill = new TopicBean(TopicConsts.getSubFriendWillTopic(bebinding.getId()), "set", "", id);
                 SDBmanager.getInstance().addOrUpdateTopic(topicBeanWill);

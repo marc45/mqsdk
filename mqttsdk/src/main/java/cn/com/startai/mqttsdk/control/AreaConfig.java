@@ -13,6 +13,8 @@ import cn.com.startai.mqttsdk.control.entity.AreaLocation;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 节点地区
  * Created by Robin on 2018/5/11.
@@ -21,7 +23,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class AreaConfig {
 
-    private static String TAG = "AreaConfig";
 
     //{"as":"AS4134 No.31,Jin-rong Street","city":"Guangzhou","country":"China","countryCode":"CN","isp":"China Telecom Guangdong","lat":23.1167,"lon":113.25,"org":"China Telecom","query":"59.42.207.3","region":"GD","regionName":"Guangdong","status":"success","timezone":"Asia/Shanghai","zip":""}
     private static String url = "http://ip-api.com/json/";

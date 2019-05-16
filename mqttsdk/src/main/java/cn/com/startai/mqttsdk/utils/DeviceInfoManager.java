@@ -40,7 +40,6 @@ import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 
 public class DeviceInfoManager {
     private static final DeviceInfoManager ourInstance = new DeviceInfoManager();
-    private static String TAG = DeviceInfoManager.class.getSimpleName();
 
 
     public static DeviceInfoManager getInstance() {

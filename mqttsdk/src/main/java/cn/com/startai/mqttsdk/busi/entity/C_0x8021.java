@@ -20,6 +20,8 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 获取验证码
  * Created by Robin on 2018/6/14.
@@ -28,7 +30,6 @@ import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 public class C_0x8021 {
 
-    private static final String TAG = C_0x8021.class.getSimpleName();
     private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
     public static String MSGCW = "0x07";

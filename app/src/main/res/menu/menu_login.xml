@@ -8,7 +8,7 @@
         android:title="第三方登录"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menu_fast_login"
         android:orderInCategory="100"
         android:title="快捷登录"
         app:showAsAction="always" />

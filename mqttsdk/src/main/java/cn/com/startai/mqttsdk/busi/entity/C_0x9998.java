@@ -7,11 +7,13 @@ import cn.com.startai.mqttsdk.base.BaseMessage;
 import cn.com.startai.mqttsdk.base.MqttPublishRequestCreator;
 import cn.com.startai.mqttsdk.base.StartaiError;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * Created by Robin on 2018/7/16.
@@ -20,8 +22,8 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x9998 {
 
-    private static String TAG = C_0x9998.class.getSimpleName();
     public static final String MSGTYPE = "0x9998";
+
     /**
      * 自己上报 自己的连接状态
      *
@@ -57,7 +59,7 @@ public class C_0x9998 {
             SLog.e(TAG, "设备上线 sn = " + sn + " userid = " + clientid);
             sn = clientid;
         }
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+        C_0x8018.Resp.ContentBean userBean = SUserManager.getInstance().getCurrUser();
         String userid = "";
         if (userBean != null) {
             userid = userBean.getUserid();

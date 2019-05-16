@@ -14,13 +14,15 @@ import cn.com.startai.mqttsdk.control.SDBmanager;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.TopicBean;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 查询绑定关系
@@ -30,12 +32,11 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8005 implements Serializable {
 
-    private static String TAG = C_0x8005.class.getSimpleName();
 
     public static String MSG_DESC = "查询绑定关系 ";
     public static final String MSGTYPE = "0x8005";
     public static String MSGCW = "0x07";
-    
+
 //    private static HashMap<String, Req.ContentBean> maps = new HashMap<>();
 
 
@@ -43,9 +44,9 @@ public class C_0x8005 implements Serializable {
      * 查询绑定关系
      *
      * @param type 1.查询用户绑定的设备
-     *             2.查询设备的用户列表
-     *             3.查询用户的用户好友
-     *             4.查询设备的设备列表
+     *             2.查询用户的用户好友
+     *             3.查询设备的设备列表
+     *             4.查询设备的用户好友
      *             5.查询用户的手机列表
      *             6.查询手机的用户好友
      *             7.查询所有
@@ -84,12 +85,7 @@ public class C_0x8005 implements Serializable {
 
         String id = userid;
         if (TextUtils.isEmpty(id)) {
-
-            C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
-            if (userBean != null && !TextUtils.isEmpty(userBean.getUserid())) {
-                id = userBean.getUserid();
-            }
-
+            id = SUserManager.getInstance().getUserId();
         }
 
         StartaiMessage message = new StartaiMessage.Builder()
@@ -119,7 +115,7 @@ public class C_0x8005 implements Serializable {
             SLog.e(TAG, "返回数据格式错误");
             return;
         }
-        C_0x8018.Resp.ContentBean userBean = new UserBusi().getCurrUser();
+        C_0x8018.Resp.ContentBean userBean = SUserManager.getInstance().getCurrUser();
 
 
         if (response.getResult() == 1) {

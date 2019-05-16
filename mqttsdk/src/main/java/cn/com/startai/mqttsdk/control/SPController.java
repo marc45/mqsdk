@@ -12,6 +12,8 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SShareUtils;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 
 /**
  * sp管理类
@@ -21,7 +23,6 @@ import cn.com.startai.mqttsdk.utils.SShareUtils;
 
 public class SPController {
 
-    private static final String TAG = SPController.class.getSimpleName();
 
     private static final String SP_LASTGET_0X800_TIME = "SP_LASTGET_0X800_TIME";
 

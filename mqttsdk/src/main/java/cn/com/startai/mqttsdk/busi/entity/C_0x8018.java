@@ -16,6 +16,7 @@ import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.MsgWillSendBean;
 import cn.com.startai.mqttsdk.control.entity.UserBean;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
@@ -25,6 +26,8 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 登录
  * Created by Robin on 2018/6/14.
@@ -32,8 +35,6 @@ import cn.com.startai.mqttsdk.utils.SRegexUtil;
  */
 
 public class C_0x8018 {
-
-    public static String TAG = C_0x8018.class.getSimpleName();
 
 
     public static HashMap<String, Req.ContentBean> maps = new HashMap<>();
@@ -225,11 +226,11 @@ public class C_0x8018 {
         //清空上次连接的clientid
         SPController.setClientid("");
 
-        SPController.setUserInfo(null);
 
         //清空用户登录状态
         SDBmanager.getInstance().deleteUserByLoginStatus(1);
-
+        SUserManager.getInstance().setUserId("");
+        SUserManager.getInstance().setCurrUser(null);
 
         //断开连接并重新以随机clientid连接
         StartaiMqttPersistent.getInstance().disconnectAndReconnect();
@@ -257,11 +258,12 @@ public class C_0x8018 {
 
             Resp.ContentBean content = resp.getContent();
 
-//            SPController.setUserInfo(resp.getContent());
-
             SDBmanager.getInstance().resetUser();
+            SUserManager.getInstance().setUserId("");
+            SUserManager.getInstance().setCurrUser(null);
             //保存本地登录状态
             SDBmanager.getInstance().addOrUpdateUser(new UserBean(content.getUserid(), content.getToken(), content.getExpire_in(), content.getuName(), content.getType(), 1));
+
 
             //订阅 userid相关主题
             StartaiMqttPersistent.getInstance().subUserTopic();

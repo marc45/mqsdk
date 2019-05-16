@@ -17,6 +17,8 @@ import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
 import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
+import static cn.com.startai.mqttsdk.StartAI.TAG;
+
 /**
  * 注册
  * Created by Robin on 2018/6/14.
@@ -25,7 +27,6 @@ import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 public class C_0x8017 {
 
-    private static final String TAG = C_0x8017.class.getSimpleName();
     public static String MSG_DESC = "注册 ";
     public static final String MSGTYPE = "0x8017";
     public static String MSGCW = "0x07";

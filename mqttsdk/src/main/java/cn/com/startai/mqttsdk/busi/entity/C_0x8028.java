@@ -15,13 +15,15 @@ import cn.com.startai.mqttsdk.base.StartaiMessage;
 import cn.com.startai.mqttsdk.busi.entity.type.Type;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.listener.IOnCallListener;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
+import cn.com.startai.mqttsdk.localbusi.SUserManager;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.StartaiMqttPersistent;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.listener.CallbackManager;
 import cn.com.startai.mqttsdk.utils.SJsonUtils;
 import cn.com.startai.mqttsdk.utils.SLog;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * 统一下单
@@ -31,7 +33,6 @@ import cn.com.startai.mqttsdk.utils.SLog;
 
 public class C_0x8028 implements Serializable {
 
-    private static final String TAG = C_0x8028.class.getSimpleName();
     public static final String MSGTYPE = "0x8028";
     public static String MSGCW = "0x07";
 
@@ -43,6 +44,9 @@ public class C_0x8028 implements Serializable {
 
     public static final int PLATFOME_WECHAT = 1;
     public static final int PLATFOME_ALIPAY = 2;
+    public static final int PLATFOME_WECHAT_SMALL_APP = 3;
+    public static final int PLATFOME_EGHL = 4;
+    public static final int PLATFOME_CLICK = 5;
 
     /**
      * 请求 统一下单
@@ -73,8 +77,7 @@ public class C_0x8028 implements Serializable {
         }
 
         if (TextUtils.isEmpty(request.getUserid())) {
-            UserBusi userBusi = new UserBusi();
-            C_0x8018.Resp.ContentBean currUser = userBusi.getCurrUser();
+            C_0x8018.Resp.ContentBean currUser = SUserManager.getInstance().getCurrUser();
             if (currUser != null && !TextUtils.isEmpty(currUser.getUserid())) {
                 request.setUserid(currUser.getUserid());
             }
@@ -125,7 +128,7 @@ public class C_0x8028 implements Serializable {
                 }
             }
             if (TextUtils.isEmpty(resp.getContent().getUserid())) {
-                C_0x8018.Resp.ContentBean currUser = new UserBusi().getCurrUser();
+                C_0x8018.Resp.ContentBean currUser = SUserManager.getInstance().getCurrUser();
                 if (currUser != null && !TextUtils.isEmpty(currUser.getUserid())) {
                     resp.getContent().setUserid(currUser.getUserid());
                 }

@@ -7,34 +7,18 @@ import android.view.KeyEvent;
 import cn.com.startai.mqttsdk.StartAI;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8000;
 import cn.com.startai.mqttsdk.busi.entity.C_0x8001;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8002;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8003;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8004;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8005;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8015;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8016;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8017;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8018;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8019;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8020;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8021;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8022;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8023;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8024;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8025;
-import cn.com.startai.mqttsdk.busi.entity.C_0x8026;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9998;
 import cn.com.startai.mqttsdk.busi.entity.C_0x9999;
 import cn.com.startai.mqttsdk.control.SPController;
 import cn.com.startai.mqttsdk.control.TopicConsts;
 import cn.com.startai.mqttsdk.control.entity.AreaLocation;
-import cn.com.startai.mqttsdk.localbusi.UserBusi;
 import cn.com.startai.mqttsdk.mqtt.MqttConfigure;
 import cn.com.startai.mqttsdk.mqtt.request.MqttPublishRequest;
 import cn.com.startai.mqttsdk.utils.DeviceInfoManager;
 import cn.com.startai.mqttsdk.utils.ProductConsts;
 import cn.com.startai.mqttsdk.utils.SLog;
-import cn.com.startai.mqttsdk.utils.SRegexUtil;
+
+import static cn.com.startai.mqttsdk.StartAI.TAG;
 
 /**
  * Created by Robin on 2018/5/11.
@@ -43,7 +27,6 @@ import cn.com.startai.mqttsdk.utils.SRegexUtil;
 
 public class MqttPublishRequestCreator {
 
-    private static final String TAG = MqttPublishRequestCreator.class.getSimpleName();
 
     /**
      * 组查询ip组
